@@ -1,0 +1,6 @@
+interface:
+  display_name: "Seagull Notes"
+  short_description: "Turn video links into illustrated notes with browser sign-in"
+  default_prompt: "Use $seagull-notes to read the video's full platform captions, let me sign in through the in-app browser if needed, then create illustrated Chinese notes with timestamps, a mind map and a CuteNote-inspired HTML page."
+policy:
+  allow_implicit_invocation: true

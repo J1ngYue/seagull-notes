@@ -1,0 +1,26 @@
+# Publish source and examples only. Runtime data and local launchers stay local.
+/*
+!/.gitignore
+!/README.md
+!/pyproject.toml
+!/src/
+!/skill/
+!/tests/
+!/examples/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+data/
+models/
+browser-profile/
+cookies*.txt
+.env
+.env.*
+*.key
+*.pem
+*.cmd
+*.bat

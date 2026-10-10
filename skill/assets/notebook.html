@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>$title · Seagull Notes</title>
+<style>
+:root{--bg:#f7f5ef;--paper:#fffefa;--ink:#292d28;--muted:#7c8076;--line:#e8e8de;--accent:#c77c60;--green:#426550}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.8 "Microsoft YaHei",system-ui,sans-serif}a{color:inherit}button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}.topbar{border-bottom:1px solid var(--line);background:var(--paper);padding:14px 5vw;display:flex;align-items:center;justify-content:space-between}.brand{font-weight:700;letter-spacing:1px}.brand span{color:var(--accent)}.tools{display:flex;gap:20px;align-items:center}.tools a{text-decoration:none;color:var(--muted)}.print{border:0;background:var(--accent);color:white;border-radius:9px;padding:7px 18px}.workspace{max-width:1260px;margin:38px auto;display:grid;grid-template-columns:220px minmax(0,860px);gap:44px;padding:0 28px}.sidebar{position:sticky;top:30px;align-self:start}.label{font-size:11px;letter-spacing:3px;font-weight:700;color:var(--accent)}.sidebar h3{font-size:15px;margin:14px 0}.toc a{display:flex;gap:14px;padding:10px 0;text-decoration:none;color:var(--muted);font-size:13px}.toc span{color:var(--accent);font-size:11px}.side-note{border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12px;margin-top:22px}.note-head h1{font-size:32px;line-height:1.5;letter-spacing:-.6px;margin:10px 0 12px}.meta{color:var(--muted);font-size:12px}.tabs{display:flex;gap:5px;background:#ebe9e0;border-radius:10px;padding:5px;width:fit-content;margin:24px 0}.tabs button{border:0;padding:7px 19px;background:transparent;color:var(--muted);border-radius:7px;font-size:13px}.tabs button[aria-selected=true]{background:var(--paper);box-shadow:0 2px 6px #2221;color:var(--ink);font-weight:700}.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:34px 38px;box-shadow:0 10px 32px #302a1c04}.panel[hidden]{display:none}.summary{padding:22px 26px;background:#eef2e9;border-radius:12px;border-left:3px solid var(--green);margin-bottom:32px}.summary p{margin:9px 0 0;font-size:15px}.summary .label{color:var(--green)}.chapter{margin:0 0 36px;scroll-margin-top:30px}.chapter:last-child{margin-bottom:0}.chapter header{display:flex;gap:12px;align-items:center}.number{background:var(--green);color:white;border-radius:7px;font-size:12px;padding:2px 8px}.chapter h2{font-size:21px;line-height:1.5;margin:0;flex:1}.time{font-size:12px;color:var(--accent);text-decoration:none;white-space:nowrap}.prose p{margin:14px 0}.prose li{padding:3px 0}.prose h3{font-size:16px}.prose strong{color:var(--green)}.prose blockquote{margin:18px 0;padding:8px 18px;background:#f5f4ee;border-left:3px solid #c8cebf;color:#606858}.prose code{font-family:Consolas,monospace;background:#efeee6;padding:2px 5px;border-radius:4px}.prose pre{overflow:auto;background:#efeee6;padding:14px;border-radius:8px}.prose table{width:100%;border-collapse:collapse;font-size:13px}.prose th,.prose td{border-bottom:1px solid var(--line);text-align:left;padding:10px}.prose th{background:#f3f3eb}figure{margin:20px 0 0}figure img{width:100%;max-height:560px;object-fit:contain;background:#f5f4ef;border:1px solid var(--line);border-radius:10px}figcaption{font-size:12px;color:var(--muted);margin-top:7px}.mindmap{width:100%;height:auto}.raw{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/2 Consolas,"Microsoft YaHei",monospace;margin:0}.muted{color:var(--muted)}footer{text-align:center;font-size:11px;color:var(--muted);margin:26px 0 40px}body[data-view]:not([data-view=notes]) .toc{display:none}
+.workspace>main,.sidebar{min-width:0}.mindmap{width:auto;min-width:100%}#map{overflow:auto}
+@media(max-width:850px){.topbar{gap:12px;flex-wrap:wrap;padding:12px 18px}.brand{font-size:12px;letter-spacing:.5px}.tools{margin-left:auto}}
+@media(max-width:850px){.workspace{grid-template-columns:1fr;padding:0 18px;margin:24px auto;gap:18px}.sidebar{position:static}.sidebar h3,.side-note{display:none}.toc{display:flex;gap:18px;overflow:auto}.toc a{white-space:nowrap}.note-head h1{font-size:26px}.panel{padding:22px}.tabs{max-width:100%;width:100%}.tabs button{flex:1;padding:7px 8px}.tools{gap:14px;font-size:12px}.chapter h2{font-size:18px}}
+@media print{body{background:white}.topbar,.sidebar,.tabs,footer{display:none}.workspace{display:block;margin:0;padding:0;max-width:none}.panel{border:0;box-shadow:none;padding:20px 0}.chapter{break-inside:avoid}.note-head h1{font-size:26px}.panel[hidden]{display:none}.time{color:#555}.summary{background:#f3f3f3}.mindmap{width:100%;min-width:0}}
+</style>
+</head>
+<body data-view="notes">
+<div class="topbar"><div class="brand"><span>◌</span> SEAGULL NOTES</div><div class="tools"><a href="$source" target="_blank" rel="noopener">查看来源 ↗</a><button class="print" type="button" onclick="window.print()">打印 / PDF</button></div></div>
+<div class="workspace">
+<aside class="sidebar"><div class="label">YOUR VIDEO NOTE</div><h3>本篇目录</h3><nav class="toc" aria-label="章节目录">$toc</nav><p class="side-note">保留值得回看的内容。<br>点章节时间，返回原视频。</p></aside>
+<main>
+<header class="note-head"><div class="label">WATCH · UNDERSTAND · KEEP</div><h1>$title</h1><div class="meta">$meta</div></header>
+<nav class="tabs" role="tablist" aria-label="笔记格式">
+<button id="tab-notes" role="tab" aria-controls="notes" aria-selected="true" data-panel="notes" tabindex="0">图文笔记</button>
+<button id="tab-map" role="tab" aria-controls="map" aria-selected="false" data-panel="map" tabindex="-1">思维导图</button>
+<button id="tab-markdown" role="tab" aria-controls="markdown" aria-selected="false" data-panel="markdown" tabindex="-1">Markdown</button>
+<button id="tab-transcript" role="tab" aria-controls="transcript" aria-selected="false" data-panel="transcript" tabindex="-1">字幕原文</button>
+</nav>
+<article class="panel" id="notes" role="tabpanel" aria-labelledby="tab-notes"><div class="summary"><div class="label">核心概览</div><p>$summary</p></div>$sections</article>
+<article class="panel" id="map" role="tabpanel" aria-labelledby="tab-map" hidden>$mindmap</article>
+<article class="panel" id="markdown" role="tabpanel" aria-labelledby="tab-markdown" hidden><pre class="raw">$markdown</pre></article>
+<article class="panel" id="transcript" role="tabpanel" aria-labelledby="tab-transcript" hidden><pre class="raw">$transcript</pre></article>
+<footer>Seagull Notes · 让内容成为可以回看的笔记</footer>
+</main>
+</div>
+<script>
+const tabs = Array.from(document.querySelectorAll('[role=tab]'));
+function activate(tab) {
+  tabs.forEach(item => { const active = item === tab; item.setAttribute('aria-selected', String(active)); item.tabIndex = active ? 0 : -1; });
+  document.querySelectorAll('[role=tabpanel]').forEach(panel => { panel.hidden = panel.id !== tab.dataset.panel; });
+  document.body.dataset.view = tab.dataset.panel;
+}
+tabs.forEach((tab, index) => {
+  tab.addEventListener('click', () => activate(tab));
+  tab.addEventListener('keydown', event => {
+    if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length-1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    activate(tabs[next]); tabs[next].focus();
+  });
+});
+</script>
+</body>
+</html>

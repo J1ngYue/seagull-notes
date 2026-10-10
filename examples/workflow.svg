@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="280" viewBox="0 0 1000 280">
+<rect width="1000" height="280" fill="#f2f3eb"/>
+<g font-family="Microsoft YaHei, sans-serif">
+<text x="38" y="43" fill="#7c8076" font-size="13" letter-spacing="3">FROM LINK TO UNDERSTANDING</text>
+<g stroke="#dfe5d9" fill="#fffefa"><rect x="38" y="84" width="275" height="134" rx="14"/><rect x="362" y="84" width="275" height="134" rx="14"/><rect x="686" y="84" width="275" height="134" rx="14"/></g>
+<g fill="#426550" font-size="12" font-weight="bold"><text x="61" y="113">01 · INPUT</text><text x="385" y="113">02 · UNDERSTAND</text><text x="709" y="113">03 · KEEP</text></g>
+<g fill="#292d28" font-size="22" font-weight="bold"><text x="61" y="153">视频链接</text><text x="385" y="153">完整字幕</text><text x="709" y="153">图文笔记</text></g>
+<g fill="#7c8076" font-size="14"><text x="61" y="187">B站 / YouTube / 其他平台</text><text x="385" y="187">需要登录时，在浏览器完成</text><text x="709" y="187">关键画面 + 章节 + 思维导图</text></g>
+<g fill="#c77c60" font-size="26"><text x="328" y="162">→</text><text x="652" y="162">→</text></g>
+<text x="38" y="251" fill="#919489" font-size="12">流程示意图 · 界面演示</text>
+</g>
+</svg>
