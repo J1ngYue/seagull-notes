@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "seagull-notes"
 version = "0.1.0"
-description = "视频/文章 → 结构化 Markdown 笔记 + 脑图，通过 MCP 暴露给 AI 客户端"
+description = "A Codex skill that turns Bilibili, YouTube, and local media into illustrated notes, mind maps, and offline HTML. Captions first, with optional local transcription."
 requires-python = ">=3.10"
 dependencies = [
     "yt-dlp>=2024.1.1",
