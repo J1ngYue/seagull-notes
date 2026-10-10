@@ -200,7 +200,7 @@ def _handle_video_url(url: str, allow_asr: bool, language: str,
         ))
 
         if needs_login:
-            hint = "打开 Codex 内置浏览器中的原视频，由用户登录，再从页面读取完整字幕或导出 YouTube transcript；登录不保证能解除平台风控。"
+            hint = "打开原视频，先复用已有登录态并检查完整字幕；确认当前会话失效时才交接登录。登录不保证解除平台风控。"
         else:
             hint = "取视频信息失败。检查链接是否有效。"
 
@@ -260,7 +260,7 @@ def _handle_video_url(url: str, allow_asr: bool, language: str,
 
     if not allow_asr:
         return _err("browser_required", f"未取得平台字幕：{url}",
-                    "这不等于视频没有字幕。打开内置浏览器，由用户登录后检查完整字幕列表；确实无字幕时再说明限制。")
+                    "这不等于视频没有字幕。打开内置浏览器，先复用已有登录态检查完整字幕；确认需要重新认证时才交接登录。")
 
     # 只有显式允许 ASR、且字幕确实未取得时，才下载音频。
     try:

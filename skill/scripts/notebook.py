@@ -9,6 +9,7 @@ import html
 import json
 import mimetypes
 import os
+import re
 import sys
 from pathlib import Path
 from string import Template
@@ -52,7 +53,10 @@ def image_data(image: dict, base: Path) -> tuple[str, Path]:
 def rich_text(text: str) -> str:
     # 输入正文是 Markdown；原文中的 HTML 作为文本保留。
     escaped = html.escape(text, quote=False).replace("&gt;", ">")
-    rendered = markdown.markdown(escaped, extensions=["tables", "fenced_code", "sane_lists"])
+    rendered = markdown.markdown(
+        escaped, extensions=["tables", "fenced_code", "sane_lists", "pymdownx.arithmatex"],
+        extension_configs={"pymdownx.arithmatex": {"generic": True}},
+    )
     from lxml import html as lxml_html
 
     root = lxml_html.fragment_fromstring(rendered, create_parent="div")
@@ -64,6 +68,23 @@ def rich_text(text: str) -> str:
     for image in list(root.iter("img")):
         image.drop_tag()
     return "".join(lxml_html.tostring(child, encoding="unicode") for child in root)
+
+
+def math_assets() -> tuple[str, str]:
+    """Bundle KaTeX and its WOFF2 fonts so the notebook works offline."""
+    assets = Path(__file__).resolve().parents[1] / "assets" / "katex"
+    css = (assets / "katex.min.css").read_text(encoding="utf-8")
+
+    def embed_font(match):
+        font = re.search(r"url\((fonts/[^)]+\.woff2)\)", match[0])
+        if not font:
+            raise ValueError("KaTeX font declaration is missing a WOFF2 source")
+        encoded = base64.b64encode((assets / font[1]).read_bytes()).decode("ascii")
+        return f'src:url(data:font/woff2;base64,{encoded}) format("woff2");'
+
+    css = re.sub(r"src:[^;]+;", embed_font, css)
+    script = (assets / "katex.min.js").read_text(encoding="utf-8")
+    return f"<style>{css}</style>", f"<script>{script}</script>"
 
 
 def render_note(note: dict, base: Path) -> tuple[str, str]:
@@ -135,6 +156,7 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
         svg = export.render_svg(tree, title)
         encoded = base64.b64encode(svg.encode("utf-8")).decode("ascii")
         mindmap = f'<img class="mindmap" alt="{html.escape(title, quote=True)}思维导图" src="data:image/svg+xml;base64,{encoded}">'
+    math_css, math_js = math_assets() if any('class="arithmatex"' in section for section in sections) else ("", "")
     template = Template((Path(__file__).resolve().parents[1] / "assets" / "notebook.html").read_text(encoding="utf-8"))
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
@@ -144,6 +166,7 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
         cover=cover, takeaways=takeaways, subtitle=html.escape(note.get("subtitle", "")),
         mindmap=mindmap, markdown=html.escape(markdown_body),
         transcript=html.escape(note.get("transcript") or "未提供完整字幕原文。"),
+        math_css=math_css, math_js=math_js,
     )
     return page, markdown_body
 

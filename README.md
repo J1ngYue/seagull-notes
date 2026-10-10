@@ -47,6 +47,8 @@ The included skill instructions and notebook interface are currently in Chinese.
 
 Anonymous access is attempted first. If a choice is needed, the skill explains both paths and asks the user to choose. Neither path guarantees access to private, paid, region-restricted, or blocked videos. Video descriptions and AI summaries are not substitutes for a full transcript.
 
+An existing, valid sign-in session is reused without asking the user to sign in or choose again. Before offering local ASR, the skill checks the installed dependencies and complete model cache: if the model is missing, it explains that a model download is required (approximately 3 GB for the default large-v3), with additional setup time and disk space.
+
 ### Fetch anonymous captions
 
 ```bash
@@ -94,6 +96,12 @@ Open `data/artifacts/demo.html`. The included example illustrates the interface,
 The AI client prepares the JSON input; the renderer does not generate a summary. See [the input format](skill/references/notebook-format.md). Use `source_url` for a web source or `source_ref` for an existing local file's absolute path. Local timestamps are position labels; web timestamps link back to the video.
 
 Use verified video frames for screenshots and label explanatory diagrams clearly. Images are embedded in HTML for offline reading; Markdown retains local image paths, so keep those files when moving the Markdown output.
+
+### LaTeX formulas and one-click copying
+
+Use `$...$` for inline math and `$$...$$` for display math in section Markdown. For example, `$$\theta_{t+1}=\theta_t-\eta\nabla L(\theta_t)$$`. Escape backslashes when writing JSON. Code blocks remain code.
+
+Formulas are typeset with bundled KaTeX. Click a formula, or focus it and press Enter/Space, to copy the original LaTeX without the delimiters. The generated HTML includes the renderer and font files, so math works offline. The vendored KaTeX 0.19.0 assets are MIT-licensed; its license is preserved in `skill/assets/katex/LICENSE`.
 
 ### Generate numeric figures
 

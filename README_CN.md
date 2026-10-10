@@ -47,6 +47,8 @@ Windows 使用实际 Python 的绝对路径，避免 Microsoft Store 别名。�
 
 先尝试匿名访问，需要选择时 skill 会列明两条路径的利弊，让用户决定。私密、付费、地区受限或受风控的视频不能保证处理。视频简介和平台 AI 总结不能冒充完整字幕。
 
+已有有效登录态时直接复用，不重复要求登录或弹出路径选择。提出本地 ASR 前检查依赖和完整模型缓存；没有模型时必须说明需要下载（默认 large-v3 约 3 GB），以及首次下载、加载的额外耗时和磁盘占用。
+
 ### 只读取匿名字幕
 
 ```bash
@@ -94,6 +96,12 @@ python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/dem
 输入 JSON 由 AI 客户端整理，渲染器本身不生成摘要。格式见 [notebook-format.md](skill/references/notebook-format.md)。网络来源填写 `source_url`，本地来源填写实际文件绝对路径 `source_ref`。本地时间显示为素材位置标记，网络时间可跳转原视频。
 
 截图使用经过核实的原视频画面，自绘图明确标注示意图。图片嵌入 HTML，离线仍可读；Markdown 保留图片原本地路径，移动 Markdown 时需一并保留图片。
+
+### LaTeX 公式与单击复制
+
+正文中 `$...$` 为行内公式，`$$...$$` 为独立公式，例如 `$$\theta_{t+1}=\theta_t-\eta\nabla L(\theta_t)$$`。写入 JSON 时转义反斜杠，代码块继续按代码显示。
+
+公式使用内置 KaTeX 排版；单击公式，或聚焦后按 Enter/空格，可复制不带定界符的 LaTeX 源码。渲染器和字体嵌入生成的 HTML，离线也能显示。内置 KaTeX 0.19.0 使用 MIT 许可，原许可保存在 `skill/assets/katex/LICENSE`。
 
 ### 生成数值配图
 
