@@ -154,6 +154,19 @@ def test_missing_timestamps_are_not_invented(tmp_path):
     assert not html.fromstring(page).xpath('//a[@class="time"]')
 
 
+def test_cover_and_takeaways_survive_both_formats(tmp_path):
+    (tmp_path / "cover.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"/>', encoding="utf-8")
+    page, body = load_script("notebook").render_note({
+        "title": "标题", "subtitle": "副标题", "source_url": "https://youtu.be/v1",
+        "takeaways": ["关键收获"], "cover": {"path": "cover.svg", "caption": "已核实画面"},
+        "sections": [{"title": "章节", "markdown": "正文"}],
+    }, tmp_path)
+    doc = html.fromstring(page)
+    assert doc.xpath('//figure[@class="cover"]/img')[0].get("src").startswith("data:image/svg+xml;base64,")
+    assert "关键收获" in doc.xpath('//div[@class="takeaways"]')[0].text_content()
+    assert "已核实画面" in body and "关键收获" in body
+
+
 def test_missing_image_reports_failure(tmp_path, monkeypatch, capsys):
     notebook = load_script("notebook")
     path = tmp_path / "note.json"

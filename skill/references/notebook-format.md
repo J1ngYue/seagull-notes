@@ -27,7 +27,7 @@
 }
 ```
 
-必需：`title/source_url/sections`；章节必需：`title/markdown`。其他字段只有实际知道时才填。`start` 单位为秒，缺失则省略，不用 0 代替未知。`image` 可省略；提供时文件必须真实存在，路径相对 JSON 所在目录或绝对路径，支持 PNG/JPEG/WebP/SVG。图注需说明视频时间或“根据字幕绘制的示意图”。
+必需：`title/source_url/sections`；章节必需：`title/markdown`。其他字段只有实际知道时才填。可加 `subtitle` 一句话说明主题，`takeaways` 用字符串数组列出核心收获，`cover` 与章节 `image` 使用相同结构提供一张主题画面。`start` 单位为秒，缺失则省略，不用 0 代替未知。`image` 可省略；提供时文件必须真实存在，路径相对 JSON 所在目录或绝对路径，支持 PNG/JPEG/WebP/SVG。图注需说明视频时间或“根据字幕绘制的示意图”。
 
 Markdown 正文中的外部图片不会加载；用 `image` 提供已经核实的配图。原文 HTML 作为普通文字展示。HTML 中的配图与脑图嵌入文件，Markdown 中的配图链接指向原本地文件，移动 Markdown 时需一并保留图片。
 

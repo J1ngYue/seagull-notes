@@ -71,12 +71,27 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
     source = source_link(note["source_url"])
     origin = note.get("subtitle_origin", "字幕来源待核实")
     summary = note.get("summary", "")
+    cover = ""
+    cover_md = ""
+    if note.get("cover"):
+        data_url, cover_path = image_data(note["cover"], base)
+        caption = note["cover"].get("caption", "")
+        cover = f'<figure class="cover"><img src="{data_url}" alt="{html.escape(caption, quote=True)}"><figcaption>{html.escape(caption)}</figcaption></figure>'
+        cover_md = f"![{caption}](<{cover_path.as_posix()}>)"
+    takeaways = ""
+    if note.get("takeaways"):
+        cards = [f'<div class="takeaway"><span>{i:02}</span><p>{html.escape(point)}</p></div>' for i, point in enumerate(note["takeaways"], 1)]
+        takeaways = '<div class="takeaways">' + "".join(cards) + '</div>'
     meta = " · ".join(str(value) for value in [
         note.get("platform", "视频"), note.get("uploader"),
         timestamp(note["duration"]) if note.get("duration") else None, origin,
     ] if value)
     toc, sections = [], []
     body = [f"# {title}", summary, f"来源：[{note.get('platform', '原视频')}]({source}) · {meta}"]
+    if note.get("takeaways"):
+        body.append("## 核心收获\n\n" + "\n".join(f"- {point}" for point in note["takeaways"]))
+    if cover_md:
+        body.append(cover_md)
     for i, section in enumerate(note["sections"], 1):
         name = html.escape(section["title"])
         start = section.get("start")
@@ -108,6 +123,7 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
         source=html.escape(source, quote=True), toc="".join(toc), sections="".join(sections),
+        cover=cover, takeaways=takeaways, subtitle=html.escape(note.get("subtitle", "")),
         mindmap=mindmap, markdown=html.escape(markdown_body),
         transcript=html.escape(note.get("transcript") or "未提供完整字幕原文。"),
     )
