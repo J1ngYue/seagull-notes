@@ -21,6 +21,8 @@ Windows 直接使用 `D:\software\Anaconda\python.exe`，不调用 `.cmd/.bat` �
 
 先用 `--anonymous` 尝试免登录获取，不读取已存 Cookie 或浏览器登录态。默认只取平台字幕，不下载视频、不运行 ASR。成功 JSON 中 `content` 是全文，`segments` 中的 `start/end/text` 是秒数时间轴；`origin` 标明来源，`source_ref` 是原链接。平台字幕也可能是机器生成的，仍要检查专有名词和数字，不宣称其必然准确。
 
+用户提供本地字幕文件时直接解析；本地音视频在用户允许 ASR 后使用同一脚本并加 `--allow-asr`，读取实际返回的时间轴。生成笔记 JSON 时使用 `source_ref` 保存本地文件绝对路径，不为本地素材编造网页地址。模型已完整缓存时直接离线加载。
+
 超过 30000 字可加 `--offset 0 --max-chars 30000` 分段读取。`has_more: true` 时继续按 `next_offset` 读到结尾，再写笔记。分页针对正文；时间轴保持完整。
 
 匿名字幕取不到而用户明确要求免登录完成、并允许语音识别时，可用 `--anonymous --allow-asr` 尝试下载公开音频再转写。这不使用平台 AI 字幕，必须标为本地 ASR；音频也可能受访问限制。依赖与模型未准备好时先说明下载体积和耗时，不自动下载模型。

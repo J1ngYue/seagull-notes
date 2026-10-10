@@ -108,6 +108,48 @@ def test_subtitle_cache_retains_timestamps(fetch, probe, monkeypatch):
     assert first["segments"] == second["segments"] == segments
 
 
+def test_local_asr_and_cache_return_identical_timestamps(fetch, tmp_path, monkeypatch):
+    from seagull_notes import asr
+    audio = tmp_path / "speech.wav"
+    audio.write_bytes(b"local test input")
+    segments = [{"start": 0.0, "end": 2.5, "text": "本地内容"}]
+    async def fake(*args, **kwargs):
+        return asr.Transcript("本地内容", segments, 2.5, "zh", "asr")
+    monkeypatch.setattr(asr, "model_is_cached", lambda: True)
+    monkeypatch.setattr(asr, "transcribe", fake)
+    first = fetch._handle_media_file(audio, True, "zh")
+    async def unexpected(*args, **kwargs):
+        pytest.fail("第二次读取应使用缓存")
+    monkeypatch.setattr(asr, "transcribe", unexpected)
+    cached = fetch._handle_media_file(audio, True, "zh")
+    assert first["segments"] == cached["segments"] == segments
+
+
+def test_local_source_is_identified_without_fake_video_links(tmp_path):
+    source = tmp_path / "speech.wav"
+    source.write_bytes(b"local test input")
+    page, body = load_script("notebook").render_note({
+        "title": "本地笔记", "source_ref": str(source),
+        "sections": [{"title": "章节", "start": 2, "markdown": "正文"}],
+    }, tmp_path)
+    doc = html.fromstring(page)
+    assert "speech.wav" in doc.text_content()
+    assert not doc.xpath('//a[@class="time"]')
+    assert "00:02" in doc.text_content() and "00:02" in body
+    assert str(source) in body
+
+
+def test_model_cache_requires_complete_snapshot(tmp_path, monkeypatch):
+    from seagull_notes import asr, config
+    monkeypatch.setattr(config, "HF_HUB_CACHE", tmp_path)
+    snapshot = tmp_path / f"models--Systran--faster-whisper-{config.ASR_MODEL}" / "snapshots" / "test-revision"
+    snapshot.mkdir(parents=True)
+    assert asr.model_is_cached() is False
+    for name in ("model.bin", "config.json", "tokenizer.json", "vocabulary.json"):
+        (snapshot / name).write_bytes(b"complete test fixture")
+    assert asr.model_is_cached() is True
+
+
 def test_explicit_asr_downloads_only_after_subtitle_attempt(fetch, probe, monkeypatch):
     calls = []
     async def fake(url, **options):

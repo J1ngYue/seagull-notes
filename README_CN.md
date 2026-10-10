@@ -1,0 +1,122 @@
+# Seagull Notes
+
+[English](README.md) | 简体中文
+
+把 B站、YouTube 和本地音视频整理成**图文笔记、思维导图、Markdown 和可离线阅读的 HTML**。
+
+这是一套 Codex skill 与本地 Python 工具：脚本负责取素材和渲染，AI 客户端负责读完素材、理解内容并写笔记。默认流程无需另配笔记生成 API key。
+
+- **字幕优先**：读取可访问的平台字幕，包括自动字幕，保留可取得的时间轴。
+- **免登录先试**：`--anonymous` 不读取 Cookie 文件或浏览器凭证。
+- **本地转写可选**：只有明确启用 ASR 后，才下载可访问音频或识别本地文件。
+- **需要时交接登录**：由用户在 Codex 内置浏览器完成登录，再读取该会话可访问的内容。
+- **图文交付**：摘要、核心收获、章节、来源画面、解释示意图和脑图，生成自包含 HTML。
+
+![视频到图文笔记的流程示意图](examples/workflow.svg)
+
+## 快速开始
+
+需要 Python 3.10+，建议使用独立 Python 环境。
+
+```bash
+git clone https://github.com/J1ngYue/seagull-notes.git
+cd seagull-notes
+python -m pip install -e ".[notes]"
+```
+
+Windows 使用实际 Python 的绝对路径，避免 Microsoft Store 别名。本机示例：
+
+```powershell
+& 'D:\software\Anaconda\python.exe' -m pip install -e '.[notes]'
+```
+
+将仓库内 `skill/` 复制到客户端的 skills 目录，目录名为 `seagull-notes`，例如 `~/.agents/skills/seagull-notes/`。先安装 Python 项目，复制后的 skill 才能导入项目包；也可以直接使用仓库中的 skill。
+
+在 Codex 中发送：
+
+> 用 seagull-notes 把这个视频整理成图文笔记：视频链接
+
+目前 skill 指令与笔记界面为中文，英文 README 介绍的是同一套流程。
+
+## 两条获取路径，先说明利弊再选择
+
+| 路径 | 好处 | 代价与限制 |
+| --- | --- | --- |
+| 浏览器登录后读取平台字幕 | 有字幕时通常更快，无需下载 ASR 模型 | 用户需登录；字幕也可能有误，登录后仍可能受限或无法导出 |
+| 免登录尝试音频转写 | 公开音频可取时，不需要视频平台账号 | 需下载音频和模型，通常更慢，可能识别错术语或数字 |
+
+先尝试匿名访问，需要选择时 skill 会列明两条路径的利弊，让用户决定。私密、付费、地区受限或受风控的视频不能保证处理。视频简介和平台 AI 总结不能冒充完整字幕。
+
+### 只读取匿名字幕
+
+```bash
+python skill/scripts/fetch.py "视频链接" --anonymous
+```
+
+默认不下载视频、不跑 ASR、不下载模型。stdout 返回 JSON，日志写 stderr：
+
+- `content`：完整提取文本。
+- `segments`：可取得的 `start/end/text`，时间单位为秒。
+- `origin`：真实来源，如 `platform_subtitle/subtitle_file/asr`。
+- `has_more/next_offset`：使用 `--offset/--max-chars` 分页时的后续位置。
+
+读完全部分页，再整理笔记。
+
+### 启用本地 ASR
+
+```bash
+python -m pip install -e ".[notes,asr]"
+python -m seagull_notes.cli prepare-model
+python skill/scripts/fetch.py "视频链接" --anonymous --allow-asr
+```
+
+默认 large-v3 模型约 3 GB，准备模型是显式操作。完整缓存可直接从本地快照加载，空缓存目录不会被当成可用模型。下载音频的转码需要 FFmpeg/ffprobe。
+
+ASR 默认 CUDA/float16。CPU 模式设置 `SEAGULL_NOTES_ASR_DEVICE=cpu` 与 `SEAGULL_NOTES_ASR_COMPUTE=int8`；`SEAGULL_NOTES_ASR_MODEL` 可选择模型大小。
+
+本地素材也使用同一脚本：
+
+```bash
+python skill/scripts/fetch.py "/素材的绝对路径/lecture.wav" --allow-asr
+python skill/scripts/fetch.py "/素材的绝对路径/captions.srt"
+```
+
+本地 ASR 是语音识别，不是平台 AI 字幕。首次转写和缓存命中都会保留时间轴。
+
+## 生成图文笔记
+
+```bash
+python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/demo
+```
+
+打开 `data/artifacts/demo.html`。仓库示例是界面演示，没有冒充真实视频笔记。页面包含暖白纸张布局、封面、重点卡片、章节目录、配图、脑图、Markdown、出处与打印 PDF。
+
+输入 JSON 由 AI 客户端整理，渲染器本身不生成摘要。格式见 [notebook-format.md](skill/references/notebook-format.md)。网络来源填写 `source_url`，本地来源填写实际文件绝对路径 `source_ref`。本地时间显示为素材位置标记，网络时间可跳转原视频。
+
+截图使用经过核实的原视频画面，自绘图明确标注示意图。图片嵌入 HTML，离线仍可读；Markdown 保留图片原本地路径，移动 Markdown 时需一并保留图片。
+
+## 浏览器、数据与 MCP
+
+内置浏览器与 Python 下载器是不同会话，浏览器登录后 Cookie 不会自动传给 Python。YouTube 字幕导出和其他平台字幕读取，取决于当前浏览器提供的能力。详见 [浏览器流程](skill/references/browser-subtitles.md)。
+
+模型、媒体、Cookie、数据库和笔记产物不进入 Git。`SEAGULL_NOTES_HOME` 可更改项目数据目录。AI 客户端整理时，素材进入其上下文；是否发送到云端取决于客户端配置。
+
+仓库也保留旧的网页、PDF、CLI 与 MCP 工具。MCP 现在是可选依赖：
+
+```bash
+python -m pip install -e ".[mcp]"
+python -m seagull_notes.server
+```
+
+建议在独立环境安装 MCP 的 Web 服务依赖。普通 skill、渲染器、字幕获取和本地 ASR 都不需要 MCP。旧 CLI 的直接生成模式在没有服务端模型时使用规则降级输出，不等同于 AI 客户端写的笔记。
+
+## 验证
+
+```bash
+python -m pip install -e ".[notes,test]"
+python -m pytest tests -q
+```
+
+测试覆盖字幕、缓存、匿名模式、时间轴、本地来源、模型完整性、图文输出和原有管线，不依赖网络、GPU 或生成 API。平台访问限制仍需真实视频链接验证。
+
+页面呈现参考 [CuteNote](https://cutenote.cc/)，项目与 CuteNote 无隶属关系。

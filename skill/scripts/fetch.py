@@ -301,7 +301,8 @@ def _transcribe(path: Path, title: str, ref: str, language: str,
             _log("命中转写缓存，跳过 ASR")
             return _ok(
                 title, cached["text"], "media", ref,
-                origin=cached["origin"], duration=cached["duration"], **extra,
+                origin=cached["origin"], duration=cached["duration"],
+                segments=cached["segments"], **extra,
             )
 
     if not asr.model_is_cached():
@@ -343,6 +344,7 @@ def _transcribe(path: Path, title: str, ref: str, language: str,
     payload.setdefault("duration", result.duration)
     payload.setdefault("language", result.language)
     payload["asr_pass"] = result.pass_used
+    payload["segments"] = result.segments
 
     if result.pass_used == "hallucination_suspected":
         payload["warning"] = (

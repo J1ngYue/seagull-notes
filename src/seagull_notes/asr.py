@@ -119,8 +119,9 @@ def _load_model():
         from faster_whisper import WhisperModel
 
         config.apply_hf_env()
+        cached_path = _cached_model_path()
         _model = WhisperModel(
-            config.ASR_MODEL,
+            str(cached_path) if cached_path else config.ASR_MODEL,
             device=config.ASR_DEVICE,
             compute_type=config.ASR_COMPUTE_TYPE,
             download_root=str(config.HF_HUB_CACHE),
@@ -227,12 +228,20 @@ async def transcribe(media_path: Path, language: str | None = "zh") -> Transcrip
         return await asyncio.to_thread(_transcribe_sync, media_path, language)
 
 
+def _cached_model_path() -> Path | None:
+    """只认可完整快照，避免把下载留下的空目录当成可用模型。"""
+    snapshots = config.HF_HUB_CACHE / f"models--Systran--faster-whisper-{config.ASR_MODEL}" / "snapshots"
+    if not snapshots.is_dir():
+        return None
+    required = ("model.bin", "config.json", "tokenizer.json", "vocabulary.json")
+    for snapshot in sorted(snapshots.iterdir()):
+        if all((snapshot / name).is_file() and (snapshot / name).stat().st_size > 0 for name in required):
+            return snapshot
+    return None
+
+
 def model_is_cached() -> bool:
-    """检查模型是否已经下到 E 盘，用来区分首次运行。"""
-    if not config.HF_HUB_CACHE.exists():
-        return False
-    needle = f"models--Systran--faster-whisper-{config.ASR_MODEL}"
-    return any(needle in p.name for p in config.HF_HUB_CACHE.iterdir())
+    return _cached_model_path() is not None
 
 
 def _prefetch_sync() -> Path:

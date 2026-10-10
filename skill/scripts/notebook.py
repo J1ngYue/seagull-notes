@@ -68,7 +68,18 @@ def rich_text(text: str) -> str:
 
 def render_note(note: dict, base: Path) -> tuple[str, str]:
     title = note["title"]
-    source = source_link(note["source_url"])
+    local_source = None
+    if note.get("source_url"):
+        source = source_link(note["source_url"])
+        source_action = f'<a href="{html.escape(source, quote=True)}" target="_blank" rel="noopener">查看原视频 ↗</a>'
+        source_md = f"[{note.get('platform', '原视频')}]({source})"
+    else:
+        local_source = Path(note["source_ref"])
+        if not local_source.is_absolute() or not local_source.is_file():
+            raise ValueError("source_ref 必须是实际存在的本地文件绝对路径")
+        source = str(local_source)
+        source_action = f'<span class="source-local" title="{html.escape(source, quote=True)}">本地素材：{html.escape(local_source.name)}</span>'
+        source_md = f"本地文件 `{source}`"
     origin = note.get("subtitle_origin", "字幕来源待核实")
     summary = note.get("summary", "")
     cover = ""
@@ -76,18 +87,19 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
     if note.get("cover"):
         data_url, cover_path = image_data(note["cover"], base)
         caption = note["cover"].get("caption", "")
-        cover = f'<figure class="cover"><img src="{data_url}" alt="{html.escape(caption, quote=True)}"><figcaption>{html.escape(caption)}</figcaption></figure>'
+        diagram_class = ' class="diagram"' if cover_path.suffix.lower() == ".svg" else ""
+        cover = f'<figure class="cover"><img{diagram_class} src="{data_url}" alt="{html.escape(caption, quote=True)}"><figcaption>{html.escape(caption)}</figcaption></figure>'
         cover_md = f"![{caption}](<{cover_path.as_posix()}>)"
     takeaways = ""
     if note.get("takeaways"):
         cards = [f'<div class="takeaway"><span>{i:02}</span><p>{html.escape(point)}</p></div>' for i, point in enumerate(note["takeaways"], 1)]
         takeaways = '<div class="takeaways">' + "".join(cards) + '</div>'
     meta = " · ".join(str(value) for value in [
-        note.get("platform", "视频"), note.get("uploader"),
+        note.get("platform", "本地文件" if local_source else "视频"), note.get("uploader"),
         timestamp(note["duration"]) if note.get("duration") else None, origin,
     ] if value)
     toc, sections = [], []
-    body = [f"# {title}", summary, f"来源：[{note.get('platform', '原视频')}]({source}) · {meta}"]
+    body = [f"# {title}", summary, f"来源：{source_md} · {meta}"]
     if note.get("takeaways"):
         body.append("## 核心收获\n\n" + "\n".join(f"- {point}" for point in note["takeaways"]))
     if cover_md:
@@ -98,9 +110,13 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
         time_link = ""
         heading = section["title"]
         if start is not None:
-            target = source_link(source, start)
-            time_link = f'<a class="time" href="{html.escape(target, quote=True)}" target="_blank" rel="noopener">↗ {timestamp(start)}</a>'
-            heading += f" [{timestamp(start)}]({target})"
+            if local_source:
+                time_link = f'<span class="time">{timestamp(start)}</span>'
+                heading += f" · {timestamp(start)}"
+            else:
+                target = source_link(source, start)
+                time_link = f'<a class="time" href="{html.escape(target, quote=True)}" target="_blank" rel="noopener">↗ {timestamp(start)}</a>'
+                heading += f" [{timestamp(start)}]({target})"
         toc.append(f'<a href="#chapter-{i}"><span>{i:02}</span>{name}</a>')
         figure = ""
         image_md = ""
@@ -122,7 +138,9 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
     template = Template((Path(__file__).resolve().parents[1] / "assets" / "notebook.html").read_text(encoding="utf-8"))
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
-        source=html.escape(source, quote=True), toc="".join(toc), sections="".join(sections),
+        source_action=source_action, toc="".join(toc), sections="".join(sections),
+        source_kicker="LOCAL NOTES · 本地精读" if local_source else "VIDEO NOTES · 视频精读",
+        source_hint="章节时间对应本地素材的位置。" if local_source else "点击章节时间，回到原视频。",
         cover=cover, takeaways=takeaways, subtitle=html.escape(note.get("subtitle", "")),
         mindmap=mindmap, markdown=html.escape(markdown_body),
         transcript=html.escape(note.get("transcript") or "未提供完整字幕原文。"),
