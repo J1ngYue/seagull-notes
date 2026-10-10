@@ -182,7 +182,7 @@ def test_illustrated_note_has_real_image_timestamps_and_text(tmp_path):
     ], "transcript": "完整原文", "mind_map": [{"title": "主题"}]}
     page, body = notebook.render_note(note, tmp_path)
     doc = html.fromstring(page)
-    assert doc.xpath('//figure/img')[0].get("src").startswith("data:image/svg+xml;base64,")
+    assert doc.xpath('//figure//img')[0].get("src").startswith("data:image/svg+xml;base64,")
     assert doc.xpath('//a[@class="time"]')[0].get("href").endswith("p=2&t=42")
     assert doc.xpath('//blockquote')
     assert len(doc.xpath('//script')) == 1  # 只有模板自己的标签切换脚本
@@ -204,7 +204,7 @@ def test_cover_and_takeaways_survive_both_formats(tmp_path):
         "sections": [{"title": "章节", "markdown": "正文"}],
     }, tmp_path)
     doc = html.fromstring(page)
-    assert doc.xpath('//figure[@class="cover"]/img')[0].get("src").startswith("data:image/svg+xml;base64,")
+    assert doc.xpath('//figure[@class="cover"]//img')[0].get("src").startswith("data:image/svg+xml;base64,")
     assert "关键收获" in doc.xpath('//div[@class="takeaways"]')[0].text_content()
     assert "已核实画面" in body and "关键收获" in body
 

@@ -87,8 +87,8 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
     if note.get("cover"):
         data_url, cover_path = image_data(note["cover"], base)
         caption = note["cover"].get("caption", "")
-        diagram_class = ' class="diagram"' if cover_path.suffix.lower() == ".svg" else ""
-        cover = f'<figure class="cover"><img{diagram_class} src="{data_url}" alt="{html.escape(caption, quote=True)}"><figcaption>{html.escape(caption)}</figcaption></figure>'
+        diagram_class = ' class="diagram"' if note["cover"].get("kind") == "diagram" or cover_path.suffix.lower() == ".svg" else ""
+        cover = f'<figure class="cover"><button type="button" class="figure-image" aria-label="放大查看配图"><img{diagram_class} src="{data_url}" alt="{html.escape(caption, quote=True)}"></button><figcaption>{html.escape(caption)}</figcaption></figure>'
         cover_md = f"![{caption}](<{cover_path.as_posix()}>)"
     takeaways = ""
     if note.get("takeaways"):
@@ -124,7 +124,7 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
             image = section["image"]
             data_url, path = image_data(image, base)
             caption = image.get("caption", "")
-            figure = f'<figure><img src="{data_url}" alt="{html.escape(caption, quote=True)}"><figcaption>{html.escape(caption)}</figcaption></figure>'
+            figure = f'<figure><button type="button" class="figure-image" aria-label="放大查看配图"><img src="{data_url}" alt="{html.escape(caption, quote=True)}"></button><figcaption>{html.escape(caption)}</figcaption></figure>'
             image_md = f"![{caption}](<{path.as_posix()}>)"
         sections.append(f'<section class="chapter" id="chapter-{i}"><header><span class="number">{i:02}</span><h2>{name}</h2>{time_link}</header><div class="prose">{rich_text(section["markdown"])}</div>{figure}</section>')
         body.extend([f"## {heading}", section["markdown"], image_md])

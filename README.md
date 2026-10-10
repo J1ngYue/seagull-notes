@@ -95,6 +95,15 @@ The AI client prepares the JSON input; the renderer does not generate a summary.
 
 Use verified video frames for screenshots and label explanatory diagrams clearly. Images are embedded in HTML for offline reading; Markdown retains local image paths, so keep those files when moving the Markdown output.
 
+### Generate numeric figures
+
+```bash
+python -m pip install -e ".[plots]"
+python skill/scripts/plot.py examples/gradient-plot.json --out data/artifacts/gradient
+```
+
+The helper plots supplied numeric data and ordered update points, with real scales, numbered steps, and separate value labels. It exports SVG and PNG, checks for detected text clipping and overlap, and does not infer data from captions. Mark generated illustrations with `kind: "diagram"` to preserve their aspect ratio. Readers can click notebook images to inspect the full figure. See [figure guidance](skill/references/note-figures.md).
+
 ## Browser access, storage, and MCP
 
 The in-app browser and the Python downloader are separate sessions. Signing in through the browser does not automatically pass cookies to Python. YouTube transcript export and other platform caption access depend on the capabilities exposed by the current browser. See [the browser workflow](skill/references/browser-subtitles.md).
@@ -113,10 +122,12 @@ Use a dedicated environment for MCP's server dependencies. The skill, renderer, 
 ## Validation
 
 ```bash
-python -m pip install -e ".[notes,test]"
+python -m pip install -e ".[notes,plots,test]"
 python -m pytest tests -q
 ```
 
 Tests cover captions, cache behavior, anonymous mode, timestamps, local source references, model completeness, notebook rendering, and the original pipeline. They do not require network access, a GPU, or a generation API. Platform restrictions need real-video checks.
 
 The notebook presentation was inspired by [CuteNote](https://cutenote.cc/). This project is not affiliated with CuteNote.
+
+Figure-generation guidance was informed by the Matplotlib and scientific-visualization skills in Scientific Agent Skills: Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). [Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents](https://doi.org/10.48550/arXiv.2609.00065).

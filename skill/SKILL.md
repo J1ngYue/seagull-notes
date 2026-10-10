@@ -48,6 +48,8 @@ YouTube 优先尝试浏览器提供的 `tab.content.exportYouTubeTranscript()`�
 
 若无法取得有用的真实画面，可以绘制基于已核实字幕的流程图、对比图或脑图，并标注“根据字幕绘制的示意图”。不要把自绘图标成视频截图；封面仅作封面，不当作整篇笔记唯一配图。短内容按信息量配图，不为凑数量添装饰。
 
+需要生成解释图时读 [笔记配图规范](references/note-figures.md)。数值曲线先根据真实数据或明确标注的公式示例计算坐标，再使用 `scripts/plot.py` 输出 SVG/PNG；不要凭视觉手写曲线、点和箭头的位置。示意图的 `image/cover.kind` 设为 `diagram`，保证完整显示；手机上可点击配图查看大图。
+
 阅读 [图文笔记格式](references/notebook-format.md)，将整理结果保存为 `note.json`。这是渲染输入，不是字幕转写的替代品。
 
 ## 3. 渲染并检查

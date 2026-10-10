@@ -95,6 +95,15 @@ python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/dem
 
 截图使用经过核实的原视频画面，自绘图明确标注示意图。图片嵌入 HTML，离线仍可读；Markdown 保留图片原本地路径，移动 Markdown 时需一并保留图片。
 
+### 生成数值配图
+
+```bash
+python -m pip install -e ".[plots]"
+python skill/scripts/plot.py examples/gradient-plot.json --out data/artifacts/gradient
+```
+
+绘图器按传入数值和更新点生成真实尺度、步号与数值对照，导出 SVG/PNG，并检查已检测到的文字裁切与重叠；不会从字幕编造数据。示意图标记为 `kind: "diagram"`，按原比例显示；读者可点击配图查看大图。详见 [配图规范](skill/references/note-figures.md)。
+
 ## 浏览器、数据与 MCP
 
 内置浏览器与 Python 下载器是不同会话，浏览器登录后 Cookie 不会自动传给 Python。YouTube 字幕导出和其他平台字幕读取，取决于当前浏览器提供的能力。详见 [浏览器流程](skill/references/browser-subtitles.md)。
@@ -113,10 +122,12 @@ python -m seagull_notes.server
 ## 验证
 
 ```bash
-python -m pip install -e ".[notes,test]"
+python -m pip install -e ".[notes,plots,test]"
 python -m pytest tests -q
 ```
 
 测试覆盖字幕、缓存、匿名模式、时间轴、本地来源、模型完整性、图文输出和原有管线，不依赖网络、GPU 或生成 API。平台访问限制仍需真实视频链接验证。
 
 页面呈现参考 [CuteNote](https://cutenote.cc/)，项目与 CuteNote 无隶属关系。
+
+绘图流程参考了 Scientific Agent Skills 的 Matplotlib 与 scientific-visualization 指引：Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). [Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents](https://doi.org/10.48550/arXiv.2609.00065)。
