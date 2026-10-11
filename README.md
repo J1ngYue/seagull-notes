@@ -40,6 +40,8 @@ The included skill instructions and notebook interface are currently in Chinese.
 
 Send a link; the skill handles collection, import, reading, illustrations, rendering, and review. Your only normal intervention is sign-in or platform verification when required. For accessible captioned videos, the workflow targets a complete illustrated notebook within 45 minutes after sign-in. This is a processing target, not a guarantee for blocked sources, missing captions, or unusually large material.
 
+Long tutorials default to detailed study notes unless you request a summary. Major demonstrations include their starting state, prerequisites, steps, commands, results, and verification, with important comparisons and troubleshooting preserved. Summaries and mind maps provide navigation; the main chapters retain the teaching detail. Faster delivery comes from cached captions and reusable rendering, without cutting essential content. The source tab retains the actual full transcript.
+
 ## Choosing a source path
 
 | Path | Benefits | Trade-offs |
