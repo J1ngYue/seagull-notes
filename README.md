@@ -41,6 +41,8 @@ Send a link; the skill handles collection, import, reading, illustrations, rende
 
 Long tutorials default to detailed study notes unless you request a summary. Major demonstrations include their starting state, prerequisites, steps, commands, results, and verification, with important comparisons and troubleshooting preserved. Summaries and mind maps provide navigation; the main chapters retain the teaching detail. Faster delivery comes from cached captions and reusable rendering, without cutting essential content. The source tab retains the actual full transcript.
 
+Coverage applies to short videos too. The skill maps every important concept, reasoning step, teaching example, key value, caveat, and closing explanation to a note chapter in a local `coverage.md`, then checks the full source for omissions. Repetition and advertisements may be removed; mentions in a summary or transcript do not replace a chapter explanation. Unverified visual details and source gaps are disclosed.
+
 ## Platform captions by default
 
 Bilibili BV links automatically use the caption collector. Other sources use available platform captions or browser exports. Valid sign-in sessions are reused; sign-in is shown only when authentication is actually required. The normal workflow does not present a caption-versus-ASR choice.
@@ -97,6 +99,8 @@ python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/dem
 Open `data/artifacts/demo.html`. The included example illustrates the interface, rather than claiming to summarize a real video. The warm paper layout includes a cover, takeaway cards, chapter navigation, images, a mind map, Markdown, source details, and PDF printing.
 
 Search the chapter directory, follow the highlighted current chapter, or use previous/next navigation and return to the top. On mobile, the directory expands on demand. Code cards can wrap long lines and show an inline copied state; copying retains the original text.
+
+Rendered notebooks are automatically collected in `data/artifacts/notebooks/`. Open its `index.html` to browse illustrated cards and search your notes; each notebook links back to this library. Re-rendering the same input updates its entry, while separate inputs with the same title remain distinct. An explicit `--out` keeps that output and also adds a library copy. Tabs use a sliding selection pill and a soft panel entrance; reduced-motion preferences are respected.
 
 The AI client prepares the JSON input; the renderer does not generate a summary. See [the input format](skill/references/notebook-format.md). Use `source_url` for a web source or `source_ref` for an existing local file's absolute path. Local timestamps are position labels; web timestamps link back to the video.
 
