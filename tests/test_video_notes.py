@@ -224,6 +224,17 @@ def test_illustrated_note_has_real_image_timestamps_and_text(tmp_path):
     assert str((tmp_path / "frame.svg").as_posix()) in body
 
 
+@pytest.mark.parametrize("text,expected", [
+    ("```text\n<<<<<<< HEAD\n当前分支\n=======\n合入分支\n>>>>>>> feature/example\n```", "<<<<<<< HEAD\n当前分支\n=======\n合入分支\n>>>>>>> feature/example\n"),
+    ("```html\n<script>alert(1)</script> &lt; & value\n```", "<script>alert(1)</script> &lt; & value\n"),
+    ("`a < b && c > d`", "a < b && c > d"),
+])
+def test_code_preserves_source_characters(text, expected):
+    doc = html.fromstring(load_script("notebook").rich_text(text))
+    assert doc.xpath('//code')[0].text_content() == expected
+    assert not doc.xpath('//script|//img')
+
+
 def test_missing_timestamps_are_not_invented(tmp_path):
     page, _ = load_script("notebook").render_note({"title": "示例", "source_url": "https://youtu.be/v1", "sections": [{"title": "章节", "markdown": "正文"}]}, tmp_path)
     assert not html.fromstring(page).xpath('//a[@class="time"]')

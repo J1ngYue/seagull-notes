@@ -60,6 +60,9 @@ def rich_text(text: str) -> str:
     from lxml import html as lxml_html
 
     root = lxml_html.fragment_fromstring(rendered, create_parent="div")
+    # Markdown 对代码再次转义；还原输入字符，序列化时仍作为文本输出。
+    for code in root.iter("code"):
+        code.text = html.unescape(code.text or "")
     for link in root.iter("a"):
         href = link.get("href", "")
         if urlsplit(href).scheme.lower() not in {"", "http", "https"}:
