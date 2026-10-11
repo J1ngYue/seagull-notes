@@ -123,11 +123,14 @@ def _read(context, source: str, bvid: str, part: int, language: str) -> dict:
     page = pages[part - 1]
     player = _json(context, "https://api.bilibili.com/x/player/wbi/v2",
                    {"aid": video["aid"], "cid": page["cid"]})["data"]
-    tracks = [track for track in player.get("subtitle", {}).get("subtitles", []) if track.get("subtitle_url")]
+    listed_tracks = player.get("subtitle", {}).get("subtitles", [])
+    tracks = [track for track in listed_tracks if track.get("subtitle_url")]
     if not tracks and not _logged_in(context):
         raise CaptionError("login_required", "专用本地浏览器需要登录后才能继续查询平台字幕。")
     if not tracks:
-        raise CaptionError("subtitle_unavailable", "已登录，但平台接口没有返回可下载字幕；未将播放器单句当作全文。")
+        message = ("平台存在字幕轨，但未返回下载地址；继续解决字幕读取，不将其判定为无字幕。" if listed_tracks else
+                   "已登录，接口未返回普通或 AI 字幕轨；需结合播放器字幕菜单确认两类字幕均不存在后，才提供 ASR 选项。")
+        raise CaptionError("subtitle_unavailable", message)
     preferred = [language, "zh-CN", "zh-Hans", "zh", "ai-zh"] if language == "zh" else [language, "ai-" + language]
     track = next((track for lan in preferred for track in tracks if track.get("lan") == lan), tracks[0])
     segments = parse_captions(_json(context, caption_url(track["subtitle_url"])))

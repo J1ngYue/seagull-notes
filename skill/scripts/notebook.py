@@ -54,8 +54,9 @@ def code_block(source: str, language: str) -> str:
     language_icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6m8-12 6 6-6 6M14 4l-4 16"/></svg>'
     copy_icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="12" height="14" rx="3"/><path d="M16 17v3H4V7h4"/></svg>'
     return (f'<div class="code-block"><div class="code-toolbar"><span class="code-language">{language_icon}{label}</span>'
+            '<div class="code-actions"><button type="button" class="wrap-code" aria-pressed="false" aria-label="切换代码自动换行">换行</button>'
             f'<button type="button" class="copy-code" aria-label="复制 {label} 代码" title="复制代码">{copy_icon}<span>复制</span></button>'
-            f'</div><pre class="code-source"><code>{colored}</code></pre></div>')
+            f'</div></div><pre class="code-source" tabindex="0" aria-label="{label} 代码"><code>{colored}</code></pre></div>')
 
 
 def timestamp(seconds: float) -> str:
@@ -206,7 +207,7 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
     template = Template((Path(__file__).resolve().parents[1] / "assets" / "notebook.html").read_text(encoding="utf-8"))
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
-        source_action=source_action, toc="".join(toc), sections="".join(sections),
+        source_action=source_action, toc="".join(toc), sections="".join(sections), chapter_count=len(note["sections"]),
         source_kicker="LOCAL NOTES · 本地精读" if local_source else "VIDEO NOTES · 视频精读",
         source_hint="章节时间对应本地素材的位置。" if local_source else "点击章节时间，回到原视频。",
         cover=cover, takeaways=takeaways, subtitle=html.escape(note.get("subtitle", "")),

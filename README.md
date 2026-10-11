@@ -8,7 +8,6 @@ Seagull Notes combines a Codex skill with local Python helpers. The helpers extr
 
 - **Captions first.** Prefer available platform captions, including automatic captions, and retain their timestamps.
 - **Automatic Bilibili collection.** BV links use the local collector and reuse complete caption caches. `--anonymous` explicitly skips credentials.
-- **Optional local transcription.** Download accessible audio or process a local file only when ASR is explicitly enabled.
 - **Browser sign-in when needed.** Let the user complete sign-in in Codex's in-app browser, then read what that session can access.
 - **Illustrated delivery.** Summaries, takeaways, chapters, source images, explanatory diagrams, and a mind map in a self-contained HTML file.
 
@@ -42,21 +41,16 @@ Send a link; the skill handles collection, import, reading, illustrations, rende
 
 Long tutorials default to detailed study notes unless you request a summary. Major demonstrations include their starting state, prerequisites, steps, commands, results, and verification, with important comparisons and troubleshooting preserved. Summaries and mind maps provide navigation; the main chapters retain the teaching detail. Faster delivery comes from cached captions and reusable rendering, without cutting essential content. The source tab retains the actual full transcript.
 
-## Choosing a source path
+## Platform captions by default
 
-| Path | Benefits | Trade-offs |
-| --- | --- | --- |
-| Read platform captions after browser sign-in | Usually faster when captions exist; no ASR model download | Requires user sign-in; captions may contain errors, and access or export can still fail |
-| Try anonymous audio transcription | No platform account is needed when the audio is publicly accessible | Requires audio and model downloads; usually slower, with possible recognition errors |
+Bilibili BV links automatically use the caption collector. Other sources use available platform captions or browser exports. Valid sign-in sessions are reused; sign-in is shown only when authentication is actually required. The normal workflow does not present a caption-versus-ASR choice.
 
-Bilibili BV links automatically use the caption collector. Other sources use available platform captions or browser exports. Anonymous mode remains an explicit option; ASR requires explicit authorization. The skill does not ask the user to repeat an already selected path. Neither path guarantees access to private, paid, region-restricted, or blocked videos. Video descriptions and AI summaries are not substitutes for a full transcript.
+Check both ordinary and automatic captions. Offer local ASR only after the authenticated session and video page confirm that both are absent. Login problems, rate limits, empty API responses, and export failures do not establish missing captions. Existing caption tracks keep the workflow on caption retrieval, even when ASR was enabled. Platform captions also take priority over cached ASR. Anonymous mode remains available on explicit request. Video descriptions and AI summaries are not substitutes for a full transcript.
 
-An existing, valid sign-in session is reused without asking the user to sign in or choose again. Before offering local ASR, the skill checks the installed dependencies and complete model cache: if the model is missing, it explains that a model download is required (approximately 3 GB for the default large-v3), with additional setup time and disk space.
-
-### Fetch anonymous captions
+### Fetch captions
 
 ```bash
-python skill/scripts/fetch.py "VIDEO_URL" --anonymous
+python skill/scripts/fetch.py "VIDEO_URL"
 ```
 
 By default, this command does not download the video, run ASR, or download a model. It writes JSON to stdout and progress messages to stderr:
@@ -68,7 +62,10 @@ By default, this command does not download the video, run ASR, or download a mod
 
 Read every page before writing the note.
 
-### Enable local ASR
+<details>
+<summary>Fallback after confirming no ordinary or AI captions: local ASR</summary>
+
+Before offering this fallback, check the dependencies and complete model cache, explain any required download and extra processing time, and obtain explicit authorization. Users may also explicitly request ASR or supply local media. To explicitly skip stored credentials, use `--anonymous`.
 
 ```bash
 python -m pip install -e ".[notes,asr]"
@@ -89,6 +86,8 @@ python skill/scripts/fetch.py "/absolute/path/captions.srt"
 
 Transcription is local speech recognition, not platform-generated captions. Its timestamps are preserved on both fresh runs and cache hits.
 
+</details>
+
 ## Render an illustrated notebook
 
 ```bash
@@ -96,6 +95,8 @@ python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/dem
 ```
 
 Open `data/artifacts/demo.html`. The included example illustrates the interface, rather than claiming to summarize a real video. The warm paper layout includes a cover, takeaway cards, chapter navigation, images, a mind map, Markdown, source details, and PDF printing.
+
+Search the chapter directory, follow the highlighted current chapter, or use previous/next navigation and return to the top. On mobile, the directory expands on demand. Code cards can wrap long lines and show an inline copied state; copying retains the original text.
 
 The AI client prepares the JSON input; the renderer does not generate a summary. See [the input format](skill/references/notebook-format.md). Use `source_url` for a web source or `source_ref` for an existing local file's absolute path. Local timestamps are position labels; web timestamps link back to the video.
 

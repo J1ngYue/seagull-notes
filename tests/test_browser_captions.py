@@ -78,6 +78,21 @@ def test_download_uses_current_part_and_preserves_full_timeline(monkeypatch):
     assert not any("playurl" in endpoint for endpoint, _ in calls)
 
 
+@pytest.mark.parametrize("tracks,expected", [
+    ([{"lan": "ai-zh", "subtitle_url": ""}], "平台存在字幕轨"),
+    ([], "需结合播放器字幕菜单确认"),
+])
+def test_missing_download_address_is_distinguished_from_missing_tracks(monkeypatch, tracks, expected):
+    def response(context, endpoint, params=None):
+        if endpoint.endswith("/view"):
+            return {"data": {"aid": 1, "pages": [{"cid": 1}]}}
+        return {"data": {"subtitle": {"subtitles": tracks}}}
+    monkeypatch.setattr(captions, "_json", response)
+    monkeypatch.setattr(captions, "_logged_in", lambda context: True)
+    with pytest.raises(captions.CaptionError, match=expected):
+        captions._read(object(), VIDEO, "BV1LwHv6LEYz", 1, "zh")
+
+
 def test_saved_srt_can_be_imported_without_manual_conversion():
     result = captions.save_captions(sample())
     assert media.parse_subtitle_segments(Path(result["subtitle_file"])) == result["segments"]

@@ -226,10 +226,8 @@ def _handle_video_url(url: str, allow_asr: bool, language: str,
     title = meta.get("title") or video_id
 
     cached = storage.get_transcript(storage.content_key(f"subtitle:{video_id}"))
-    if not cached and allow_asr:
-        cached = storage.get_transcript(storage.content_key(f"asr:{video_id}"))
     if cached:
-        _log("命中转写缓存，跳过下载和 ASR")
+        _log("命中平台字幕缓存，跳过下载")
         return _ok(title, cached["text"], "media", url,
                    origin=cached["origin"], duration=cached["duration"],
                    uploader=meta.get("uploader", ""),
@@ -250,11 +248,8 @@ def _handle_video_url(url: str, allow_asr: bool, language: str,
             cookies_from_browser=cookies_from_browser, cookie_file=cookie_file,
         ))
     except Exception as exc:                                    # noqa: BLE001
-        if not allow_asr:
-            return _err("browser_required", str(exc)[:300],
-                        "字幕获取失败。打开内置浏览器检查原视频、登录要求和字幕列表。")
-        _log("字幕获取失败；已显式允许 ASR，继续尝试可访问音频")
-        info = None
+        return _err("browser_required", str(exc)[:300],
+                    "字幕读取失败不代表没有字幕。继续默认登录路径，检查普通字幕和 AI 字幕；不因此转 ASR。")
 
     # 平台字幕优先
     if info and info.subtitle_text:
@@ -274,11 +269,18 @@ def _handle_video_url(url: str, allow_asr: bool, language: str,
             note="用的是平台自带字幕，没跑模型",
         )
 
-    if not allow_asr:
+    if has_subtitle or not allow_asr:
         return _err("browser_required", f"未取得平台字幕：{url}",
-                    "这不等于视频没有字幕。打开内置浏览器，先复用已有登录态检查完整字幕；确认需要重新认证时才交接登录。")
+                    "继续复用登录态检查普通字幕和 AI 字幕；已有字幕轨但导出失败时不转 ASR。确认两类字幕都不存在后，才提供需明确授权的转写选项。")
 
-    # 只有显式允许 ASR、且字幕确实未取得时，才下载音频。
+    cached = storage.get_transcript(storage.content_key(f"asr:{video_id}"))
+    if cached:
+        return _ok(title, cached["text"], "media", url,
+                   origin=cached["origin"], duration=cached["duration"],
+                   uploader=meta.get("uploader", ""), segments=cached["segments"],
+                   note="复用已授权的本地 ASR 缓存；先检查过平台字幕。")
+
+    # 调用方确认普通/AI 字幕均缺失并取得授权后，才允许下载音频。
     try:
         info = _run_async(media.fetch_media(
             url, want_subtitle=False, audio_only=True,

@@ -114,7 +114,7 @@ def test_anonymous_mode_does_not_use_saved_cookies(fetch, monkeypatch):
     assert received == {"browser": None, "cookie": None}
 
 
-def test_subtitle_failure_can_fall_back_to_public_audio(fetch, probe, monkeypatch):
+def test_subtitle_failure_does_not_offer_asr_as_missing_captions(fetch, probe, monkeypatch):
     calls = []
     async def fake(url, **options):
         calls.append(options)
@@ -124,8 +124,32 @@ def test_subtitle_failure_can_fall_back_to_public_audio(fetch, probe, monkeypatc
     monkeypatch.setattr(media, "fetch_media", fake)
     monkeypatch.setattr(fetch, "_transcribe", lambda *args, **kwargs: {"ok": True, "origin": "asr"})
     result = fetch._handle_video_url("https://youtu.be/v1", True, "zh")
-    assert result["origin"] == "asr"
-    assert len(calls) == 2 and calls[1]["audio_only"]
+    assert result["error"]["code"] == "browser_required"
+    assert len(calls) == 1 and calls[0]["subtitle_only"]
+
+
+def test_existing_caption_track_without_export_cannot_fall_back_to_asr(fetch, monkeypatch):
+    async def probe(*args, **kwargs):
+        return {"video_id": "v1", "title": "示例", "has_subtitle": True}
+    calls = []
+    async def download(url, **options):
+        calls.append(options)
+        return media.MediaInfo(None, None, "示例", 60, "作者", "v1")
+    monkeypatch.setattr(media, "probe_video", probe)
+    monkeypatch.setattr(media, "fetch_media", download)
+    result = fetch._handle_video_url("https://youtu.be/v1", True, "zh")
+    assert result["error"]["code"] == "browser_required"
+    assert len(calls) == 1 and calls[0]["subtitle_only"]
+
+
+def test_platform_captions_take_priority_over_authorized_asr_cache(fetch, probe, monkeypatch):
+    storage.save_transcript(storage.content_key("asr:v1"), text="旧 ASR", segments=[], duration=60, origin="asr")
+    async def download(url, **options):
+        return media.MediaInfo(None, "平台字幕", "示例", 60, "作者", "v1")
+    monkeypatch.setattr(media, "fetch_media", download)
+    result = fetch._handle_video_url("https://youtu.be/v1", True, "zh")
+    assert result["origin"] == "platform_subtitle"
+    assert result["content"] == "平台字幕"
 
 
 def test_subtitle_cache_retains_timestamps(fetch, probe, monkeypatch):
@@ -247,6 +271,7 @@ def test_fenced_code_has_language_highlighting_and_copy_button(language, label, 
     block = doc.xpath('//div[@class="code-block"]')[0]
     assert block.xpath('.//span[@class="code-language"]')[0].text_content() == label
     assert block.xpath('.//button[@class="copy-code"]')[0].get("aria-label") == f"复制 {label} 代码"
+    assert block.xpath('.//button[@class="wrap-code"]')[0].get("aria-pressed") == "false"
     assert block.xpath('.//pre/code')[0].text_content() == source
     assert any(span.text_content().strip() for span in block.xpath('.//pre/code/span[@class]'))
 
@@ -257,6 +282,20 @@ def test_unknown_code_language_remains_copyable_plain_text():
     assert doc.xpath('//pre/code')[0].text_content() == source
     assert doc.xpath('//button[@class="copy-code"]')
     assert not doc.xpath('//unknown')
+
+
+def test_long_notes_have_searchable_directory_and_reading_navigation(tmp_path):
+    page, _ = load_script("notebook").render_note({
+        "title": "长课", "source_url": "https://youtu.be/v1",
+        "sections": [{"title": "回滚", "markdown": "正文"}, {"title": "分支", "markdown": "正文"}],
+    }, tmp_path)
+    doc = html.fromstring(page)
+    assert doc.xpath('//input[@id="toc-search"]')[0].get("aria-label") == "搜索章节"
+    assert doc.xpath('//*[@id="toc-toggle"]')[0].get("aria-controls") == "toc-panel"
+    assert doc.xpath('//progress[@id="reading-progress"]')[0].get("max") == "2"
+    assert doc.xpath('//*[@id="prev-chapter"]')[0].get("aria-label") == "上一章"
+    assert doc.xpath('//*[@id="next-chapter"]')[0].get("aria-label") == "下一章"
+    assert doc.xpath('//a[@class="skip-link"]')[0].get("href") == "#notes"
 
 
 def test_missing_timestamps_are_not_invented(tmp_path):

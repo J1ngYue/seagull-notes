@@ -4,7 +4,7 @@
 <text x="38" y="43" fill="#7c8076" font-size="13" letter-spacing="3">FROM SOURCE TO UNDERSTANDING</text>
 <g stroke="#dfe5d9" fill="#fffefa"><rect x="38" y="84" width="275" height="134" rx="14"/><rect x="362" y="84" width="275" height="134" rx="14"/><rect x="686" y="84" width="275" height="134" rx="14"/></g>
 <g fill="#426550" font-size="12" font-weight="bold"><text x="61" y="113">01 · INPUT</text><text x="385" y="113">02 · UNDERSTAND</text><text x="709" y="113">03 · KEEP</text></g>
-<g fill="#292d28" font-size="22" font-weight="bold"><text x="61" y="153">Video or local media</text><text x="385" y="153">Captions or local ASR</text><text x="709" y="153">Illustrated notes</text></g>
+<g fill="#292d28" font-size="22" font-weight="bold"><text x="61" y="153">Video or local media</text><text x="385" y="153">Platform captions</text><text x="709" y="153">Illustrated notes</text></g>
 <g fill="#7c8076" font-size="13"><text x="61" y="187">Bilibili / YouTube / local files</text><text x="385" y="187">Browser sign-in when needed</text><text x="709" y="187">Chapters + images + mind map</text></g>
 <g fill="#c77c60" font-size="26"><text x="328" y="162">→</text><text x="652" y="162">→</text></g>
 <text x="38" y="251" fill="#7c8076" font-size="12">Workflow illustration · Seagull Notes</text>
