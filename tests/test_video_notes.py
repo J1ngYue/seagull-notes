@@ -56,6 +56,25 @@ def test_local_collector_cannot_silently_override_anonymous_mode(fetch):
     assert result["error"]["code"] == "conflicting_credentials"
 
 
+def test_bilibili_link_automatically_uses_collector(fetch, monkeypatch):
+    from seagull_notes import browser_captions
+    expected = {"ok": True, "content": "完整平台字幕", "origin": "platform_subtitle"}
+    got = {}
+    def collect(source, **options):
+        got.update(options)
+        return expected
+    monkeypatch.setattr(browser_captions, "collect", collect)
+    result = fetch.run("https://www.bilibili.com/video/BV1LwHv6LEYz/", allow_asr=False, language="zh", refresh=True)
+    assert result == expected and got["refresh"] is True
+
+
+def test_explicit_anonymous_bilibili_does_not_start_collector(fetch, monkeypatch):
+    from seagull_notes import browser_captions
+    monkeypatch.setattr(browser_captions, "collect", lambda *args, **kwargs: pytest.fail("匿名请求不应读取专用会话"))
+    monkeypatch.setattr(fetch, "_handle_video_url", lambda *args: {"ok": True, "content": "公开字幕"})
+    assert fetch.run("https://www.bilibili.com/video/BV1LwHv6LEYz/", allow_asr=False, language="zh", anonymous=True)["ok"]
+
+
 def test_no_tracks_still_never_downloads_video(fetch, probe, monkeypatch):
     calls = []
     async def fake(url, **options):

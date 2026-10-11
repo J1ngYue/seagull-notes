@@ -7,7 +7,7 @@
 这是一套 Codex skill 与本地 Python 工具：脚本负责取素材和渲染，AI 客户端负责读完素材、理解内容并写笔记。默认流程无需另配笔记生成 API key。
 
 - **字幕优先**：读取可访问的平台字幕，包括自动字幕，保留可取得的时间轴。
-- **免登录先试**：`--anonymous` 不读取 Cookie 文件或浏览器凭证。
+- **B站自动采集**：BV 链接默认走本地采集器，复用完整字幕缓存；`--anonymous` 明确跳过凭证。
 - **本地转写可选**：只有明确启用 ASR 后，才下载可访问音频或识别本地文件。
 - **需要时交接登录**：由用户在 Codex 内置浏览器完成登录，再读取该会话可访问的内容。
 - **图文交付**：摘要、核心收获、章节、来源画面、解释示意图和脑图，生成自包含 HTML。
@@ -21,13 +21,13 @@
 ```bash
 git clone https://github.com/J1ngYue/seagull-notes.git
 cd seagull-notes
-python -m pip install -e ".[notes]"
+python -m pip install -e ".[notes,browser]"
 ```
 
 Windows 使用实际 Python 的绝对路径，避免 Microsoft Store 别名。本机示例：
 
 ```powershell
-& 'D:\software\Anaconda\python.exe' -m pip install -e '.[notes]'
+& 'D:\software\Anaconda\python.exe' -m pip install -e '.[notes,browser]'
 ```
 
 将仓库内 `skill/` 复制到客户端的 skills 目录，目录名为 `seagull-notes`，例如 `~/.agents/skills/seagull-notes/`。先安装 Python 项目，复制后的 skill 才能导入项目包；也可以直接使用仓库中的 skill。
@@ -38,6 +38,8 @@ Windows 使用实际 Python 的绝对路径，避免 Microsoft Store 别名。�
 
 目前 skill 指令与笔记界面为中文，英文 README 介绍的是同一套流程。
 
+用户发链接；skill 完成采集、导入、全文阅读、配图、排版和检查。正常情况下用户只需要在真实需要认证时登录/完成平台验证。对可读取字幕的视频，以登录完成后 45 分钟内交付完整图文笔记为目标；这不是对无字幕、访问受限或异常长素材的固定耗时保证。
+
 ## 两条获取路径，先说明利弊再选择
 
 | 路径 | 好处 | 代价与限制 |
@@ -45,7 +47,7 @@ Windows 使用实际 Python 的绝对路径，避免 Microsoft Store 别名。�
 | 浏览器登录后读取平台字幕 | 有字幕时通常更快，无需下载 ASR 模型 | 用户需登录；字幕也可能有误，登录后仍可能受限或无法导出 |
 | 免登录尝试音频转写 | 公开音频可取时，不需要视频平台账号 | 需下载音频和模型，通常更慢，可能识别错术语或数字 |
 
-先尝试匿名访问，需要选择时 skill 会列明两条路径的利弊，让用户决定。私密、付费、地区受限或受风控的视频不能保证处理。视频简介和平台 AI 总结不能冒充完整字幕。
+B站 BV 链接默认自动使用平台字幕采集器，其他来源使用可用的平台字幕或浏览器导出。匿名模式仍可明确指定，ASR 必须得到明确授权；不重复询问已经选定的路径。私密、付费、地区受限或受风控的视频不能保证处理。视频简介和平台 AI 总结不能冒充完整字幕。
 
 已有有效登录态时直接复用，不重复要求登录或弹出路径选择。提出本地 ASR 前检查依赖和完整模型缓存；没有模型时必须说明需要下载（默认 large-v3 约 3 GB），以及首次下载、加载的额外耗时和磁盘占用。
 
@@ -122,6 +124,8 @@ python skill/scripts/fetch.py "https://www.bilibili.com/video/BV1LwHv6LEYz/" --l
 ```
 
 采集器在后台使用专用 Chrome 配置，先验证登录状态；已有有效登录时不弹提示。需要认证时返回本地 `LOGIN_URL`，Codex 会在内置浏览器中可见地展示登录页。用 B站 App 扫码并在手机确认一次，成功后自动继续，不依赖单独的 Chrome 窗口能否弹到前台。专用配置与内置浏览器、普通 Chrome 个人配置分开。优先使用已安装的 Chrome；没有时可用 `python -m playwright install chromium` 安装浏览器。
+
+BV 链接可以省略 `--local-browser`，未明确指定匿名或其他凭证来源时自动选用采集器。完整字幕缓存可用时，在启动 Chrome 或提示登录前直接复用；`cache_hit/collected_at` 保留来源与采集时间，`--refresh` 更新平台字幕。`collection_seconds` 仅计采集阶段，不是 AI 整理笔记的总耗时。
 
 全文 JSON/SRT 自动保存到 `data/captions/`；返回现有的 `content/segments/origin` 格式，可直接交给笔记流程，无需手动导出或导入。分 P 对应当前视频片段，结果包含首末字幕时间供完整性核对。采集器只获取平台字幕，不下载音视频或 ASR 模型，也不导出 Cookie 文件；平台访问限制仍然适用。目前接受完整 B站 BV 链接，YouTube 等来源继续使用原有流程。
 

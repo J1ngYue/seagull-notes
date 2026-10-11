@@ -85,6 +85,45 @@ def test_saved_srt_can_be_imported_without_manual_conversion():
     assert saved["content"] == result["content"] and saved["part"] == 2
 
 
+def test_complete_caption_cache_skips_browser_and_login(tmp_path, monkeypatch):
+    monkeypatch.setattr(captions.config, "DATA_DIR", tmp_path)
+    saved = captions.save_captions(sample())
+    monkeypatch.setattr(captions, "_launch", lambda *args: pytest.fail("全文缓存不应启动浏览器"))
+    result = captions.collect(VIDEO + "?p=2", allow_login=False)
+    assert result["cache_hit"] is True
+    assert result["content"] == saved["content"] and result["segments"] == saved["segments"]
+    assert result["collected_at"] > 0
+
+
+def test_cache_is_separate_for_part_and_language(tmp_path, monkeypatch):
+    monkeypatch.setattr(captions.config, "DATA_DIR", tmp_path)
+    captions.save_captions(sample())
+    assert captions.cached_captions("BV1LwHv6LEYz", 1, "zh") is None
+    assert captions.cached_captions("BV1LwHv6LEYz", 2, "en") is None
+
+
+def test_partial_cache_is_not_used(tmp_path, monkeypatch):
+    monkeypatch.setattr(captions.config, "DATA_DIR", tmp_path)
+    result = captions.save_captions(sample())
+    Path(result["caption_file"]).write_text('{"ok":', encoding="utf-8")
+    assert captions.cached_captions("BV1LwHv6LEYz", 2, "zh") is None
+
+
+def test_refresh_reads_platform_instead_of_using_cache(tmp_path, browser, monkeypatch):
+    monkeypatch.setattr(captions.config, "DATA_DIR", tmp_path)
+    old = sample()
+    old["part"] = 1
+    captions.save_captions(old)
+    fresh = sample()
+    fresh["part"] = 1
+    fresh["segments"][0]["text"] = "更新的第一句"
+    fresh["content"] = "更新的第一句\n最后一句"
+    monkeypatch.setattr(captions, "_read", lambda *args: fresh)
+    result = captions.collect(VIDEO, refresh=True)
+    assert result["cache_hit"] is False and result["content"] == fresh["content"]
+    assert browser == [False]
+
+
 @pytest.fixture
 def browser(monkeypatch):
     module = ModuleType("playwright.sync_api")

@@ -7,7 +7,7 @@ Turn Bilibili, YouTube, and local media into **illustrated notes, mind maps, Mar
 Seagull Notes combines a Codex skill with local Python helpers. The helpers extract source material and render the notebook; your AI client reads the material and writes the notes. This workflow does not require a separate note-generation API key.
 
 - **Captions first.** Prefer available platform captions, including automatic captions, and retain their timestamps.
-- **Anonymous access first.** `--anonymous` skips saved cookies and browser credentials.
+- **Automatic Bilibili collection.** BV links use the local collector and reuse complete caption caches. `--anonymous` explicitly skips credentials.
 - **Optional local transcription.** Download accessible audio or process a local file only when ASR is explicitly enabled.
 - **Browser sign-in when needed.** Let the user complete sign-in in Codex's in-app browser, then read what that session can access.
 - **Illustrated delivery.** Summaries, takeaways, chapters, source images, explanatory diagrams, and a mind map in a self-contained HTML file.
@@ -21,13 +21,13 @@ Requires Python 3.10 or later. A dedicated Python environment is recommended.
 ```bash
 git clone https://github.com/J1ngYue/seagull-notes.git
 cd seagull-notes
-python -m pip install -e ".[notes]"
+python -m pip install -e ".[notes,browser]"
 ```
 
 On Windows, use the absolute path to your actual Python installation instead of a Microsoft Store alias. For example:
 
 ```powershell
-& 'D:\software\Anaconda\python.exe' -m pip install -e '.[notes]'
+& 'D:\software\Anaconda\python.exe' -m pip install -e '.[notes,browser]'
 ```
 
 Copy `skill/` into your client's skills directory as `seagull-notes`, for example `~/.agents/skills/seagull-notes/`. Install the Python project first so a copied skill can import its helpers. You can also use the skill directly from the checkout.
@@ -38,6 +38,8 @@ Ask Codex:
 
 The included skill instructions and notebook interface are currently in Chinese. This English README describes the same workflow.
 
+Send a link; the skill handles collection, import, reading, illustrations, rendering, and review. Your only normal intervention is sign-in or platform verification when required. For accessible captioned videos, the workflow targets a complete illustrated notebook within 45 minutes after sign-in. This is a processing target, not a guarantee for blocked sources, missing captions, or unusually large material.
+
 ## Choosing a source path
 
 | Path | Benefits | Trade-offs |
@@ -45,7 +47,7 @@ The included skill instructions and notebook interface are currently in Chinese.
 | Read platform captions after browser sign-in | Usually faster when captions exist; no ASR model download | Requires user sign-in; captions may contain errors, and access or export can still fail |
 | Try anonymous audio transcription | No platform account is needed when the audio is publicly accessible | Requires audio and model downloads; usually slower, with possible recognition errors |
 
-Anonymous access is attempted first. If a choice is needed, the skill explains both paths and asks the user to choose. Neither path guarantees access to private, paid, region-restricted, or blocked videos. Video descriptions and AI summaries are not substitutes for a full transcript.
+Bilibili BV links automatically use the caption collector. Other sources use available platform captions or browser exports. Anonymous mode remains an explicit option; ASR requires explicit authorization. The skill does not ask the user to repeat an already selected path. Neither path guarantees access to private, paid, region-restricted, or blocked videos. Video descriptions and AI summaries are not substitutes for a full transcript.
 
 An existing, valid sign-in session is reused without asking the user to sign in or choose again. Before offering local ASR, the skill checks the installed dependencies and complete model cache: if the model is missing, it explains that a model download is required (approximately 3 GB for the default large-v3), with additional setup time and disk space.
 
@@ -122,6 +124,8 @@ python skill/scripts/fetch.py "https://www.bilibili.com/video/BV1LwHv6LEYz/" --l
 ```
 
 The collector reuses a dedicated Chrome profile in the background and verifies sign-in first. A valid session skips the login page. When authentication is needed, it prints a local `LOGIN_URL`; Codex opens this page visibly in its in-app browser. Scan the Bilibili QR code with the Bilibili app and confirm on your phone once; collection resumes automatically. This avoids relying on a separate Chrome window becoming visible. The collector profile is separate from both the in-app browser and your normal Chrome profile. Installed Chrome is preferred; otherwise install Chromium with `python -m playwright install chromium`.
+
+`--local-browser` is optional for BV links: the default command selects it automatically unless an explicit credential or anonymous option is supplied. Valid full-caption caches are reused before launching Chrome or requesting sign-in. `cache_hit` and `collected_at` retain provenance; `--refresh` requests an updated platform copy. `collection_seconds` measures only the collection stage, not AI note generation.
 
 Full caption JSON and SRT files are saved automatically under `data/captions/`. The existing `content`, `segments`, and `origin` output feeds the note workflow directly, with no manual export or import. The collector preserves the selected `p` and reports the first and last caption times for coverage review. It fetches platform captions, without audio/video downloads or ASR models, and does not export cookie files. Platform restrictions still apply. Currently it accepts full Bilibili BV links; YouTube and other sources retain their existing workflow.
 

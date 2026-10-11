@@ -8,7 +8,7 @@ Windows 使用真实 Python 解释器的绝对路径；本机使用 `D:\software
 & 'D:\software\Anaconda\python.exe' -m pip install yt-dlp httpx lxml Markdown pymdown-extensions
 ```
 
-完整依赖可在仓库根安装 `pip install -e ".[notes]"`。网页/PDF 使用 `readability-lxml/pymupdf`。免登录字幕模式使用 `--anonymous`；需要本地 ASR 时安装 `pip install -e ".[notes,asr]"`，并显式使用 `--allow-asr`。
+完整笔记与自动 B站采集流程在仓库根安装 `pip install -e ".[notes,browser]"`。网页/PDF 使用 `readability-lxml/pymupdf`。免登录字幕模式使用 `--anonymous`；需要本地 ASR 时安装 `pip install -e ".[notes,asr]"`，并显式使用 `--allow-asr`。
 
 本地 B站采集器安装 `pip install -e ".[notes,browser]"`（Playwright 与 qrcode/Pillow），然后运行 `fetch.py '<BV视频链接>' --local-browser`。它优先使用已安装的 Chrome；没有 Chrome 时可显式运行 `python -m playwright install chromium` 安装浏览器，无需 ASR 模型。需要认证时展示日志中的本地 `LOGIN_URL`，用 B站 App 扫码确认；之后自动复用专用配置。专用配置被另一个采集进程占用时，先完成该进程再启动下一次；不要同时启动同一配置。
 

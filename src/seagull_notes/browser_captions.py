@@ -166,6 +166,32 @@ def save_captions(result: dict) -> dict:
     return result
 
 
+def cached_captions(bvid: str, part: int, language: str) -> dict | None:
+    folder = config.DATA_DIR / "captions" / f"{bvid}-p{part}"
+    path = folder / "transcript.json"
+    if not path.is_file() or not (folder / "captions.srt").is_file():
+        return None
+    try:
+        result = json.loads(path.read_text(encoding="utf-8"))
+        if (not result.get("ok") or result.get("origin") != "platform_subtitle"
+                or result.get("video_id") != bvid or result.get("part") != part
+                or not isinstance(result.get("content"), str)):
+            return None
+        cached_language = result.get("caption_language", "").removeprefix("ai-").split("-")[0]
+        if cached_language != language.removeprefix("ai-").split("-")[0]:
+            return None
+        segments = parse_captions({"body": [{"from": row["start"], "to": row["end"], "content": row["text"]}
+                                            for row in result["segments"]]})
+        if "\n".join(row["text"] for row in segments) != result["content"]:
+            return None
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, CaptionError):
+        return None
+    result.update(caption_file=str(path), subtitle_file=str(folder / "captions.srt"),
+                  collected_at=result.get("collected_at", path.stat().st_mtime), cache_hit=True,
+                  note="复用完整平台字幕缓存，未重新请求平台、登录或运行 ASR；来源采集时间已保留。")
+    return result
+
+
 def _launch(playwright):
     options = {"user_data_dir": str(config.DATA_DIR / "caption-browser-profile"), "headless": True,
                "viewport": {"width": 1280, "height": 860}, "locale": "zh-CN"}
@@ -248,8 +274,14 @@ def _wait_for_login(context, timeout: float, log) -> None:
         server.server_close()
 
 
-def collect(url: str, *, language: str = "zh", allow_login: bool = True, login_timeout: float = 300, log=print) -> dict:
+def collect(url: str, *, language: str = "zh", allow_login: bool = True, login_timeout: float = 300,
+            refresh: bool = False, log=print) -> dict:
+    started = time.perf_counter()
     source, bvid, part = video_target(url)
+    cached = None if refresh else cached_captions(bvid, part, language)
+    if cached:
+        cached["collection_seconds"] = round(time.perf_counter() - started, 4)
+        return cached
     try:
         from playwright.sync_api import sync_playwright, Error
     except ImportError:
@@ -271,4 +303,6 @@ def collect(url: str, *, language: str = "zh", allow_login: bool = True, login_t
         raise CaptionError("browser_failed", "本地浏览器启动或请求失败；检查 Chrome 安装、网络及专用配置是否正在使用。缺少浏览器时可安装 Playwright Chromium。") from None
     except httpx.HTTPError:
         raise CaptionError("network_failed", "平台字幕请求失败；检查网络及项目的直连地址设置。") from None
+    result.update(collected_at=time.time(), cache_hit=False,
+                  collection_seconds=round(time.perf_counter() - started, 4))
     return save_captions(result)

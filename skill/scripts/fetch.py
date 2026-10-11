@@ -20,6 +20,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 # ------------------------------------------------------------------ 环境自举
 
@@ -105,16 +106,21 @@ def _err(code: str, message: str, hint: str = "") -> dict:
 def run(source: str, *, allow_asr: bool, language: str,
         cookies_from_browser: str | None = None,
         cookie_file: str | None = None, anonymous: bool = False,
-        local_browser: bool = False) -> dict:
+        local_browser: bool = False, refresh: bool = False) -> dict:
     from seagull_notes import config, extract, media
     from seagull_notes.pipeline import URL_RE, _looks_like_path
 
+    if not local_browser and not (anonymous or cookies_from_browser or cookie_file):
+        parsed = urlparse(source)
+        host = (parsed.hostname or "").lower()
+        local_browser = (parsed.scheme in ("http", "https") and parsed.path.startswith("/video/BV")
+                         and (host == "bilibili.com" or host.endswith(".bilibili.com")))
     if local_browser:
         if anonymous or cookies_from_browser or cookie_file:
             return _err("conflicting_credentials", "本地专用浏览器不能与匿名模式或其他 Cookie 来源同时使用。")
         from seagull_notes.browser_captions import CaptionError, collect
         try:
-            return collect(source, language=language, log=_log)
+            return collect(source, language=language, refresh=refresh, log=_log)
         except CaptionError as exc:
             return _err(exc.code, str(exc))
 
@@ -407,6 +413,8 @@ def main() -> int:
                         help="用 cookies.txt 文件（Netscape 格式）")
     credentials.add_argument("--local-browser", action="store_true",
                         help="本地专用 Chrome 自动采集 B站字幕；会话有效时直接复用，失效时交接登录")
+    parser.add_argument("--refresh", action="store_true",
+                        help="重新采集 B站平台字幕，不复用已保存的全文缓存")
     parser.add_argument("--format", choices=["json", "text"], default="json",
                         help="输出格式")
     args = parser.parse_args()
@@ -419,6 +427,7 @@ def main() -> int:
         cookie_file=args.cookie_file,
         anonymous=args.anonymous,
         local_browser=args.local_browser,
+        refresh=args.refresh,
     )
 
     if not result.get("ok"):
