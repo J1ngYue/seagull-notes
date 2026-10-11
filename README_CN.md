@@ -102,6 +102,16 @@ python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/dem
 
 生成的图文笔记会自动收录到 `data/artifacts/notebooks/`。打开其中的 `index.html`，即可通过图文卡片浏览和搜索；每篇顶部可返回笔记夹。同一输入重新生成会更新原条目，不同输入同名也不会覆盖；指定 `--out` 时保留原输出并额外收录。格式切换采用滑动选中胶囊与柔和淡入，尊重系统减少动态效果的偏好。
 
+### 可编辑的 Obsidian 导出
+
+每次渲染也生成 Obsidian ZIP，包含原生 Markdown、独立图片附件、完整原文、可编辑的原生 Canvas 脑图和专用淡色 CSS。笔记夹可下载单篇或全部导出包。把内容放进 vault，首次在设置 → 外观 → CSS 代码片段启用 `seagull-notes`；也可直接导入：
+
+```bash
+python skill/scripts/notebook.py note.json --obsidian-vault "/实际vault的绝对路径"
+```
+
+正文可直接编辑；删除或移动图片的 `![[...]]` 行即可删图、换位置，替换附件即可换图，修改 `|760` 可调显示宽度。SVG 保留矢量源文件，截图仍是原图片；Canvas 脑图可拖节点、改字和连接箭头，不需额外插件。保留淡色配色、标题、重点框、代码和图文结构，导航采用 Obsidian 自带界面。重导入保留已有文件，避免覆盖用户修改。
+
 输入 JSON 由 AI 客户端整理，渲染器本身不生成摘要。格式见 [notebook-format.md](skill/references/notebook-format.md)。网络来源填写 `source_url`，本地来源填写实际文件绝对路径 `source_ref`。本地时间显示为素材位置标记，网络时间可跳转原视频。
 
 截图使用经过核实的原视频画面，自绘图明确标注示意图。图片嵌入 HTML，离线仍可读；Markdown 保留图片原本地路径，移动 Markdown 时需一并保留图片。

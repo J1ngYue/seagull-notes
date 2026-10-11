@@ -58,3 +58,9 @@ Markdown 正文中的外部图片不会加载；用 `image` 提供已经核实�
 ```
 
 用 `--out '<产物目录>\标题'` 指定输出基名。默认输出到 `data/artifacts/notebooks/` 笔记夹，用稳定文件标识避免同名覆盖；页面显示实际标题。stdout 返回 `html/markdown/library/library_note` 的绝对路径。笔记夹的 `index.html` 会自动更新，每篇顶部可返回列表。同一输入 JSON 重新渲染会更新原条目；指定 `--out` 时也会自动收录，不移走原输出。
+
+同时返回 `obsidian_zip`（可导入 ZIP 的绝对路径）与 `obsidian_note`（包内主 Markdown 路径）。包内 `Seagull Notes/<稳定标识>/` 保存正文、`附件/`、字幕原文与 `.canvas` 脑图；图片引用为 `![[Seagull Notes/.../附件/图片.svg|760]]`，760 可修改为显示宽度。没有原机器路径或 data URI 作为图片依赖。SVG 不转成位图，脑图 Canvas 的文字、节点与连线可以在 Obsidian 编辑。
+
+`.obsidian/snippets/seagull-notes.css` 使用 `cssclasses: [seagull-notes]` 限定样式，仅影响对应笔记。用户首次在外观设置启用片段。代码围栏与公式保持原生 Markdown，使用 Obsidian 的编辑与代码复制；网页格式切换不会被当作可编辑 Markdown 交互搬过去。
+
+直接导入：`notebook.py '<note.json>' --obsidian-vault '<实际vault绝对路径>'`；会复制附件并返回 `obsidian_import` 结果，不覆盖已经存在的文件。仅生成 ZIP 时不修改任何 vault。全部导出包为笔记夹中的 `Seagull-Notes-Obsidian.zip`。

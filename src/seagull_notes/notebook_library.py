@@ -48,10 +48,14 @@ def render_index(entries: list[dict], template_file: Path) -> str:
                      f'<h2 id="note-title-{index}">{title}</h2><p>{summary}</p><div class="card-foot"><span>{details}</span>'
                      '<span class="read-label">阅读笔记 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>'
                      '</div></div></a>')
+        if entry.get("obsidian_zip"):
+            cards[-1] = ('<div class="note-entry" data-search="' + search + '">' + cards[-1] +
+                         f'<a class="obsidian-download" href="{entry["obsidian_zip"]}" download aria-label="导出 {title} 到 Obsidian">'
+                         '<span>导入 Obsidian</span><span>可编辑笔记与图片 ↓</span></a></div>')
     return Template(template_file.read_text(encoding="utf-8")).substitute(cards="".join(cards), count=len(entries))
 
 
-def register(note: dict, source: Path, page: str, markdown: str, template_file: Path) -> dict[str, str]:
+def register(note: dict, source: Path, page: str, markdown: str, template_file: Path, bundle: dict | None = None) -> dict[str, str]:
     folder = directory().resolve()
     folder.mkdir(parents=True, exist_ok=True)
     identity = notebook_id(source)
@@ -63,6 +67,8 @@ def register(note: dict, source: Path, page: str, markdown: str, template_file: 
              "duration": note.get("duration"), "chapters": len(note["sections"]),
              "html": identity + ".html", "markdown": identity + ".md",
              "created_at": entries.get(identity, {}).get("created_at", now), "updated_at": now}
+    if bundle:
+        entry["obsidian_zip"] = Path(bundle["obsidian_zip"]).name
     if note.get("cover"):
         cover = (source.parent / note["cover"]["path"]).resolve()
         cover_name = identity + "-cover" + cover.suffix.lower()
@@ -77,4 +83,8 @@ def register(note: dict, source: Path, page: str, markdown: str, template_file: 
     temporary.replace(manifest)
     index = folder / "index.html"
     index.write_text(render_index(list(entries.values()), template_file), encoding="utf-8")
+    packages = [folder / value["obsidian_zip"] for value in entries.values() if value.get("obsidian_zip")]
+    if packages:
+        from .obsidian_export import merge_bundles
+        merge_bundles(packages, folder / "Seagull-Notes-Obsidian.zip")
     return {"library": str(index), "library_note": str(folder / entry["html"])}

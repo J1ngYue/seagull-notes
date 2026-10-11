@@ -102,6 +102,16 @@ Search the chapter directory, follow the highlighted current chapter, or use pre
 
 Rendered notebooks are automatically collected in `data/artifacts/notebooks/`. Open its `index.html` to browse illustrated cards and search your notes; each notebook links back to this library. Re-rendering the same input updates its entry, while separate inputs with the same title remain distinct. An explicit `--out` keeps that output and also adds a library copy. Tabs use a sliding selection pill and a soft panel entrance; reduced-motion preferences are respected.
 
+### Editable Obsidian export
+
+Each render also creates an Obsidian ZIP with native Markdown, independent image attachments, the transcript, an editable native Canvas mind map, and a scoped light CSS snippet. The library provides individual and combined ZIP downloads. Copy the package contents into your vault and enable `seagull-notes` under Appearance → CSS snippets once, or import directly:
+
+```bash
+python skill/scripts/notebook.py note.json --obsidian-vault "/absolute/path/to/vault"
+```
+
+Edit the text normally. Delete or move an image's `![[...]]` line, replace its attachment, or change `|760` to another width. SVG files remain editable vectors; raster screenshots remain images. The Canvas mind map supports changing text, moving nodes, and reconnecting arrows without a community plugin. Colors, headings, callouts, code cards, and illustrations retain the reading style; navigation uses Obsidian's interface. Existing vault files are preserved on re-import, so user edits are not overwritten.
+
 The AI client prepares the JSON input; the renderer does not generate a summary. See [the input format](skill/references/notebook-format.md). Use `source_url` for a web source or `source_ref` for an existing local file's absolute path. Local timestamps are position labels; web timestamps link back to the video.
 
 Use verified video frames for screenshots and label explanatory diagrams clearly. Images are embedded in HTML for offline reading; Markdown retains local image paths, so keep those files when moving the Markdown output.

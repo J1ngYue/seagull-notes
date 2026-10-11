@@ -28,7 +28,7 @@ from pygments.util import ClassNotFound
 PROJECT_HOME = Path(os.environ.get("SEAGULL_NOTES_HOME", str(Path(__file__).resolve().parents[2])))
 sys.path.insert(0, str(PROJECT_HOME / "src"))
 
-from seagull_notes import export, notebook_library
+from seagull_notes import export, notebook_library, obsidian_export
 
 
 class NotebookBashLexer(BashLexer):
@@ -133,7 +133,7 @@ def math_assets() -> tuple[str, str]:
     return f"<style>{css}</style>", f"<script>{script}</script>"
 
 
-def render_note(note: dict, base: Path, library_href: str | None = None) -> tuple[str, str]:
+def render_note(note: dict, base: Path, library_href: str | None = None, obsidian_href: str | None = None) -> tuple[str, str]:
     title = note["title"]
     local_source = None
     if note.get("source_url"):
@@ -215,6 +215,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None) -> tupl
         transcript=html.escape(note.get("transcript") or "未提供完整字幕原文。"),
         math_css=math_css, math_js=math_js, code_css=code_css,
         library_action=f'<a class="library-link" href="{html.escape(library_href, quote=True)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2-3h9v16H3V7z"/></svg>笔记夹</a>' if library_href else "",
+        obsidian_action=f'<a class="obsidian-link" href="{html.escape(obsidian_href, quote=True)}" download>导入 Obsidian ↓</a>' if obsidian_href else "",
     )
     return page, markdown_body
 
@@ -226,11 +227,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="笔记 JSON → 图文 HTML + Markdown")
     parser.add_argument("note", type=Path)
     parser.add_argument("--out", type=Path, help="输出文件基名，不含扩展名")
+    parser.add_argument("--obsidian-vault", type=Path, help="将可编辑笔记与图片导入指定 vault，保留已存在的文件")
     args = parser.parse_args()
     try:
         note = json.loads(args.note.read_text(encoding="utf-8-sig"))
         source = args.note.resolve()
         folder = notebook_library.directory().resolve()
+        identity = notebook_library.notebook_id(source)
+        bundle = obsidian_export.export_bundle(note, source, folder / (identity + ".obsidian.zip"))
         out = args.out or folder / notebook_library.notebook_id(source)
         out.parent.mkdir(parents=True, exist_ok=True)
         html_path, md_path = Path(f"{out}.html"), Path(f"{out}.md")
@@ -238,16 +242,19 @@ def main() -> int:
             library_href = quote(os.path.relpath(folder / "index.html", html_path.resolve().parent).replace(os.sep, "/"), safe="/")
         except ValueError:
             library_href = (folder / "index.html").as_uri()
-        page, body = render_note(note, source.parent, library_href)
+        obsidian_href = library_href.rsplit("/", 1)[0] + "/" + identity + ".obsidian.zip" if "/" in library_href else identity + ".obsidian.zip"
+        page, body = render_note(note, source.parent, library_href, obsidian_href)
         html_path.write_text(page, encoding="utf-8")
         md_path.write_text(body, encoding="utf-8")
         canonical = folder / (notebook_library.notebook_id(source) + ".html")
-        canonical_page = page if html_path.resolve() == canonical else render_note(note, source.parent, "index.html")[0]
-        collected = notebook_library.register(note, source, canonical_page, body, Path(__file__).resolve().parents[1] / "assets" / "library.html")
+        canonical_page = page if html_path.resolve() == canonical else render_note(note, source.parent, "index.html", identity + ".obsidian.zip")[0]
+        collected = notebook_library.register(note, source, canonical_page, body, Path(__file__).resolve().parents[1] / "assets" / "library.html", bundle)
+        if args.obsidian_vault:
+            collected["obsidian_import"] = obsidian_export.import_bundle(Path(bundle["obsidian_zip"]), args.obsidian_vault)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False))
         return 1
-    print(json.dumps({"ok": True, "html": str(html_path.resolve()), "markdown": str(md_path.resolve()), **collected}, ensure_ascii=False))
+    print(json.dumps({"ok": True, "html": str(html_path.resolve()), "markdown": str(md_path.resolve()), **bundle, **collected}, ensure_ascii=False))
     return 0
 
 
