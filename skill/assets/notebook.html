@@ -87,8 +87,8 @@ tocToggle.addEventListener('click',()=>{const open=sidebar.classList.toggle('toc
 links.forEach(link=>link.addEventListener('click',()=>{sidebar.classList.remove('toc-open');tocToggle.setAttribute('aria-expanded','false')}));
 const chapters=Array.from(document.querySelectorAll('.chapter')),position=document.getElementById('chapter-position'),previous=document.getElementById('prev-chapter'),next=document.getElementById('next-chapter');let currentChapter=-1,readingFrame;
 function updateReading(){
- readingFrame=0;if(document.body.dataset.view!=='notes'||!chapters.length)return;let index=0;const threshold=Math.min(180,innerHeight*.25);
- chapters.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=threshold)index=i});if(index===currentChapter)return;currentChapter=index;
+ readingFrame=0;if(document.body.dataset.view!=='notes'||!chapters.length)return;let index=0,visibleArea=0;
+ chapters.forEach((chapter,i)=>{const rect=chapter.getBoundingClientRect(),area=Math.max(0,Math.min(innerHeight,rect.bottom)-Math.max(0,rect.top));if(area>visibleArea){visibleArea=area;index=i}});if(index===currentChapter)return;currentChapter=index;
  position.textContent='第 '+(index+1)+' / '+chapters.length+' 章';position.title=chapters[index].querySelector('h2').textContent;document.getElementById('reading-progress').value=index+1;previous.disabled=index===0;next.disabled=index===chapters.length-1;
  links.forEach((link,i)=>{link.classList.toggle('active',i===index);if(i===index)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
  const active=links[index];if(!active.hidden&&innerWidth>850){const a=active.getBoundingClientRect(),s=sidebar.getBoundingClientRect();if(a.top<s.top+105)sidebar.scrollTop+=a.top-s.top-105;else if(a.bottom>s.bottom-10)sidebar.scrollTop+=a.bottom-s.bottom+10}
