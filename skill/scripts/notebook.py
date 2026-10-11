@@ -39,7 +39,7 @@ class NotebookBashLexer(BashLexer):
     ]}
 
 
-CODE_FORMATTER = HtmlFormatter(nowrap=True, style="github-dark")
+CODE_FORMATTER = HtmlFormatter(nowrap=True, style="default")
 
 
 def code_block(source: str, language: str) -> str:

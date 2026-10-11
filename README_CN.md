@@ -103,7 +103,7 @@ python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/dem
 
 ### 代码框与复制
 
-代码围栏注明实际语言，如 `bash`、`python`、`java`、`cpp` 或 `html`。页面显示语言标签、语法高亮、独立深色圆角框和复制按钮。Pygments 生成的高亮与样式嵌入 HTML，离线可用；复制保留原代码、缩进、换行和特殊字符，未知语言按纯文本展示并可复制。示例注明前提与替换值，互斥操作分成不同代码框。
+代码围栏注明实际语言，如 `bash`、`python`、`java`、`cpp` 或 `html`。页面显示语言标签、语法高亮、独立淡色圆角框和复制按钮。Pygments 生成的高亮与样式嵌入 HTML，离线可用；复制保留原代码、缩进、换行和特殊字符，未知语言按纯文本展示并可复制。示例注明前提与替换值，互斥操作分成不同代码框。
 
 ### LaTeX 公式与单击复制
 

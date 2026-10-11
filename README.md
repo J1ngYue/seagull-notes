@@ -103,7 +103,7 @@ Use verified video frames for screenshots and label explanatory diagrams clearly
 
 ### Code blocks and copying
 
-Fenced code blocks include a language label, syntax highlighting, a bordered dark card, and a copy button. Specify the actual language, such as `bash`, `python`, `java`, `cpp`, or `html`. Highlighting is generated with Pygments and embedded in the HTML for offline reading. Copying preserves the original code, indentation, line breaks, and special characters. Unknown languages remain copyable as plain text. Examples state their prerequisites and placeholder values; alternative operations use separate blocks.
+Fenced code blocks include a language label, syntax highlighting, a bordered light card, and a copy button. Specify the actual language, such as `bash`, `python`, `java`, `cpp`, or `html`. Highlighting is generated with Pygments and embedded in the HTML for offline reading. Copying preserves the original code, indentation, line breaks, and special characters. Unknown languages remain copyable as plain text. Examples state their prerequisites and placeholder values; alternative operations use separate blocks.
 
 ### LaTeX formulas and one-click copying
 
