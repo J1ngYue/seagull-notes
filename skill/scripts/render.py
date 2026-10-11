@@ -117,7 +117,7 @@ def main() -> int:
         except ImportError:
             result["png_note"] = "没装 playwright，跳过 PNG。装法见 references/setup.md"
         else:
-            placed, width, max_y = export._layout(tree)
+            placed, width, max_y = export._layout(tree, title)
             total_w = int(width + export.PADDING * 2)
             total_h = int(max_y + export.NODE_H + export.PADDING * 2)
             png_path = config.ARTIFACT_DIR / f"{safe}.png"

@@ -102,6 +102,8 @@ Search the chapter directory, follow the highlighted current chapter, or use pre
 
 Rendered notebooks are automatically collected in `data/artifacts/notebooks/`. Open its `index.html` to browse illustrated cards and search your notes; each notebook links back to this library. Re-rendering the same input updates its entry, while separate inputs with the same title remain distinct. An explicit `--out` keeps that output and also adds a library copy. Tabs use a sliding selection pill and a soft panel entrance; reduced-motion preferences are respected.
 
+Mind maps use a central topic, balanced branches, soft colors, curved connectors, and wrapped bilingual labels. Zoom, drag, fit, or expand the canvas to read dense maps. The same layout powers standalone maps and editable Obsidian Canvas exports.
+
 ### Editable Obsidian export
 
 Each render also creates an Obsidian ZIP with native Markdown, independent image attachments, the transcript, an editable native Canvas mind map, and a scoped light CSS snippet. The library provides individual and combined ZIP downloads. Copy the package contents into your vault and enable `seagull-notes` under Appearance → CSS snippets once, or import directly:

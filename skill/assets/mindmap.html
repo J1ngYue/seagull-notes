@@ -1,0 +1,42 @@
+<style>
+.mindmap-viewer{background:#fffefa;border-radius:18px;overflow:hidden;color:#2d3c32}
+.map-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 24px;border-bottom:1px solid #e1e6dc;background:#fffefa}
+.map-heading strong{display:block;font-size:14px;font-weight:600}.map-heading span{display:block;font-size:10px;letter-spacing:.4px;color:#687868;margin-top:3px}
+.map-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.map-actions button{display:flex;align-items:center;justify-content:center;gap:6px;min-width:34px;min-height:34px;border:1px solid #dce3d5;border-radius:8px;background:#f8faf4;color:#486443;padding:5px 10px;font:11px "Microsoft YaHei",system-ui,sans-serif;cursor:pointer;transition:background .18s,border-color .18s}.map-actions button:hover{background:#eaf1e3;border-color:#b8c9ac}.map-actions button:focus-visible,.map-stage:focus-visible{outline:2px solid #a87859;outline-offset:-3px}.map-actions svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.map-zoom{min-width:42px;text-align:center;font:11px ui-monospace,Consolas,monospace;color:#6a7967}
+.map-stage{height:640px;overflow:auto;background:#fffefa;cursor:grab;scrollbar-width:thin;overscroll-behavior:contain}.map-stage.dragging{cursor:grabbing}.map-paper{display:flex;align-items:center;justify-content:center}.map-stage .mindmap{display:block;min-width:0;max-width:none;flex-shrink:0;user-select:none;pointer-events:none}
+.map-caption{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #e1e6dc;padding:11px 24px;font-size:10px;line-height:1.8;color:#687868;background:#fcfdf8}
+.mindmap-viewer.expanded{position:fixed;inset:18px;z-index:80;border:1px solid #d6dfce;box-shadow:0 0 0 30px #25382888,0 16px 50px #20351f20;display:flex;flex-direction:column}.mindmap-viewer.expanded .map-stage{flex:1;height:0;min-height:0}.mindmap-viewer.expanded .map-toolbar,.mindmap-viewer.expanded .map-caption{flex-shrink:0}
+body[data-view=map] .workspace{display:block;max-width:1280px}body[data-view=map] .sidebar{display:none}body[data-view=map] #map{padding:0;overflow:visible}
+@media(max-width:650px){.map-toolbar{padding:16px;align-items:flex-start;flex-direction:column;gap:12px}.map-actions{width:100%;justify-content:flex-end}.map-actions button{min-height:44px;min-width:44px}.map-heading span{font-size:10px}.map-stage{height:540px}.map-caption{padding:10px 16px;flex-wrap:wrap;gap:2px}.mindmap-viewer.expanded{inset:8px}}
+@media(prefers-reduced-motion:reduce){.map-actions button{transition:none}}
+@media print{.map-toolbar,.map-caption{display:none}.map-stage{height:auto;overflow:visible}.map-paper{width:100%!important;height:auto!important}.map-stage .mindmap{width:100%!important;height:auto!important}.mindmap-viewer.expanded{position:static;box-shadow:none;border:0;display:block}}
+</style>
+<section class="mindmap-viewer" aria-label="交互式思维导图">
+  <header class="map-toolbar"><div class="map-heading"><strong>把知识，连成一张图。</strong><span>$node_count 个知识节点 · 分支颜色对应不同主题</span></div><div class="map-actions">
+    <button type="button" data-map-action="out" aria-label="缩小思维导图"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+    <output class="map-zoom" aria-label="思维导图缩放比例">100%</output>
+    <button type="button" data-map-action="in" aria-label="放大思维导图"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7v14"/></svg></button>
+    <button type="button" data-map-action="fit">适应画布</button>
+    <button type="button" data-map-action="expand" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5"/></svg><span>展开画布</span></button>
+  </div></header>
+  <div class="map-stage" tabindex="0" aria-label="思维导图画布，可拖动，使用加减键缩放，0 适应画布"><div class="map-paper"><img class="mindmap" alt="$title 思维导图" src="$image" width="$width" height="$height" draggable="false"></div></div>
+  <div class="map-caption"><span>拖动画布查看细节 · + / − 缩放 · 0 适应</span><span>保留完整知识结构，支持离线阅读</span></div>
+</section>
+<script>
+document.querySelectorAll('.mindmap-viewer').forEach(viewer=>{
+ const stage=viewer.querySelector('.map-stage'),paper=viewer.querySelector('.map-paper'),image=viewer.querySelector('.mindmap'),label=viewer.querySelector('.map-zoom'),expand=viewer.querySelector('[data-map-action=expand]');
+ const width=Number(image.getAttribute('width')),height=Number(image.getAttribute('height'));let scale=1,automatic=true,drag=null,previousOverflow='';
+ function resize(next,center=true){if(!stage.clientWidth)return;const cx=(stage.scrollLeft+stage.clientWidth/2)/paper.offsetWidth,cy=(stage.scrollTop+stage.clientHeight/2)/paper.offsetHeight;scale=next;image.style.width=width*scale+'px';image.style.height=height*scale+'px';paper.style.width=Math.max(stage.clientWidth,width*scale+48)+'px';paper.style.height=Math.max(stage.clientHeight,height*scale+48)+'px';label.textContent=Math.round(scale*100)+'%';stage.scrollLeft=center?(paper.offsetWidth-stage.clientWidth)/2:paper.offsetWidth*cx-stage.clientWidth/2;stage.scrollTop=center?(paper.offsetHeight-stage.clientHeight)/2:paper.offsetHeight*cy-stage.clientHeight/2}
+ function fit(){automatic=true;resize(Math.min((stage.clientWidth-64)/width,(stage.clientHeight-64)/height,1))}
+ function zoom(factor){automatic=false;resize(Math.max(.15,Math.min(3,scale*factor)),false)}
+ function toggleExpanded(){const open=viewer.classList.toggle('expanded');expand.setAttribute('aria-pressed',String(open));expand.querySelector('span').textContent=open?'收起画布':'展开画布';if(open){previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden'}else document.body.style.overflow=previousOverflow;fit()}
+ viewer.querySelector('[data-map-action=in]').addEventListener('click',()=>zoom(stage.clientWidth<650?2:1.25));viewer.querySelector('[data-map-action=out]').addEventListener('click',()=>zoom(stage.clientWidth<650?.5:.8));viewer.querySelector('[data-map-action=fit]').addEventListener('click',fit);expand.addEventListener('click',toggleExpanded);
+ stage.addEventListener('keydown',event=>{if(['+','=','-','0'].includes(event.key)){event.preventDefault();event.key==='0'?fit():zoom(event.key==='-'?.8:1.25)}});
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&viewer.classList.contains('expanded')){toggleExpanded();expand.focus()}});
+ stage.addEventListener('pointerdown',event=>{if(event.pointerType!=='mouse'||event.button!==0)return;drag={x:event.clientX,y:event.clientY,left:stage.scrollLeft,top:stage.scrollTop};stage.classList.add('dragging');stage.setPointerCapture(event.pointerId)});
+ stage.addEventListener('pointermove',event=>{if(drag){stage.scrollLeft=drag.left+drag.x-event.clientX;stage.scrollTop=drag.top+drag.y-event.clientY}});
+ function release(){drag=null;stage.classList.remove('dragging')}
+ stage.addEventListener('pointerup',release);stage.addEventListener('pointercancel',release);
+ new ResizeObserver(()=>{if(automatic)fit()}).observe(stage);image.addEventListener('load',()=>{if(automatic)fit()});fit();
+});
+</script>

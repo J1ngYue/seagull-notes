@@ -199,9 +199,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
     tree = note.get("mind_map")
     mindmap = '<p class="muted">这篇笔记没有提供脑图。</p>'
     if tree:
-        svg = export.render_svg(tree, title)
-        encoded = base64.b64encode(svg.encode("utf-8")).decode("ascii")
-        mindmap = f'<img class="mindmap" alt="{html.escape(title, quote=True)}思维导图" src="data:image/svg+xml;base64,{encoded}">'
+        mindmap = export.render_mindmap(tree, title)
     math_css, math_js = math_assets() if any('class="arithmatex"' in section for section in sections) else ("", "")
     code_css = "\n".join(line for line in CODE_FORMATTER.get_style_defs(".code-source").splitlines() if line.startswith(".code-source"))
     template = Template((Path(__file__).resolve().parents[1] / "assets" / "notebook.html").read_text(encoding="utf-8"))

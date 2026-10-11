@@ -242,7 +242,7 @@ def test_illustrated_note_has_real_image_timestamps_and_text(tmp_path):
     assert doc.xpath('//figure//img')[0].get("src").startswith("data:image/svg+xml;base64,")
     assert doc.xpath('//a[@class="time"]')[0].get("href").endswith("p=2&t=42")
     assert doc.xpath('//blockquote')
-    assert len(doc.xpath('//script')) == 1  # 只有模板自己的标签切换脚本
+    assert all('alert(1)' not in (script.text or '') for script in doc.xpath('//script'))
     assert not doc.xpath('//a[starts-with(@href,"javascript:")]')
     assert "完整原文" in doc.xpath('//*[@id="transcript"]')[0].text_content()
     assert str((tmp_path / "frame.svg").as_posix()) in body

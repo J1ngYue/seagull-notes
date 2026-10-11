@@ -47,25 +47,20 @@ def _timestamp(seconds: float) -> str:
     return f"{hours}:{minutes:02}:{seconds:02}" if hours else f"{minutes:02}:{seconds:02}"
 
 
-def canvas_tree(tree: list[dict]) -> dict:
+def canvas_tree(tree: list[dict], title: str = "") -> dict:
     nodes, edges = [], []
-    next_row = 0
-
-    def walk(item, depth, parent=None):
-        nonlocal next_row
-        identity = f"node-{len(nodes)}"
-        width = max(200, min(420, len(item["title"]) * 15 + 36))
+    placed, _, _ = export._layout(tree, title)
+    for index, item in enumerate(placed):
+        identity = f"node-{index}"
+        color = "#e4eedf" if item["depth"] == 0 else export.FILLS[item["branch"] % len(export.FILLS)]
         nodes.append({"id": identity, "type": "text", "text": item["title"],
-                      "x": depth * 460, "y": next_row * 90, "width": width, "height": 65, "color": "4"})
-        next_row += 1
-        if parent is not None:
-            edges.append({"id": f"edge-{len(edges)}", "fromNode": parent, "toNode": identity,
-                          "fromSide": "right", "toSide": "left", "toEnd": "arrow", "color": "4"})
-        for child in item.get("children", []):
-            walk(child, depth + 1, identity)
-
-    for item in tree:
-        walk(item, 0)
+                      "x": round(item["x"] * 1.4), "y": round(item["y"] * 1.4),
+                      "width": round(item["w"] * 1.4), "height": round(item["h"] * 1.4), "color": color})
+        if item["parent"] is not None:
+            left = item["side"] == -1
+            edges.append({"id": f"edge-{len(edges)}", "fromNode": f'node-{item["parent"]}', "toNode": identity,
+                          "fromSide": "left" if left else "right", "toSide": "right" if left else "left",
+                          "toEnd": "none", "color": export.PALETTE[item["branch"] % len(export.PALETTE)]})
     return {"nodes": nodes, "edges": edges}
 
 
@@ -119,7 +114,7 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
             body.append(picture(section["image"]))
     if note.get("mind_map"):
         canvas = f"{folder}/思维导图.canvas"
-        files[canvas] = json.dumps(canvas_tree(note["mind_map"]), ensure_ascii=False, indent=2).encode("utf-8")
+        files[canvas] = json.dumps(canvas_tree(note["mind_map"], note["title"]), ensure_ascii=False, indent=2).encode("utf-8")
         body.append(f"## 思维导图\n\n[[{canvas}|打开可编辑思维导图]]")
     if note.get("transcript"):
         transcript = f"{folder}/字幕原文.md"
