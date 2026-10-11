@@ -101,6 +101,10 @@ The AI client prepares the JSON input; the renderer does not generate a summary.
 
 Use verified video frames for screenshots and label explanatory diagrams clearly. Images are embedded in HTML for offline reading; Markdown retains local image paths, so keep those files when moving the Markdown output.
 
+### Code blocks and copying
+
+Fenced code blocks include a language label, syntax highlighting, a bordered dark card, and a copy button. Specify the actual language, such as `bash`, `python`, `java`, `cpp`, or `html`. Highlighting is generated with Pygments and embedded in the HTML for offline reading. Copying preserves the original code, indentation, line breaks, and special characters. Unknown languages remain copyable as plain text. Examples state their prerequisites and placeholder values; alternative operations use separate blocks.
+
 ### LaTeX formulas and one-click copying
 
 Use `$...$` for inline math and `$$...$$` for display math in section Markdown. For example, `$$\theta_{t+1}=\theta_t-\eta\nabla L(\theta_t)$$`. Escape backslashes when writing JSON. Code blocks remain code.

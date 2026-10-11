@@ -16,11 +16,46 @@ from string import Template
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import markdown
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexer import bygroups, inherit
+from pygments.lexers import get_lexer_by_name
+from pygments.lexers.shell import BashLexer
+from pygments.lexers.special import TextLexer
+from pygments.token import Name, Text
+from pygments.util import ClassNotFound
 
 PROJECT_HOME = Path(os.environ.get("SEAGULL_NOTES_HOME", str(Path(__file__).resolve().parents[2])))
 sys.path.insert(0, str(PROJECT_HOME / "src"))
 
 from seagull_notes import config, export
+
+
+class NotebookBashLexer(BashLexer):
+    tokens = {"root": [
+        (r"^([ \t]*)(git|ssh-keygen|ssh)(?=[ \t]|$)", bygroups(Text, Name.Function)),
+        (r"--?[\w-]+", Name.Attribute),
+        inherit,
+    ]}
+
+
+CODE_FORMATTER = HtmlFormatter(nowrap=True, style="github-dark")
+
+
+def code_block(source: str, language: str) -> str:
+    try:
+        lexer = get_lexer_by_name(language or "text", stripnl=False, ensurenl=False)
+    except ClassNotFound:
+        lexer = TextLexer(stripnl=False, ensurenl=False)
+    if isinstance(lexer, BashLexer):
+        lexer = NotebookBashLexer(stripnl=False, ensurenl=False)
+    label = html.escape(lexer.name, quote=True)
+    colored = highlight(source, lexer, CODE_FORMATTER)
+    language_icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6m8-12 6 6-6 6M14 4l-4 16"/></svg>'
+    copy_icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="12" height="14" rx="3"/><path d="M16 17v3H4V7h4"/></svg>'
+    return (f'<div class="code-block"><div class="code-toolbar"><span class="code-language">{language_icon}{label}</span>'
+            f'<button type="button" class="copy-code" aria-label="复制 {label} 代码" title="复制代码">{copy_icon}<span>复制</span></button>'
+            f'</div><pre class="code-source"><code>{colored}</code></pre></div>')
 
 
 def timestamp(seconds: float) -> str:
@@ -63,6 +98,13 @@ def rich_text(text: str) -> str:
     # Markdown 对代码再次转义；还原输入字符，序列化时仍作为文本输出。
     for code in root.iter("code"):
         code.text = html.unescape(code.text or "")
+    for pre in list(root.iter("pre")):
+        code = pre.find("code")
+        if code is not None:
+            language = next((value[9:] for value in code.get("class", "").split() if value.startswith("language-")), "")
+            block = lxml_html.fragment_fromstring(code_block(code.text_content(), language))
+            block.tail = pre.tail
+            pre.getparent().replace(pre, block)
     for link in root.iter("a"):
         href = link.get("href", "")
         if urlsplit(href).scheme.lower() not in {"", "http", "https"}:
@@ -160,6 +202,7 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
         encoded = base64.b64encode(svg.encode("utf-8")).decode("ascii")
         mindmap = f'<img class="mindmap" alt="{html.escape(title, quote=True)}思维导图" src="data:image/svg+xml;base64,{encoded}">'
     math_css, math_js = math_assets() if any('class="arithmatex"' in section for section in sections) else ("", "")
+    code_css = "\n".join(line for line in CODE_FORMATTER.get_style_defs(".code-source").splitlines() if line.startswith(".code-source"))
     template = Template((Path(__file__).resolve().parents[1] / "assets" / "notebook.html").read_text(encoding="utf-8"))
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
@@ -169,7 +212,7 @@ def render_note(note: dict, base: Path) -> tuple[str, str]:
         cover=cover, takeaways=takeaways, subtitle=html.escape(note.get("subtitle", "")),
         mindmap=mindmap, markdown=html.escape(markdown_body),
         transcript=html.escape(note.get("transcript") or "未提供完整字幕原文。"),
-        math_css=math_css, math_js=math_js,
+        math_css=math_css, math_js=math_js, code_css=code_css,
     )
     return page, markdown_body
 

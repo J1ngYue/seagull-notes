@@ -101,6 +101,10 @@ python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/dem
 
 截图使用经过核实的原视频画面，自绘图明确标注示意图。图片嵌入 HTML，离线仍可读；Markdown 保留图片原本地路径，移动 Markdown 时需一并保留图片。
 
+### 代码框与复制
+
+代码围栏注明实际语言，如 `bash`、`python`、`java`、`cpp` 或 `html`。页面显示语言标签、语法高亮、独立深色圆角框和复制按钮。Pygments 生成的高亮与样式嵌入 HTML，离线可用；复制保留原代码、缩进、换行和特殊字符，未知语言按纯文本展示并可复制。示例注明前提与替换值，互斥操作分成不同代码框。
+
 ### LaTeX 公式与单击复制
 
 正文中 `$...$` 为行内公式，`$$...$$` 为独立公式，例如 `$$\theta_{t+1}=\theta_t-\eta\nabla L(\theta_t)$$`。写入 JSON 时转义反斜杠，代码块继续按代码显示。

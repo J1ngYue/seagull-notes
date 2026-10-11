@@ -2,10 +2,10 @@
 
 Windows 使用真实 Python 解释器的绝对路径；本机使用 `D:\software\Anaconda\python.exe`，其他机器按安装位置调整。默认只读取平台字幕；不需要下载 Whisper 模型，不运行 `.cmd/.bat` 启动器，也不自动切换解释器。
 
-字幕获取依赖 `yt-dlp/httpx/lxml`，图文渲染依赖 `Markdown/pymdown-extensions/lxml`。缺少时在指定解释器安装：
+字幕获取依赖 `yt-dlp/httpx/lxml`，图文渲染依赖 `Markdown/pymdown-extensions/Pygments/lxml`。缺少时在指定解释器安装：
 
 ```powershell
-& 'D:\software\Anaconda\python.exe' -m pip install yt-dlp httpx lxml Markdown pymdown-extensions
+& 'D:\software\Anaconda\python.exe' -m pip install yt-dlp httpx lxml Markdown pymdown-extensions Pygments
 ```
 
 完整笔记与自动 B站采集流程在仓库根安装 `pip install -e ".[notes,browser]"`。网页/PDF 使用 `readability-lxml/pymupdf`。免登录字幕模式使用 `--anonymous`；需要本地 ASR 时安装 `pip install -e ".[notes,asr]"`，并显式使用 `--allow-asr`。

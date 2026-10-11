@@ -235,6 +235,30 @@ def test_code_preserves_source_characters(text, expected):
     assert not doc.xpath('//script|//img')
 
 
+@pytest.mark.parametrize("language,label,source", [
+    ("python", "Python", 'for i in range(5):\n    print("Hello World", i)\n'),
+    ("java", "Java", 'public class Main { public static void main(String[] args) {} }\n'),
+    ("cpp", "C++", '#include <iostream>\nint main() { return 0; }\n'),
+    ("bash", "Bash", 'git commit -m "添加按钮"\ngit status\n'),
+    ("bash", "Bash", 'git status\n'),
+])
+def test_fenced_code_has_language_highlighting_and_copy_button(language, label, source):
+    doc = html.fromstring(load_script("notebook").rich_text(f"```{language}\n{source}```"))
+    block = doc.xpath('//div[@class="code-block"]')[0]
+    assert block.xpath('.//span[@class="code-language"]')[0].text_content() == label
+    assert block.xpath('.//button[@class="copy-code"]')[0].get("aria-label") == f"复制 {label} 代码"
+    assert block.xpath('.//pre/code')[0].text_content() == source
+    assert any(span.text_content().strip() for span in block.xpath('.//pre/code/span[@class]'))
+
+
+def test_unknown_code_language_remains_copyable_plain_text():
+    source = "<unknown> &lt; & value\n"
+    doc = html.fromstring(load_script("notebook").rich_text(f"```unknown-language\n{source}```"))
+    assert doc.xpath('//pre/code')[0].text_content() == source
+    assert doc.xpath('//button[@class="copy-code"]')
+    assert not doc.xpath('//unknown')
+
+
 def test_missing_timestamps_are_not_invented(tmp_path):
     page, _ = load_script("notebook").render_note({"title": "示例", "source_url": "https://youtu.be/v1", "sections": [{"title": "章节", "markdown": "正文"}]}, tmp_path)
     assert not html.fromstring(page).xpath('//a[@class="time"]')
