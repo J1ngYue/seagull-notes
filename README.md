@@ -114,6 +114,17 @@ The helper plots supplied numeric data and ordered update points, with real scal
 
 ## Browser access, storage, and MCP
 
+### Automatic local Bilibili caption collection
+
+```bash
+python -m pip install -e ".[notes,browser]"
+python skill/scripts/fetch.py "https://www.bilibili.com/video/BV1LwHv6LEYz/" --local-browser
+```
+
+The collector reuses a dedicated Chrome profile and verifies sign-in before asking for it. An already signed-in window skips the login prompt. When authentication is needed, sign in once in the opened window; collection resumes automatically. This profile is separate from both Codex's in-app browser and your normal Chrome profile. Installed Chrome is preferred; otherwise install Chromium with `python -m playwright install chromium`.
+
+Full caption JSON and SRT files are saved automatically under `data/captions/`. The existing `content`, `segments`, and `origin` output feeds the note workflow directly, with no manual export or import. The collector preserves the selected `p` and reports the first and last caption times for coverage review. It fetches platform captions, without audio/video downloads or ASR models, and does not export cookie files. Platform restrictions still apply. Currently it accepts full Bilibili BV links; YouTube and other sources retain their existing workflow.
+
 The in-app browser and the Python downloader are separate sessions. Signing in through the browser does not automatically pass cookies to Python. YouTube transcript export and other platform caption access depend on the capabilities exposed by the current browser. See [the browser workflow](skill/references/browser-subtitles.md).
 
 Models, media, cookies, databases, and generated notes remain outside Git. `SEAGULL_NOTES_HOME` overrides the project data location. Source text enters your AI client's context when it writes the notes; whether that context goes to a cloud service depends on the client.

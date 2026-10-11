@@ -114,6 +114,17 @@ python skill/scripts/plot.py examples/gradient-plot.json --out data/artifacts/gr
 
 ## 浏览器、数据与 MCP
 
+### 自动采集本地 B站字幕
+
+```bash
+python -m pip install -e ".[notes,browser]"
+python skill/scripts/fetch.py "https://www.bilibili.com/video/BV1LwHv6LEYz/" --local-browser
+```
+
+采集器先验证专用 Chrome 配置的登录状态；已有有效登录、新打开的窗口已登录时，都不弹登录提示。需要认证时在打开的窗口正常登录一次，成功后自动继续。专用配置与 Codex 内置浏览器、普通 Chrome 个人配置分开。优先使用已安装的 Chrome；没有时可用 `python -m playwright install chromium` 安装浏览器。
+
+全文 JSON/SRT 自动保存到 `data/captions/`；返回现有的 `content/segments/origin` 格式，可直接交给笔记流程，无需手动导出或导入。分 P 对应当前视频片段，结果包含首末字幕时间供完整性核对。采集器只获取平台字幕，不下载音视频或 ASR 模型，也不导出 Cookie 文件；平台访问限制仍然适用。目前接受完整 B站 BV 链接，YouTube 等来源继续使用原有流程。
+
 内置浏览器与 Python 下载器是不同会话，浏览器登录后 Cookie 不会自动传给 Python。YouTube 字幕导出和其他平台字幕读取，取决于当前浏览器提供的能力。详见 [浏览器流程](skill/references/browser-subtitles.md)。
 
 模型、媒体、Cookie、数据库和笔记产物不进入 Git。`SEAGULL_NOTES_HOME` 可更改项目数据目录。AI 客户端整理时，素材进入其上下文；是否发送到云端取决于客户端配置。

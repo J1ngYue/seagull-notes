@@ -1,0 +1,209 @@
+"""Collect Bilibili caption files with a private, persistent Chrome session."""
+
+from __future__ import annotations
+
+import json
+import math
+import re
+import time
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
+
+import httpx
+
+from . import config, storage
+
+
+class CaptionError(RuntimeError):
+    def __init__(self, code: str, message: str):
+        super().__init__(message)
+        self.code = code
+
+
+def video_target(url: str) -> tuple[str, str, int]:
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    match = re.fullmatch(r"/video/(BV[0-9A-Za-z]{10})/?", parsed.path)
+    if parsed.scheme not in ("http", "https") or not (host == "bilibili.com" or host.endswith(".bilibili.com")) or not match:
+        raise CaptionError("unsupported_source", "本地采集器目前支持 B站 BV 视频链接；其他来源继续使用原有获取流程。")
+    try:
+        part = int(parse_qs(parsed.query).get("p", ["1"])[0])
+    except ValueError:
+        raise CaptionError("invalid_part", "分 P 参数必须是正整数。") from None
+    if part < 1:
+        raise CaptionError("invalid_part", "分 P 参数必须是正整数。")
+    bvid = match[1]
+    return f"https://www.bilibili.com/video/{bvid}/?p={part}", bvid, part
+
+
+def caption_url(url: str) -> str:
+    url = "https:" + url if url.startswith("//") else url
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    if parsed.scheme != "https" or not any(host == domain or host.endswith("." + domain) for domain in ("hdslb.com", "bilibili.com")):
+        raise CaptionError("invalid_subtitle_url", "字幕地址不是平台提供的 HTTPS 资源。")
+    return url
+
+
+def parse_captions(payload: dict) -> list[dict]:
+    segments = []
+    rows = payload.get("body")
+    if not isinstance(rows, list):
+        raise CaptionError("invalid_subtitle", "平台未返回完整字幕条目列表。")
+    for row in rows:
+        try:
+            start, end = float(row["from"]), float(row["to"])
+            text = row["content"].strip()
+        except (KeyError, TypeError, ValueError, AttributeError):
+            raise CaptionError("invalid_subtitle", "字幕文件缺少有效的起止时间或正文。") from None
+        if not math.isfinite(start) or not math.isfinite(end) or start < 0 or end < start:
+            raise CaptionError("invalid_subtitle", "字幕文件包含无效时间轴。")
+        if text:
+            segments.append({"start": start, "end": end, "text": text})
+    if not segments:
+        raise CaptionError("empty_subtitle", "平台返回的字幕文件为空。")
+    return sorted(segments, key=lambda segment: (segment["start"], segment["end"]))
+
+
+def _json(context, endpoint: str, params: dict | None = None) -> dict:
+    # Use the project's direct-network setting; credentials stay in memory and
+    # only cookies applicable to this platform URL enter this request.
+    cookies = httpx.Cookies()
+    for cookie in context.cookies(endpoint):
+        cookies.set(cookie["name"], cookie["value"], domain=cookie["domain"], path=cookie["path"])
+    transport = httpx.HTTPTransport(local_address=config.find_physical_ip())
+    agent = context.pages[0].evaluate("navigator.userAgent")
+    with httpx.Client(transport=transport, trust_env=False, cookies=cookies, timeout=30,
+                      headers={"Referer": "https://www.bilibili.com/", "User-Agent": agent}) as client:
+        response = client.get(endpoint, params=params)
+        if not response.is_success:
+            raise CaptionError("platform_access_limited", f"平台接口返回 HTTP {response.status_code}；这不能证明视频没有字幕。")
+        try:
+            payload = response.json()
+        except ValueError:
+            raise CaptionError("invalid_subtitle", "平台接口未返回可解析的 JSON 数据。") from None
+        if not isinstance(payload, dict):
+            raise CaptionError("invalid_subtitle", "平台接口未返回字幕对象。")
+        if payload.get("code", 0) != 0:
+            code = payload["code"]
+            raise CaptionError("login_required" if code == -101 else "platform_access_limited",
+                               f"平台接口返回状态 {code}；未取得完整字幕。")
+        return payload
+
+
+def _logged_in(context) -> bool:
+    try:
+        return bool(_json(context, "https://api.bilibili.com/x/web-interface/nav").get("data", {}).get("isLogin"))
+    except CaptionError as exc:
+        if exc.code == "login_required":
+            return False
+        raise
+
+
+def _read(context, source: str, bvid: str, part: int, language: str) -> dict:
+    video = _json(context, "https://api.bilibili.com/x/web-interface/view", {"bvid": bvid})["data"]
+    pages = video.get("pages", [])
+    if part > len(pages):
+        raise CaptionError("invalid_part", f"视频只有 {len(pages)} 个分 P。")
+    page = pages[part - 1]
+    player = _json(context, "https://api.bilibili.com/x/player/wbi/v2",
+                   {"aid": video["aid"], "cid": page["cid"]})["data"]
+    tracks = [track for track in player.get("subtitle", {}).get("subtitles", []) if track.get("subtitle_url")]
+    if not tracks and not _logged_in(context):
+        raise CaptionError("login_required", "专用本地浏览器需要登录后才能继续查询平台字幕。")
+    if not tracks:
+        raise CaptionError("subtitle_unavailable", "已登录，但平台接口没有返回可下载字幕；未将播放器单句当作全文。")
+    preferred = [language, "zh-CN", "zh-Hans", "zh", "ai-zh"] if language == "zh" else [language, "ai-" + language]
+    track = next((track for lan in preferred for track in tracks if track.get("lan") == lan), tracks[0])
+    segments = parse_captions(_json(context, caption_url(track["subtitle_url"])))
+    duration = float(page.get("duration", video.get("duration", 0)))
+    title = video["title"] + (f" · P{part} {page['part']}" if len(pages) > 1 else "")
+    content = "\n".join(segment["text"] for segment in segments)
+    return {"ok": True, "title": title, "source_kind": "media", "source_ref": source,
+            "video_id": bvid, "part": part, "cid": page["cid"], "uploader": video.get("owner", {}).get("name", ""),
+            "content": content, "char_count": len(content), "segments": segments, "duration": duration,
+            "origin": "platform_subtitle", "caption_language": track.get("lan", ""),
+            "coverage": {"first_start": segments[0]["start"], "last_end": max(s["end"] for s in segments),
+                         "gap_to_video_end": max(0, duration - max(s["end"] for s in segments))},
+            "note": "来自平台整条字幕文件，保留时间轴；未运行 ASR。请核对末条时间及明显缺段。"}
+
+
+def _srt_time(seconds: float) -> str:
+    value = round(seconds * 1000)
+    hours, value = divmod(value, 3600000)
+    minutes, value = divmod(value, 60000)
+    seconds, milliseconds = divmod(value, 1000)
+    return f"{hours:02}:{minutes:02}:{seconds:02},{milliseconds:03}"
+
+
+def save_captions(result: dict) -> dict:
+    folder = config.DATA_DIR / "captions" / f"{result['video_id']}-p{result['part']}"
+    folder.mkdir(parents=True, exist_ok=True)
+    result["caption_file"] = str(folder / "transcript.json")
+    result["subtitle_file"] = str(folder / "captions.srt")
+    body = "\n\n".join(f"{index}\n{_srt_time(segment['start'])} --> {_srt_time(segment['end'])}\n{segment['text']}"
+                         for index, segment in enumerate(result["segments"], 1))
+    Path(result["subtitle_file"]).write_text(body + "\n", encoding="utf-8")
+    Path(result["caption_file"]).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    storage.save_transcript(storage.content_key(f"subtitle:{result['video_id']}:{result['cid']}"),
+                            text=result["content"], segments=result["segments"], duration=result["duration"],
+                            origin="platform_subtitle")
+    return result
+
+
+def _launch(playwright, headed: bool):
+    options = {"user_data_dir": str(config.DATA_DIR / "caption-browser-profile"), "headless": not headed,
+               "viewport": {"width": 1280, "height": 860}, "locale": "zh-CN"}
+    try:
+        context = playwright.chromium.launch_persistent_context(channel="chrome", **options)
+    except Exception as exc:
+        if "not found" not in str(exc).lower() and "doesn't exist" not in str(exc).lower():
+            raise
+        context = playwright.chromium.launch_persistent_context(**options)
+    context.route("**/*", lambda route: route.abort() if route.request.resource_type == "media" or
+                  urlparse(route.request.url).path.lower().endswith((".m4s", ".mp4", ".flv", ".m3u8")) else route.continue_())
+    return context
+
+
+def _wait_for_login(context, timeout: float, log) -> None:
+    page = context.pages[0] if context.pages else context.new_page()
+    page.goto("https://www.bilibili.com/", wait_until="domcontentloaded", timeout=60000)
+    if _logged_in(context):
+        return
+    log("请在新打开的专用 Chrome 中登录 B站。登录成功后会自动采集；以后复用此会话。")
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        has_session = any(cookie["name"] == "SESSDATA" for cookie in context.cookies("https://api.bilibili.com"))
+        if has_session and _logged_in(context):
+            log("专用浏览器登录已验证，自动继续获取完整字幕。")
+            return
+        page.wait_for_timeout(3000)
+    raise CaptionError("login_timeout", "等待登录超时；已保留专用浏览器配置，可再次运行继续。")
+
+
+def collect(url: str, *, language: str = "zh", allow_login: bool = True, login_timeout: float = 300, log=print) -> dict:
+    source, bvid, part = video_target(url)
+    try:
+        from playwright.sync_api import sync_playwright, Error
+    except ImportError:
+        raise CaptionError("browser_dependency_missing", '本地采集器需要 Playwright：在当前 Python 安装项目的 [browser] 可选依赖。') from None
+    config.DATA_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        with sync_playwright() as playwright:
+            context = _launch(playwright, headed=False)
+            try:
+                result = _read(context, source, bvid, part, language)
+            except CaptionError as exc:
+                if exc.code != "login_required" or not allow_login:
+                    raise
+                context.close()
+                context = _launch(playwright, headed=True)
+                _wait_for_login(context, login_timeout, log)
+                result = _read(context, source, bvid, part, language)
+            finally:
+                context.close()
+    except Error:
+        raise CaptionError("browser_failed", "本地浏览器启动或请求失败；检查 Chrome 安装、网络及专用配置是否正在使用。缺少浏览器时可安装 Playwright Chromium。") from None
+    except httpx.HTTPError:
+        raise CaptionError("network_failed", "平台字幕请求失败；检查网络及项目的直连地址设置。") from None
+    return save_captions(result)

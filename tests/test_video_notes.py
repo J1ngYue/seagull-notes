@@ -40,6 +40,20 @@ def test_default_cli_disallows_asr(fetch, monkeypatch):
     monkeypatch.setattr(sys, "argv", ["fetch.py", "https://youtu.be/v1"])
     assert fetch.main() == 0
     assert got["allow_asr"] is False
+    assert got["local_browser"] is False
+
+
+def test_local_collector_directly_imports_its_result(fetch, monkeypatch):
+    from seagull_notes import browser_captions
+    expected = {"ok": True, "content": "平台全文", "segments": [{"start": 0, "end": 6575, "text": "平台全文"}], "origin": "platform_subtitle"}
+    monkeypatch.setattr(browser_captions, "collect", lambda *args, **kwargs: expected)
+    monkeypatch.setattr(media, "probe_video", lambda *args, **kwargs: pytest.fail("本地采集器不应重新进入下载流程"))
+    assert fetch.run("https://www.bilibili.com/video/BV1LwHv6LEYz/", allow_asr=False, language="zh", local_browser=True) == expected
+
+
+def test_local_collector_cannot_silently_override_anonymous_mode(fetch):
+    result = fetch.run("https://www.bilibili.com/video/BV1LwHv6LEYz/", allow_asr=False, language="zh", local_browser=True, anonymous=True)
+    assert result["error"]["code"] == "conflicting_credentials"
 
 
 def test_no_tracks_still_never_downloads_video(fetch, probe, monkeypatch):

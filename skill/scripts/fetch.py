@@ -104,9 +104,19 @@ def _err(code: str, message: str, hint: str = "") -> dict:
 
 def run(source: str, *, allow_asr: bool, language: str,
         cookies_from_browser: str | None = None,
-        cookie_file: str | None = None, anonymous: bool = False) -> dict:
+        cookie_file: str | None = None, anonymous: bool = False,
+        local_browser: bool = False) -> dict:
     from seagull_notes import config, extract, media
     from seagull_notes.pipeline import URL_RE, _looks_like_path
+
+    if local_browser:
+        if anonymous or cookies_from_browser or cookie_file:
+            return _err("conflicting_credentials", "本地专用浏览器不能与匿名模式或其他 Cookie 来源同时使用。")
+        from seagull_notes.browser_captions import CaptionError, collect
+        try:
+            return collect(source, language=language, log=_log)
+        except CaptionError as exc:
+            return _err(exc.code, str(exc))
 
     # 没显式指定 cookies 时，自动用之前导出好的那份
     if anonymous:
@@ -395,6 +405,8 @@ def main() -> int:
                              "B站的 AI 字幕、会员视频需要这个")
     credentials.add_argument("--cookie-file", default=None, metavar="PATH",
                         help="用 cookies.txt 文件（Netscape 格式）")
+    credentials.add_argument("--local-browser", action="store_true",
+                        help="本地专用 Chrome 自动采集 B站字幕；会话有效时直接复用，失效时交接登录")
     parser.add_argument("--format", choices=["json", "text"], default="json",
                         help="输出格式")
     args = parser.parse_args()
@@ -406,6 +418,7 @@ def main() -> int:
         cookies_from_browser=args.cookies_from_browser,
         cookie_file=args.cookie_file,
         anonymous=args.anonymous,
+        local_browser=args.local_browser,
     )
 
     if not result.get("ok"):
