@@ -3,9 +3,14 @@
 from __future__ import annotations
 
 import json
+import base64
+import io
 import math
 import re
+import secrets
+import threading
 import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
@@ -78,6 +83,16 @@ def _json(context, endpoint: str, params: dict | None = None) -> dict:
         response = client.get(endpoint, params=params)
         if not response.is_success:
             raise CaptionError("platform_access_limited", f"平台接口返回 HTTP {response.status_code}；这不能证明视频没有字幕。")
+        received = []
+        for cookie in response.cookies.jar:
+            item = {"name": cookie.name, "value": cookie.value, "path": cookie.path,
+                    "domain": "." + cookie.domain.lstrip(".") if cookie.domain_specified else cookie.domain,
+                    "secure": cookie.secure, "httpOnly": cookie.has_nonstandard_attr("HttpOnly")}
+            if cookie.expires and cookie.expires > 0:
+                item["expires"] = cookie.expires
+            received.append(item)
+        if received:
+            context.add_cookies(received)
         try:
             payload = response.json()
         except ValueError:
@@ -151,8 +166,8 @@ def save_captions(result: dict) -> dict:
     return result
 
 
-def _launch(playwright, headed: bool):
-    options = {"user_data_dir": str(config.DATA_DIR / "caption-browser-profile"), "headless": not headed,
+def _launch(playwright):
+    options = {"user_data_dir": str(config.DATA_DIR / "caption-browser-profile"), "headless": True,
                "viewport": {"width": 1280, "height": 860}, "locale": "zh-CN"}
     try:
         context = playwright.chromium.launch_persistent_context(channel="chrome", **options)
@@ -165,20 +180,72 @@ def _launch(playwright, headed: bool):
     return context
 
 
+def _login_page(qr_url: str, state: dict):
+    import qrcode
+    image = io.BytesIO()
+    qrcode.make(qr_url).save(image, format="PNG")
+    template = Path(__file__).resolve().parents[2] / "skill" / "assets" / "caption-login.html"
+    html = template.read_text(encoding="utf-8").replace("__QR_IMAGE__", base64.b64encode(image.getvalue()).decode("ascii"))
+    path = "/login/" + secrets.token_urlsafe(24)
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path not in (path, path + "/status"):
+                self.send_error(404)
+                return
+            status = self.path.endswith("/status")
+            content = json.dumps({"state": state["state"]}) if status else html
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8" if status else "text/html; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.end_headers()
+            self.wfile.write(content.encode("utf-8"))
+
+        def log_message(self, *args):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server, f"http://127.0.0.1:{server.server_port}{path}"
+
+
 def _wait_for_login(context, timeout: float, log) -> None:
-    page = context.pages[0] if context.pages else context.new_page()
-    page.goto("https://www.bilibili.com/", wait_until="domcontentloaded", timeout=60000)
     if _logged_in(context):
         return
-    log("请在新打开的专用 Chrome 中登录 B站。登录成功后会自动采集；以后复用此会话。")
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        has_session = any(cookie["name"] == "SESSDATA" for cookie in context.cookies("https://api.bilibili.com"))
-        if has_session and _logged_in(context):
-            log("专用浏览器登录已验证，自动继续获取完整字幕。")
-            return
-        page.wait_for_timeout(3000)
-    raise CaptionError("login_timeout", "等待登录超时；已保留专用浏览器配置，可再次运行继续。")
+    try:
+        qr = _json(context, "https://passport.bilibili.com/x/passport-login/web/qrcode/generate")["data"]
+        state = {"state": "waiting"}
+        server, url = _login_page(qr["url"], state)
+    except ImportError:
+        raise CaptionError("browser_dependency_missing", "登录页需要 qrcode；请在当前 Python 安装项目的 [browser] 可选依赖。") from None
+    log(f"LOGIN_URL {url}")
+    log("请展示上面的本地登录页，使用 B站 App 扫码确认；成功后会自动采集。")
+    deadline = time.monotonic() + min(timeout, 180)
+    try:
+        while time.monotonic() < deadline:
+            result = _json(context, "https://passport.bilibili.com/x/passport-login/web/qrcode/poll",
+                           {"qrcode_key": qr["qrcode_key"]})["data"]
+            code = result["code"]
+            if code == 0:
+                if not _logged_in(context):
+                    raise CaptionError("login_unverified", "扫码已确认，但平台尚未验证会话有效；未宣称登录成功。")
+                state["state"] = "complete"
+                log("本地采集器登录已验证，自动继续获取完整字幕。")
+                time.sleep(2)
+                return
+            if code == 86038:
+                break
+            if code not in (86101, 86090):
+                raise CaptionError("login_failed", f"平台扫码状态异常：{code}。")
+            state["state"] = "scanned" if code == 86090 else "waiting"
+            time.sleep(2)
+        state["state"] = "expired"
+        time.sleep(2)
+        raise CaptionError("login_timeout", "二维码已失效或等待登录超时；可重新运行继续。")
+    finally:
+        server.shutdown()
+        server.server_close()
 
 
 def collect(url: str, *, language: str = "zh", allow_login: bool = True, login_timeout: float = 300, log=print) -> dict:
@@ -190,14 +257,12 @@ def collect(url: str, *, language: str = "zh", allow_login: bool = True, login_t
     config.DATA_DIR.mkdir(parents=True, exist_ok=True)
     try:
         with sync_playwright() as playwright:
-            context = _launch(playwright, headed=False)
+            context = _launch(playwright)
             try:
                 result = _read(context, source, bvid, part, language)
             except CaptionError as exc:
                 if exc.code != "login_required" or not allow_login:
                     raise
-                context.close()
-                context = _launch(playwright, headed=True)
                 _wait_for_login(context, login_timeout, log)
                 result = _read(context, source, bvid, part, language)
             finally:

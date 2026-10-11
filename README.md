@@ -121,7 +121,7 @@ python -m pip install -e ".[notes,browser]"
 python skill/scripts/fetch.py "https://www.bilibili.com/video/BV1LwHv6LEYz/" --local-browser
 ```
 
-The collector reuses a dedicated Chrome profile and verifies sign-in before asking for it. An already signed-in window skips the login prompt. When authentication is needed, sign in once in the opened window; collection resumes automatically. This profile is separate from both Codex's in-app browser and your normal Chrome profile. Installed Chrome is preferred; otherwise install Chromium with `python -m playwright install chromium`.
+The collector reuses a dedicated Chrome profile in the background and verifies sign-in first. A valid session skips the login page. When authentication is needed, it prints a local `LOGIN_URL`; Codex opens this page visibly in its in-app browser. Scan the Bilibili QR code with the Bilibili app and confirm on your phone once; collection resumes automatically. This avoids relying on a separate Chrome window becoming visible. The collector profile is separate from both the in-app browser and your normal Chrome profile. Installed Chrome is preferred; otherwise install Chromium with `python -m playwright install chromium`.
 
 Full caption JSON and SRT files are saved automatically under `data/captions/`. The existing `content`, `segments`, and `origin` output feeds the note workflow directly, with no manual export or import. The collector preserves the selected `p` and reports the first and last caption times for coverage review. It fetches platform captions, without audio/video downloads or ASR models, and does not export cookie files. Platform restrictions still apply. Currently it accepts full Bilibili BV links; YouTube and other sources retain their existing workflow.
 

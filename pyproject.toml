@@ -20,7 +20,7 @@ mcp = ["mcp>=2.3"]
 asr = ["faster-whisper>=1.0", "huggingface_hub>=0.23"]
 notes = ["Markdown>=3.6", "pymdown-extensions>=10"]
 plots = ["matplotlib>=3.9"]
-browser = ["playwright>=1.40"]
+browser = ["playwright>=1.40", "qrcode[pil]>=7.4"]
 test = ["pytest>=7"]
 png = ["playwright>=1.40"]
 

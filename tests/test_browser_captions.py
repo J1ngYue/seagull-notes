@@ -95,7 +95,7 @@ def browser(monkeypatch):
     class Context:
         def close(self):
             pass
-    monkeypatch.setattr(captions, "_launch", lambda playwright, headed: launches.append(headed) or Context())
+    monkeypatch.setattr(captions, "_launch", lambda playwright: launches.append(False) or Context())
     return launches
 
 
@@ -117,7 +117,7 @@ def test_expired_session_opens_login_once_then_automatically_imports(browser, mo
     monkeypatch.setattr(captions, "_read", read)
     monkeypatch.setattr(captions, "_wait_for_login", lambda *args: waits.append(True))
     assert captions.collect(VIDEO)["ok"]
-    assert browser == [False, True] and len(waits) == 1
+    assert browser == [False] and len(waits) == 1
 
 
 def test_a_window_that_is_already_signed_in_does_not_show_prompt(monkeypatch):
@@ -137,3 +137,43 @@ def test_noninteractive_run_does_not_open_login(browser, monkeypatch):
     with pytest.raises(captions.CaptionError, match="expired"):
         captions.collect(VIDEO, allow_login=False)
     assert browser == [False]
+
+
+def test_login_response_cookies_enter_the_persistent_browser(monkeypatch):
+    import httpx
+    received = []
+    class Page:
+        def evaluate(self, script):
+            return "Chrome test user agent"
+    class Context:
+        pages = [Page()]
+        def cookies(self, endpoint):
+            assert endpoint.startswith("https://passport.bilibili.com/")
+            return []
+        def add_cookies(self, cookies):
+            received.extend(cookies)
+    def response(request):
+        return httpx.Response(200, json={"code": 0, "data": {"code": 0}}, headers={
+            "Set-Cookie": "SESSDATA=test-session; Domain=bilibili.com; Path=/; HttpOnly; Secure"})
+    monkeypatch.setattr(httpx, "HTTPTransport", lambda **kwargs: httpx.MockTransport(response))
+    captions._json(Context(), "https://passport.bilibili.com/x/passport-login/web/qrcode/poll")
+    assert received == [{"name": "SESSDATA", "value": "test-session", "domain": ".bilibili.com",
+                         "path": "/", "secure": True, "httpOnly": True}]
+
+
+def test_local_login_page_serves_only_the_qr_page_and_public_status():
+    pytest.importorskip("qrcode")
+    import httpx
+    state = {"state": "scanned", "cookie": "must-not-be-served"}
+    server, url = captions._login_page("https://passport.bilibili.com/example", state)
+    try:
+        with httpx.Client(trust_env=False) as client:
+            page = client.get(url)
+            assert page.status_code == 200 and "连接 B站字幕" in page.text
+            assert "must-not-be-served" not in page.text
+            assert client.get(url + "/status").json() == {"state": "scanned"}
+            assert client.get(url.rsplit("/login/", 1)[0] + "/").status_code == 404
+            assert server.server_address[0] == "127.0.0.1"
+    finally:
+        server.shutdown()
+        server.server_close()

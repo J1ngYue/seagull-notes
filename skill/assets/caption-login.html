@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>连接 B站字幕 · Seagull Notes</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f5f3ed;color:#28342e;font:15px/1.8 "Microsoft YaHei",system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;padding:24px}main{width:460px;max-width:100%;padding:34px;border:1px solid #e3e4da;border-radius:18px;background:#fffefa;box-shadow:0 12px 50px #28342e08}.brand{font-size:11px;letter-spacing:2px;color:#8f624c}h1{font-size:25px;margin:18px 0 10px}.intro{color:#666d65;font-size:14px}.qr{display:grid;place-items:center;margin:24px 0;padding:15px;background:white;border:1px solid #e3e4da;border-radius:12px}.qr img{width:230px;max-width:100%;image-rendering:pixelated}#status{padding:12px;border-radius:8px;background:#edf2e7;color:#365a48;text-align:center;font-size:14px}.detail{font-size:12px;color:#666d65;margin:20px 0 0}#success{display:none;color:#365a48;font-size:56px;padding:30px}body[data-state=complete] .qr img{display:none}body[data-state=complete] #success{display:block}body[data-state=expired] .qr{opacity:.25}
+</style>
+<main>
+<div class="brand">SEAGULL NOTES</div>
+<h1>连接 B站字幕</h1>
+<p class="intro">用 B站 App 扫描二维码，并在手机上确认登录。</p>
+<div class="qr"><img src="data:image/png;base64,__QR_IMAGE__" alt="B站官方登录二维码"><span id="success" aria-hidden="true">✓</span></div>
+<div id="status" role="status" aria-live="polite">等待扫码</div>
+<p class="detail">登录成功后会自动获取完整字幕。此登录用于本地字幕采集器，后续会复用会话；已有有效登录时会跳过此页面。</p>
+</main>
+<script>
+const labels={waiting:'等待扫码',scanned:'已扫码，请在手机上确认登录',complete:'登录已验证，正在自动获取字幕',expired:'二维码已失效，请返回聊天继续'};
+async function check(){try{const response=await fetch(location.pathname+'/status',{cache:'no-store'});const data=await response.json();document.body.dataset.state=data.state;document.getElementById('status').textContent=labels[data.state]||'等待扫码';if(data.state==='complete'||data.state==='expired')clearInterval(timer)}catch(error){}}
+const timer=setInterval(check,1000);check();
+</script>
+</html>

@@ -121,7 +121,7 @@ python -m pip install -e ".[notes,browser]"
 python skill/scripts/fetch.py "https://www.bilibili.com/video/BV1LwHv6LEYz/" --local-browser
 ```
 
-采集器先验证专用 Chrome 配置的登录状态；已有有效登录、新打开的窗口已登录时，都不弹登录提示。需要认证时在打开的窗口正常登录一次，成功后自动继续。专用配置与 Codex 内置浏览器、普通 Chrome 个人配置分开。优先使用已安装的 Chrome；没有时可用 `python -m playwright install chromium` 安装浏览器。
+采集器在后台使用专用 Chrome 配置，先验证登录状态；已有有效登录时不弹提示。需要认证时返回本地 `LOGIN_URL`，Codex 会在内置浏览器中可见地展示登录页。用 B站 App 扫码并在手机确认一次，成功后自动继续，不依赖单独的 Chrome 窗口能否弹到前台。专用配置与内置浏览器、普通 Chrome 个人配置分开。优先使用已安装的 Chrome；没有时可用 `python -m playwright install chromium` 安装浏览器。
 
 全文 JSON/SRT 自动保存到 `data/captions/`；返回现有的 `content/segments/origin` 格式，可直接交给笔记流程，无需手动导出或导入。分 P 对应当前视频片段，结果包含首末字幕时间供完整性核对。采集器只获取平台字幕，不下载音视频或 ASR 模型，也不导出 Cookie 文件；平台访问限制仍然适用。目前接受完整 B站 BV 链接，YouTube 等来源继续使用原有流程。
 

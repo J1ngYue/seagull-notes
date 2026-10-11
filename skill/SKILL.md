@@ -21,7 +21,7 @@ Windows 直接使用 `D:\software\Anaconda\python.exe`，不调用 `.cmd/.bat` �
 
 用户没有现成登录状态时可先用 `--anonymous` 尝试免登录获取，不读取已存 Cookie 或浏览器登录态。用户说此前已登录、或同一会话已有有效登录态时，先复用现有页面和已授权的本地凭证，能取得字幕就直接继续；不要因匿名请求失败重新弹出选择，也不要强制用户再次登录。当前状态实际失效时才说明具体限制。默认只取平台字幕，不下载视频、不运行 ASR。成功 JSON 中 `content` 是全文，`segments` 中的 `start/end/text` 是秒数时间轴；`origin` 标明来源，`source_ref` 是原链接。平台字幕也可能是机器生成的，仍要检查专有名词和数字，不宣称其必然准确。
 
-B站用户已启用本地采集器时，优先运行 `fetch.py '<BV视频链接>' --local-browser`，不再让用户打开开发者工具、复制响应或手动导入字幕。它使用专用的本地 Chrome 配置；与 Codex 内置浏览器的会话分开。先验证现有登录，已登录的窗口不弹提示；确需登录时仅交接一次，脚本会自动检测成功并继续。`caption_file` 与 `subtitle_file` 是自动保存的全文 JSON/SRT，返回的 `content/segments` 可直接写笔记。按 `coverage` 核对首末时间和明显缺段，不能只凭文件存在宣称完整。安装和限制见 [本地采集器](references/browser-subtitles.md#本地-b站采集器)。
+B站用户已启用本地采集器时，优先运行 `fetch.py '<BV视频链接>' --local-browser`，不再让用户打开开发者工具、复制响应或手动导入字幕。它使用后台的专用 Chrome 配置；与 Codex 内置浏览器的会话分开。先验证现有登录，有效时不弹提示；确需认证时，日志返回 `LOGIN_URL`。用当前浏览器工具可见地打开此本地页，确认二维码已显示后交接用户扫码，脚本会自动验证并继续；不要仅凭进程存在声称登录窗口已弹出。`caption_file` 与 `subtitle_file` 是自动保存的全文 JSON/SRT，返回的 `content/segments` 可直接写笔记。按 `coverage` 核对首末时间和明显缺段，不能只凭文件存在宣称完整。安装和限制见 [本地采集器](references/browser-subtitles.md#本地-b站采集器)。
 
 用户提供本地字幕文件时直接解析；本地音视频在用户允许 ASR 后使用同一脚本并加 `--allow-asr`，读取实际返回的时间轴。生成笔记 JSON 时使用 `source_ref` 保存本地文件绝对路径，不为本地素材编造网页地址。模型已完整缓存时直接离线加载。
 
