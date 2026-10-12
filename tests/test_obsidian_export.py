@@ -61,6 +61,25 @@ def test_import_keeps_existing_user_note_and_image_edits(tmp_path):
     assert image.read_text(encoding="utf-8") == "用户修改后的图片"
 
 
+def test_reimport_preserves_canvas_text_positions_and_connections(tmp_path):
+    note, source = sample(tmp_path)
+    package = tmp_path / "note.zip"
+    obsidian_export.export_bundle(note, source, package)
+    vault = tmp_path / "vault"
+    vault.mkdir()
+    obsidian_export.import_bundle(package, vault)
+    canvas_path = next(vault.rglob("*.canvas"))
+    edited = json.loads(canvas_path.read_text(encoding="utf-8"))
+    edited["nodes"][1].update(text="用户改过的概念", x=900, y=300)
+    edited["nodes"].append({"id": "user-node", "type": "text", "text": "新增知识点",
+                            "x": 1200, "y": 300, "width": 250, "height": 90})
+    edited["edges"] = [{"id": "user-edge", "fromNode": edited["nodes"][1]["id"],
+                        "toNode": "user-node", "fromSide": "right", "toSide": "left"}]
+    canvas_path.write_text(json.dumps(edited, ensure_ascii=False), encoding="utf-8")
+    obsidian_export.import_bundle(package, vault)
+    assert json.loads(canvas_path.read_text(encoding="utf-8")) == edited
+
+
 def test_local_media_export_does_not_require_original_file_after_import(tmp_path):
     note, source = sample(tmp_path)
     audio = tmp_path / "source.wav"

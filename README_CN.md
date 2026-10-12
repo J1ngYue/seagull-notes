@@ -102,7 +102,7 @@ python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/dem
 
 生成的图文笔记会自动收录到 `data/artifacts/notebooks/`。打开其中的 `index.html`，即可通过图文卡片浏览和搜索；每篇顶部可返回笔记夹。同一输入重新生成会更新原条目，不同输入同名也不会覆盖；指定 `--out` 时保留原输出并额外收录。格式切换采用滑动选中胶囊与柔和淡入，尊重系统减少动态效果的偏好。
 
-脑图采用中心主题、均衡双侧分支、淡色卡片、曲线连线和中英文长标题换行。支持缩放、拖动、适应和展开画布；独立脑图与可编辑 Obsidian Canvas 使用同一布局。
+脑图采用中心主题、均衡双侧分支、淡色卡片、曲线连线和中英文长标题换行。支持普通滚轮围绕指针缩放、拖动、适应和展开画布；独立脑图与可编辑 Obsidian Canvas 使用同一布局。
 
 ### 可编辑的 Obsidian 导出
 

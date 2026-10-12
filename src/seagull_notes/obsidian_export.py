@@ -115,7 +115,7 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
     if note.get("mind_map"):
         canvas = f"{folder}/思维导图.canvas"
         files[canvas] = json.dumps(canvas_tree(note["mind_map"], note["title"]), ensure_ascii=False, indent=2).encode("utf-8")
-        body.append(f"## 思维导图\n\n[[{canvas}|打开可编辑思维导图]]")
+        body.append(f"## 思维导图\n\n[[{canvas}|打开可编辑思维导图]]\n\n在 Obsidian 中打开此脑图，可修改节点文字、移动或增删节点，以及调整连线。")
     if note.get("transcript"):
         transcript = f"{folder}/字幕原文.md"
         files[transcript] = ("# 字幕与出处\n\n" + note["transcript"]).encode("utf-8")

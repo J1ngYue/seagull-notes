@@ -102,7 +102,7 @@ Search the chapter directory, follow the highlighted current chapter, or use pre
 
 Rendered notebooks are automatically collected in `data/artifacts/notebooks/`. Open its `index.html` to browse illustrated cards and search your notes; each notebook links back to this library. Re-rendering the same input updates its entry, while separate inputs with the same title remain distinct. An explicit `--out` keeps that output and also adds a library copy. Tabs use a sliding selection pill and a soft panel entrance; reduced-motion preferences are respected.
 
-Mind maps use a central topic, balanced branches, soft colors, curved connectors, and wrapped bilingual labels. Zoom, drag, fit, or expand the canvas to read dense maps. The same layout powers standalone maps and editable Obsidian Canvas exports.
+Mind maps use a central topic, balanced branches, soft colors, curved connectors, and wrapped bilingual labels. Use the mouse wheel to zoom around the pointer, or drag, fit, and expand the canvas. The same layout powers standalone maps and editable Obsidian Canvas exports.
 
 ### Editable Obsidian export
 
