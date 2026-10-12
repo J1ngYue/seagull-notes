@@ -6,9 +6,9 @@
 .map-stage{height:640px;overflow:auto;background:#fffefa;cursor:grab;scrollbar-width:thin;overscroll-behavior:contain}.map-stage.dragging{cursor:grabbing}.map-paper{display:flex;align-items:center;justify-content:center}.map-stage .mindmap{display:block;min-width:0;max-width:none;flex-shrink:0;user-select:none;pointer-events:none}
 .map-caption{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #e1e6dc;padding:11px 24px;font-size:10px;line-height:1.8;color:#687868;background:#fcfdf8}
 .mindmap-viewer.expanded{position:fixed;inset:18px;z-index:80;border:1px solid #d6dfce;box-shadow:0 0 0 30px #25382888,0 16px 50px #20351f20;display:flex;flex-direction:column}.mindmap-viewer.expanded .map-stage{flex:1;height:0;min-height:0}.mindmap-viewer.expanded .map-toolbar,.mindmap-viewer.expanded .map-caption{flex-shrink:0}
-body[data-view=map] .workspace{display:block;max-width:1280px}body[data-view=map] .sidebar{display:none}body[data-view=map] #map{padding:0;overflow:visible}
+body[data-view=map] .workspace{display:block;max-width:1280px}body[data-view=map] .sidebar{display:none}body[data-view=map] #map{padding:0;overflow:visible;animation:map-enter .28s ease both;transform:none}@keyframes map-enter{from{opacity:0}to{opacity:1}}
 @media(max-width:650px){.map-toolbar{padding:16px;align-items:flex-start;flex-direction:column;gap:12px}.map-actions{width:100%;justify-content:flex-end}.map-actions button{min-height:44px;min-width:44px}.map-heading span{font-size:10px}.map-stage{height:540px}.map-caption{padding:10px 16px;flex-wrap:wrap;gap:2px}.mindmap-viewer.expanded{inset:8px}}
-@media(prefers-reduced-motion:reduce){.map-actions button{transition:none}}
+@media(prefers-reduced-motion:reduce){.map-actions button{transition:none}body[data-view=map] #map{animation:none}}
 @media print{.map-toolbar,.map-caption{display:none}.map-stage{height:auto;overflow:visible}.map-paper{width:100%!important;height:auto!important}.map-stage .mindmap{width:100%!important;height:auto!important}.mindmap-viewer.expanded{position:static;box-shadow:none;border:0;display:block}}
 </style>
 <section class="mindmap-viewer" aria-label="交互式思维导图">
