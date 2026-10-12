@@ -241,6 +241,10 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
     code_css = "\n".join(line for line in CODE_FORMATTER.get_style_defs(".code-source").splitlines() if line.startswith(".code-source"))
     template = Template((Path(__file__).resolve().parents[1] / "assets" / "notebook.html").read_text(encoding="utf-8"))
     assets = Path(__file__).resolve().parents[1] / "assets"
+    hand_font = base64.b64encode((assets / "handwritten" / "ma-shan-zheng.woff2").read_bytes()).decode("ascii")
+    handwriting_assets = ('/* ' + (assets / "handwritten" / "LICENSE-note-skill.txt").read_text(encoding="utf-8") + '\n'
+                          + (assets / "handwritten" / "OFL-MaShanZheng.txt").read_text(encoding="utf-8") + ' */\n'
+                          + '@font-face{font-family:SeagullHand;src:url(data:font/woff2;base64,' + hand_font + ') format("woff2");font-weight:400;font-style:normal;font-display:swap}')
     route = ''.join(f'<button type="button" class="route-card" data-chapter="{index}"><span>{index + 1:02}</span><strong>{html.escape(section["title"])}</strong><small>展开学习 ↗</small></button>' for index, section in enumerate(note["sections"]))
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
@@ -253,6 +257,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         original_tab="字幕与出处" if kind == "video" else "资料与出处", references=references,
         style=style, note_id=html.escape(note_id or title, quote=True),
         experience_css=(assets / "experiences.css").read_text(encoding="utf-8"),
+        handwriting_assets=handwriting_assets,
         experience_js=(assets / "experiences.js").read_text(encoding="utf-8"),
         route=route, widgets=widgets,
         math_css=math_css, math_js=math_js, code_css=code_css,
@@ -269,7 +274,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="笔记 JSON → 图文 HTML + Markdown")
     parser.add_argument("note", type=Path)
     parser.add_argument("--out", type=Path, help="输出文件基名，不含扩展名")
-    parser.add_argument("--style", choices=["paper", "atlas", "folio"], help="米色纸页 / 知识图谱 / 叙事卷册")
+    parser.add_argument("--style", choices=["paper", "atlas", "folio"], help="米色纸页 / 学霸笔记本 / 手账皮革本")
     parser.add_argument("--obsidian-vault", type=Path, help="将可编辑笔记与图片导入指定 vault，保留已存在的文件")
     args = parser.parse_args()
     try:

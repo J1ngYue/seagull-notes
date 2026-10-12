@@ -15,8 +15,8 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import font_manager, pyplot as plt
 
-BG, INK, MUTED = "#eff3e9", "#2d4436", "#65705f"
-GREEN, ACCENT = "#42684d", "#a36b4f"
+BG, INK, MUTED = "#fffdf7", "#594533", "#84725f"
+CURVE, ACCENT = "#846a45", "#a36b4f"
 
 
 def validate(data: dict) -> None:
@@ -46,18 +46,18 @@ def make_figure(data: dict):
                     fontproperties=font_manager.FontProperties(fname=bold_path) if bold_path else None, color=INK, va="top")
         header.text(0, .15, textwrap.fill(data.get("subtitle", ""), 60), fontsize=11, color=MUTED, va="top")
         ax.set_facecolor(BG)
-        ax.plot(data["x"], data["y"], color=GREEN, linewidth=2.8)
+        ax.plot(data["x"], data["y"], color=CURVE, linewidth=2.8)
         ax.set(xlabel=data["x_label"], ylabel=data["y_label"])
         ax.tick_params(colors=MUTED, labelsize=11, length=0, pad=9)
         ax.xaxis.label.set_color(INK)
         ax.yaxis.label.set_color(INK)
-        ax.grid(axis="y", color="#d5decd", linewidth=.8, linestyle=(0, (3, 5)))
+        ax.grid(axis="y", color="#e7dccb", linewidth=.8, linestyle=(0, (3, 5)))
         ax.set_axisbelow(True)
         ax.margins(x=.09, y=.16)
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
         for side in ("bottom", "left"):
-            ax.spines[side].set_color("#c0ccba")
+            ax.spines[side].set_color("#dcc8a8")
         steps = data.get("steps", [])
         for i, point in enumerate(steps):
             xy = point["x"], point["y"]
@@ -71,7 +71,7 @@ def make_figure(data: dict):
             footer.text((i+.5)/len(steps), .72,
                         f'{i}  ·  {data["x_label"]} = {point["x"]:g}\n{data["y_label"]} = {point["y"]:g}',
                         ha="center", va="top", color=INK, fontsize=10, linespacing=1.8,
-                        bbox={"boxstyle": "round,pad=.7", "facecolor": "#e2eadb", "edgecolor": "none"})
+                        bbox={"boxstyle": "round,pad=.7", "facecolor": "#fcf7ee", "edgecolor": "none"})
         footer.text(0, -.12, textwrap.fill(data.get("note", ""), 65), color=MUTED, fontsize=9, va="top")
         fig.canvas.draw()
         renderer = fig.canvas.get_renderer()

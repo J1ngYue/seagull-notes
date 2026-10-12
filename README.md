@@ -11,7 +11,7 @@ Seagull Notes combines a Codex skill with local Python helpers. The helpers extr
 - **Browser sign-in when needed.** Let the user complete sign-in in Codex's in-app browser, then read what that session can access.
 - **Illustrated delivery.** Summaries, takeaways, chapters, source images, explanatory diagrams, and a mind map in a self-contained HTML file.
 - **Topics, text, and webpages.** Ask for a subject tutorial, paste someone else's notes, or provide an article URL. The AI reads or researches the material, preserves attribution, and separates source content from its own extensions.
-- **Three reading experiences.** Keep the beige Paper view, explore the new Knowledge Atlas, or read chapter by chapter in Narrative Folio. Switch styles in the page, mark mastered chapters, explore step visualizations, and reveal review answers.
+- **Three reading experiences.** Keep the beige Paper view, use the handwritten Study Notebook, or turn chapter pages in the Leather Journal. Ruled paper, binding, sticky notes and marker highlights recreate the study-notebook feel; code and formulas remain readable and copyable.
 
 ![From video link to illustrated notes](examples/workflow-en.svg)
 
@@ -53,14 +53,14 @@ python skill/scripts/notebook.py note.json --style atlas
 | Style | Experience |
 | --- | --- |
 | Paper (`paper`) | The existing beige illustrated reader |
-| Knowledge Atlas (`atlas`) | Learning-route cards, mastery progress, concept chapters, step explorers, and reveal animations |
-| Narrative Folio (`folio`) | Editorial typography, chapter pages, arrow-key navigation, and page transitions |
+| Study Notebook (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
+| Leather Journal (`folio`) | Brown leather cover, metal binding rings, ruled chapter pages, arrow-key navigation, and page-turn transitions |
 
-Topic, text, and article notes default to Atlas; existing video and local-media notebooks retain Paper. Every style keeps complete chapters, source attribution, code and formula copying, mind maps, search, and print support. Folio prints every chapter, not just the currently selected page. Mastery marks and reading-style preferences are stored locally in the browser.
+Topic, text, and article notes default to Study Notebook; existing video and local-media notebooks retain Paper. Every style keeps complete chapters, source attribution, code and formula copying, mind maps, search, and print support. Leather Journal prints every chapter, not just the selected page. Long chapters grow to fit their content. Mastery marks and reading-style preferences are stored locally in the browser. The existing `atlas` and `folio` values now select the two replacement styles.
 
 The shelf filters notes by source type and searches titles, summaries, and tags. `explorers`, `review`, and `extensions` add interactive learning components; see [the material and style guide](skill/references/materials-and-styles.md). Obsidian remains an optional export; the web notebook is the primary experience for the new styles.
 
-The multi-style direction was informed by [note-skill](https://github.com/Unclecheng-li/note-skill). Atlas, Folio, and their components are independently implemented.
+The handwritten and leather-journal styling is adapted from [note-skill](https://github.com/Unclecheng-li/note-skill), with its MIT notice preserved. Seagull Notes retains its own ingestion, complete note content, shelf and copying controls. The bundled Chinese handwriting font works offline; its SIL OFL notice is preserved. See [asset provenance](skill/assets/handwritten/SOURCE.md).
 
 Try the included Git/GitHub topic notebook with its official reference links, original flow diagram, step explorer, review questions, and extensions:
 

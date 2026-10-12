@@ -12,6 +12,7 @@ function updateMastery(){
 chapters.forEach((chapter,index)=>{const button=document.createElement('button');button.type='button';button.className='mastery-button';button.setAttribute('aria-label','切换掌握状态：'+chapter.querySelector('h2').textContent);button.addEventListener('click',()=>{mastered.has(index)?mastered.delete(index):mastered.add(index);savePreference(learningKey,Array.from(mastered));updateMastery()});chapter.append(button)});
 function selectFolioChapter(index){
  folioIndex=Math.max(0,Math.min(chapters.length-1,index));
+ document.body.classList.toggle('journal-reading',folioIndex>0);
  chapters.forEach((chapter,position)=>{chapter.classList.toggle('folio-current',position===folioIndex)});
  document.getElementById('folio-position').textContent=String(folioIndex+1).padStart(2,'0')+' / '+chapters.length;
  document.querySelector('[data-folio=previous]').disabled=folioIndex===0;document.querySelector('[data-folio=next]').disabled=folioIndex===chapters.length-1;
@@ -19,7 +20,7 @@ function selectFolioChapter(index){
 }
 function applyReadingStyle(style){
  if(!['paper','atlas','folio'].includes(style))style='paper';document.body.dataset.style=style;stylePicker.value=style;
- document.querySelector('.hub-heading .label').textContent=style==='folio'?'THE CHAPTER INDEX':'THE LEARNING JOURNEY';document.querySelector('.hub-heading h2').textContent=style==='folio'?'一章一页，把思路慢慢展开。':'让知识，从理解走向掌握。';document.querySelector('.hub-heading p').textContent=style==='folio'?'从目录选一章，或用左右键继续阅读。':chapters.length+' 个章节，连成你的学习路线。';
+ document.querySelector('.hub-heading .label').textContent=style==='folio'?'MY STUDY JOURNAL':'MY STUDY NOTES';document.querySelector('.hub-heading h2').textContent=style==='folio'?'翻开这一页，继续理解。':'把重点写在纸上。';document.querySelector('.hub-heading p').textContent=style==='folio'?'从目录选一章，或用左右键继续阅读。':chapters.length+' 个章节，保留完整学习内容。';
  if(style==='folio'){const index=chapters.findIndex(chapter=>'#'+chapter.id===location.hash);selectFolioChapter(index>=0?index:Math.max(0,currentChapter))}
  currentChapter=-1;queueReading();requestAnimationFrame(updateIndicator);
 }

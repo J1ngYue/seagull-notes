@@ -2,7 +2,7 @@
 from urllib.parse import urlsplit
 
 SOURCE_LABELS = {"video": "视频精读", "local": "本地素材", "topic": "主题知识", "text": "文本整理", "article": "网页笔记"}
-STYLE_LABELS = {"paper": "米色纸页", "atlas": "知识图谱", "folio": "叙事卷册"}
+STYLE_LABELS = {"paper": "米色纸页", "atlas": "学霸笔记本", "folio": "手账皮革本"}
 
 
 def source_kind(note: dict) -> str:
