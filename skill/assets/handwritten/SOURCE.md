@@ -9,8 +9,10 @@ adapted from UncleCheng's MIT-licensed **note-skill** templates:
 - Upstream license: `LICENSE-note-skill.txt`
 
 Seagull Notes keeps its own source ingestion, full note body, shelf, navigation,
-code/formula copying and accessible interactions. Long chapters grow normally;
-content is not cut to a fixed cover height. Paper remains the existing reader.
+code/formula copying and accessible interactions. Study pages scroll continuously;
+long journal chapters scroll inside a fixed cover without cutting content.
+Both replicas use a charcoal desk, centered pages and compact tool/directory
+popovers as requested in the supplied screenshots. Paper remains the existing reader.
 The legacy `atlas` / `folio` values now select Study Notebook / Leather Journal.
 
 Ma Shan Zheng is bundled for offline Chinese handwriting. The WOFF2 file is

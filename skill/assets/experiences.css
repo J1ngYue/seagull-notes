@@ -3,7 +3,8 @@
 .style-picker{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
 .style-picker select{max-width:125px;background:#fcf9f3;color:#785c42;border:1px solid #e1d3bd;border-radius:7px;padding:6px;font:inherit;font-size:11px;cursor:pointer}
 .source-list{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 18px}.source-list a{font-size:11px;line-height:1.6;color:var(--accent);padding:6px 11px;border:1px solid var(--line);border-radius:20px;text-decoration:none}.source-list a:hover{background:#f5ecdc}
-.learning-hub,.mastery-button,.notebook-decoration{display:none}
+.learning-hub,.mastery-button,.notebook-decoration,.tools-toggle{display:none}
+.book-overview{margin-bottom:18px}.book-overview>summary{cursor:pointer;color:#38678b;font:15px/1.8 SeagullHand,cursive;padding:6px 0;border-bottom:1px dashed #c8b69b}
 .study-widgets{margin-top:35px}.explorer,.review-deck,.extension-deck{margin:28px 0;border:1px solid #e1d3bd;border-radius:15px;background:#fcf9f3;padding:25px}
 .explorer header{display:flex;align-items:center;justify-content:space-between;gap:20px}.explorer h3,.review-deck h3{font-size:20px;margin:8px 0 20px}
 .explore-play{border:1px solid #d7c6ad;border-radius:8px;background:#fffefa;color:#785c42;padding:7px 12px;font-size:11px;white-space:nowrap}.explore-play[aria-pressed=true]{background:#eee1ca}
@@ -13,41 +14,59 @@
 .folio-controls{display:none}
 
 /* Both replicas use a real handwritten Chinese font, local and offline. */
-body:is([data-style=atlas],[data-style=folio]){--ink:#34302b;--muted:#736657;--accent:#b04d3c;--green:#765c42;--paper:#fffbf2;--line:#e1d4ba;background:#e8e3d9;background-image:radial-gradient(#a7906b12 .7px,transparent .7px);background-size:9px 9px}
-body:is([data-style=atlas],[data-style=folio]) .workspace{max-width:1320px;grid-template-columns:190px minmax(0,980px);gap:38px;margin-top:46px}
+body:is([data-style=atlas],[data-style=folio]){--ink:#34302b;--muted:#736657;--accent:#b04d3c;--green:#765c42;--paper:#fffbf2;--line:#e1d4ba;background:#3d3f3e;min-height:100vh}
+body:is([data-style=atlas],[data-style=folio]) .workspace{display:block;padding:0;margin:30px auto 50px;width:calc(100% - 64px)}
+body[data-style=atlas] .workspace{max-width:680px}body[data-style=folio] .workspace{max-width:860px}
+body:is([data-style=atlas],[data-style=folio]) .topbar{position:fixed;top:16px;right:18px;z-index:40;display:block;padding:0;background:transparent;border:0}
+body:is([data-style=atlas],[data-style=folio]) .brand{display:none}
+body:is([data-style=atlas],[data-style=folio]) .tools-toggle{display:block;margin-left:auto;padding:7px 12px;min-height:36px;border:1px solid #ffffff35;border-radius:5px;background:#303331;color:#e4dece;font-size:11px}
+body:is([data-style=atlas],[data-style=folio]) .topbar .tools{display:none;position:absolute;right:0;top:44px;width:300px;max-width:calc(100vw - 32px);padding:16px;background:#fffaf0;border:1px solid #c8ad79;border-radius:6px;box-shadow:0 8px 28px #0004}
+body:is([data-style=atlas],[data-style=folio]) .topbar.tools-open .tools{display:flex;flex-wrap:wrap;gap:12px 17px}
+body:is([data-style=atlas],[data-style=folio]) .topbar .tabs{width:100%;margin:5px 0 0;padding:3px;background:#f7eddb;border:1px dashed #c7ad83;border-radius:3px}
+body:is([data-style=atlas],[data-style=folio]) .topbar .tabs button{flex:1;font-size:10px;padding:7px 3px}
+body:is([data-style=atlas],[data-style=folio]) .sidebar{position:fixed;top:62px;right:18px;left:auto;z-index:30;width:110px;max-height:none;padding:0;overflow:visible}
+body:is([data-style=atlas],[data-style=folio]) .sidebar>.label,body:is([data-style=atlas],[data-style=folio]) .sidebar>h3,body:is([data-style=atlas],[data-style=folio]) .sidebar>.side-note{display:none}
+body:is([data-style=atlas],[data-style=folio]) .toc-toggle{display:block;width:100%;min-height:36px;padding:6px 11px;border:1px solid #ffffff35;border-radius:5px;background:#303331;color:#e4dece;font-size:11px;text-align:center}
+body:is([data-style=atlas],[data-style=folio]) .toc-toggle span{display:none}
+body:is([data-style=atlas],[data-style=folio]) .sidebar:not(.toc-open) .toc-panel{display:none}
+body:is([data-style=atlas],[data-style=folio]) .sidebar.toc-open{width:280px}
+body:is([data-style=atlas],[data-style=folio]) .toc-panel{padding:14px;margin-top:8px;background:#fffaf0;border:1px solid #c8ad79;border-radius:6px;box-shadow:0 8px 28px #0004}
+body:is([data-style=atlas],[data-style=folio]) .toc{display:block;max-height:60vh;overflow:auto;margin-top:9px;border:0}
+body:is([data-style=atlas],[data-style=folio]) .toc a{white-space:normal;margin:0;padding:8px;font-size:11px}
 body:is([data-style=atlas],[data-style=folio]) .workspace>main{position:relative;min-width:0}
 body:is([data-style=atlas],[data-style=folio]) .notebook-decoration{display:block;position:absolute;inset:0;pointer-events:none;z-index:2}
 body:is([data-style=atlas],[data-style=folio]) .note-head h1,body:is([data-style=atlas],[data-style=folio]) .chapter h2,body:is([data-style=atlas],[data-style=folio]) .prose h3,body:is([data-style=atlas],[data-style=folio]) .subtitle,body:is([data-style=atlas],[data-style=folio]) .summary p,body:is([data-style=atlas],[data-style=folio]) .takeaway p,body:is([data-style=atlas],[data-style=folio]) .prose{font-family:SeagullHand,"KaiTi",cursive;font-weight:400}
-body:is([data-style=atlas],[data-style=folio]) .prose{font-size:20px;line-height:1.95}
+body:is([data-style=atlas],[data-style=folio]) .prose{font-size:16px;line-height:1.9}
 body:is([data-style=atlas],[data-style=folio]) .prose strong{font-weight:400;color:#9f4135;background:linear-gradient(transparent 55%,#f4d97670 55%,#f4d97670 94%,transparent 94%);padding:0 2px}
-body:is([data-style=atlas],[data-style=folio]) .prose h3{font-size:24px;color:#b04d3c;text-decoration:underline;text-decoration-color:#b04d3c55;text-underline-offset:7px}
+body:is([data-style=atlas],[data-style=folio]) .prose h3{font-size:19px;color:#b04d3c;text-decoration:underline;text-decoration-color:#b04d3c55;text-underline-offset:5px}
 body:is([data-style=atlas],[data-style=folio]) .prose code{font-family:Consolas,"Microsoft YaHei",monospace;font-size:13px}
-body:is([data-style=atlas],[data-style=folio]) .prose table{background:#fffbf2dc;border:1px dashed #b8a382;font-family:"Microsoft YaHei",system-ui,sans-serif;font-size:13px}
+body:is([data-style=atlas],[data-style=folio]) .prose table{background:#fffbf2dc;border:1px dashed #b8a382;font-family:SeagullHand,"KaiTi",cursive;font-size:15px}
+body:is([data-style=atlas],[data-style=folio]) .prose th,body:is([data-style=atlas],[data-style=folio]) .prose td{padding:8px 11px}
 body:is([data-style=atlas],[data-style=folio]) .prose blockquote{background:#fff7df;border:1px dashed #c8ad79;border-left:3px solid #be8060;box-shadow:2px 3px 0 #8a67300c}
-body:is([data-style=atlas],[data-style=folio]) .chapter h2{font-size:29px;color:#b04d3c;line-height:1.5;text-decoration:underline;text-decoration-color:#b04d3c44;text-underline-offset:8px}
-body:is([data-style=atlas],[data-style=folio]) .number{font-family:SeagullHand,cursive;font-size:30px;color:#b04d3c}
-body:is([data-style=atlas],[data-style=folio]) .note-head h1{font-size:clamp(36px,3.7vw,52px);line-height:1.45;letter-spacing:1px;color:#33312d;margin:16px 0 18px;text-decoration:underline;text-decoration-color:#eed25d70;text-decoration-thickness:8px;text-underline-offset:-1px}
-body:is([data-style=atlas],[data-style=folio]) .subtitle{font-size:22px;color:#38678b;line-height:1.7}
-body:is([data-style=atlas],[data-style=folio]) .edition{color:#b04d3c;font-size:10px;letter-spacing:2px}
+body:is([data-style=atlas],[data-style=folio]) .chapter h2{font-size:21px;color:#b04d3c;line-height:1.5;text-decoration:underline;text-decoration-color:#b04d3c44;text-underline-offset:5px}
+body:is([data-style=atlas],[data-style=folio]) .number{font-family:SeagullHand,cursive;font-size:21px;color:#b04d3c}
+body:is([data-style=atlas],[data-style=folio]) .note-head h1{font-size:29px;line-height:1.4;letter-spacing:.3px;color:#33312d;margin:0 0 11px;text-decoration:none}
+body:is([data-style=atlas],[data-style=folio]) .subtitle{font-size:15px;color:#38678b;line-height:1.7;margin-bottom:12px}
+body:is([data-style=atlas],[data-style=folio]) .edition{display:none}
 body:is([data-style=atlas],[data-style=folio]) .tabs{background:#f7eddbcc;border:1px dashed #c7ad83;border-radius:4px;margin:24px 0}.tabs button{min-width:0}
 body:is([data-style=atlas],[data-style=folio]) .tab-indicator{border-radius:2px;background:#fffcf2;box-shadow:2px 2px 0 #98754a15}
 body:is([data-style=atlas],[data-style=folio]) .summary{position:relative;padding:15px 20px;border:1px dashed #c8ad79;background:#fff8e4;box-shadow:3px 4px 0 #9a74340d;margin:25px 0}
 body:is([data-style=atlas],[data-style=folio]) .summary:before{content:"";position:absolute;width:75px;height:19px;left:25px;top:-9px;background:#ead4ab80;transform:rotate(-4deg)}
-body:is([data-style=atlas],[data-style=folio]) .summary p{font-size:22px;line-height:1.8}
+body:is([data-style=atlas],[data-style=folio]) .summary p{font-size:16px;line-height:1.8}
 body:is([data-style=atlas],[data-style=folio]) .takeaways{gap:13px;margin:25px 0 34px}
 body:is([data-style=atlas],[data-style=folio]) .takeaway{position:relative;border:1px solid #dbc894;border-radius:1px;background:#fff4cb;padding:18px;box-shadow:3px 4px 7px #71502512;transform:rotate(-1deg)}
 body:is([data-style=atlas],[data-style=folio]) .takeaway:nth-child(2){transform:rotate(1deg);background:#fff3df}
 body:is([data-style=atlas],[data-style=folio]) .takeaway:nth-child(3){transform:rotate(-.6deg);background:#faeddf}
 body:is([data-style=atlas],[data-style=folio]) .takeaway:before{content:"";position:absolute;left:28%;top:-8px;width:44%;height:17px;background:#fdfaf280;transform:rotate(-3deg)}
-body:is([data-style=atlas],[data-style=folio]) .takeaway p{font-size:19px;line-height:1.55;color:#4f4333}
+body:is([data-style=atlas],[data-style=folio]) .takeaway p{font-size:15px;line-height:1.55;color:#4f4333}
 body:is([data-style=atlas],[data-style=folio]) .cover{position:relative;border:1px dashed #b9a78a;background:#fffdf5;padding:12px;box-shadow:3px 4px 0 #9a74340d;transform:rotate(.3deg);margin-bottom:32px!important}
 body:is([data-style=atlas],[data-style=folio]) figcaption{font-size:11px;line-height:1.7}
-body:is([data-style=atlas],[data-style=folio]) .mastery-button{display:inline-flex;border:1px dashed #ae8f63;border-radius:3px;padding:7px 12px;margin-top:15px;background:#fffbf2;color:#876c48;font-size:11px;min-height:36px}
+body:is([data-style=atlas],[data-style=folio]) .mastery-button{display:inline-flex;border:1px dashed #ae8f63;border-radius:3px;padding:4px 8px;margin-top:10px;background:#fffbf2;color:#876c48;font-size:10px;min-height:30px}
 body:is([data-style=atlas],[data-style=folio]) .mastery-button[aria-pressed=true]{background:#f7e5b9;border-color:#b04d3c;color:#9f4135}
 body:is([data-style=atlas],[data-style=folio]) .explorer,body:is([data-style=atlas],[data-style=folio]) .review-deck,body:is([data-style=atlas],[data-style=folio]) .extension-deck{border:1px dashed #b99c75;border-radius:3px;background:#fffaf0e8;box-shadow:3px 4px 0 #9a74340a}
-body:is([data-style=atlas],[data-style=folio]) .explorer h3,body:is([data-style=atlas],[data-style=folio]) .review-deck h3{font:27px/1.5 SeagullHand,cursive;color:#b04d3c}
+body:is([data-style=atlas],[data-style=folio]) .explorer h3,body:is([data-style=atlas],[data-style=folio]) .review-deck h3{font:21px/1.5 SeagullHand,cursive;color:#b04d3c}
 body:is([data-style=atlas],[data-style=folio]) .explore-steps button{border:1px solid #a99479;border-radius:45% 3% 40% 3% / 3% 40% 3% 45%;background:#fffdf7;box-shadow:2px 2px 0 #a9947925}
-body:is([data-style=atlas],[data-style=folio]) .review-card summary{font:21px/1.7 SeagullHand,cursive;color:#524334}
+body:is([data-style=atlas],[data-style=folio]) .review-card summary{font:17px/1.7 SeagullHand,cursive;color:#524334}
 body:is([data-style=atlas],[data-style=folio]) .source-list a{background:#fffaf0b3;border-style:dashed;border-radius:3px}
 body:is([data-style=atlas],[data-style=folio]) .notebook-tape{position:absolute;width:116px;height:31px;background:#fbf7e19e;opacity:.8;box-shadow:0 1px 3px #49331c19;border:1px solid #c8b07c29}
 .tape-left{top:-11px;left:72px;transform:rotate(-4deg)}.tape-right{top:-10px;right:44px;transform:rotate(3deg)}
@@ -58,61 +77,60 @@ body:is([data-style=atlas],[data-style=folio]) .notebook-tape{position:absolute;
 .notebook-doodle{position:absolute;right:17px;top:250px;width:55px;height:44px;color:#97674077;transform:rotate(-10deg)}
 
 /* Style A: one continuous ruled notebook, spiral binding and write-in chapters. */
-body[data-style=atlas] .workspace>main{background:#fdf6e3;background-image:linear-gradient(90deg,transparent 66px,#d8938555 66px,#d8938555 68px,transparent 68px),linear-gradient(#e8e0cc 1px,transparent 1px);background-size:100% 100%,100% 39px;border-radius:4px;box-shadow:0 4px 12px #68513516,9px 13px 27px #68513521;padding:36px 38px 32px 86px}
+body[data-style=atlas] .workspace>main{background:#fdf6e3;background-image:linear-gradient(90deg,transparent 52px,#d8938540 52px,#d8938540 53px,transparent 53px),linear-gradient(#e8e0cc77 1px,transparent 1px);background-size:100% 100%,100% 30px;border-radius:3px;box-shadow:0 4px 12px #0003,9px 13px 27px #0003;padding:32px 35px 30px 73px}
 body[data-style=atlas] .workspace>main:before{content:"";position:absolute;left:19px;top:19px;bottom:22px;width:26px;background:radial-gradient(circle at 10px 18px,#82796b 0 6px,#fff8e4 6px 8px,transparent 8px),linear-gradient(180deg,transparent 4px,#a3a09a 4px,#ece8df 7px,#9b978f 10px,transparent 10px);background-size:26px 46px;pointer-events:none}
-body[data-style=atlas] .note-head{padding:3px 0 12px}.note-head{position:relative}
+body[data-style=atlas] .note-head{padding:3px 0 15px}.note-head{position:relative}
 body[data-style=atlas] .panel{border:0;padding:0;background:transparent;box-shadow:none;border-radius:0}
-body[data-style=atlas] .chapter{position:relative;border-top:0;padding:9px 0 24px;margin:0 0 21px;background:transparent}
+body[data-style=atlas] .chapter{position:relative;border-top:0;padding:5px 0 18px;margin:0 0 14px;background:transparent}
 body[data-style=atlas] .chapter.is-visible{animation:write-in .38s ease both}
 body[data-style=atlas] .chapter header{margin-bottom:14px;align-items:baseline}
-body[data-style=atlas] .reader-nav{width:190px}
+body[data-style=atlas] .reader-nav{width:175px;left:50%;transform:translateX(-50%);bottom:12px;background:#303331;color:#e4dece;border-color:#ffffff35}
+body[data-style=atlas] .reader-controls button,body[data-style=atlas] .chapter-position{color:#e4dece;font-size:10px}
 body[data-style=atlas] .toc a.active{background:#f4e6bc;color:#9f4135;box-shadow:inset 3px 0 #be8060}
 body[data-style=atlas] footer{border-top:1px dashed #c9b794;padding-top:16px}
 
 /* Style B: leather cover, metal rings, lined paper and one full chapter per page. */
-body[data-style=folio] .workspace>main{background:#8b4513;background-image:repeating-linear-gradient(90deg,transparent,transparent 2px,#0000000a 2px,#0000000a 4px),linear-gradient(180deg,#98613b,#754126);border-radius:12px 18px 18px 12px;padding:24px 22px 25px 45px;box-shadow:0 0 0 2px #704326,0 14px 30px #5d3b2835,inset 0 1px 0 #ffffff20;perspective:1600px}
+body[data-style=folio] .workspace>main{display:grid;grid-template-rows:minmax(0,1fr) auto;height:min(740px,calc(100dvh - 75px));min-height:440px;background:#8b4513;background-image:repeating-linear-gradient(90deg,transparent,transparent 2px,#0000000a 2px,#0000000a 4px),linear-gradient(180deg,#8b4513,#733b16);border-radius:10px 14px 14px 10px;padding:20px 19px 12px 35px;box-shadow:0 0 0 2px #5c2e0b,0 20px 50px #0006,inset 0 1px 0 #ffffff20;perspective:1600px}
 body[data-style=folio] .workspace>main:before{content:"";position:absolute;left:9px;top:36px;bottom:32px;width:32px;background:radial-gradient(ellipse 12px 7px at 16px 20px,#87847e 20%,#ddd9d0 55%,#99968f 70%,transparent 74%),linear-gradient(90deg,transparent 11px,#c5c2ba 11px,#88847c 18px,transparent 18px);background-size:32px 82px;pointer-events:none;z-index:3;border-radius:6px}
-body[data-style=folio] .note-head{background:#f5f0e8;border-radius:4px 10px 0 0;padding:34px 45px 21px;text-align:center;box-shadow:2px 2px 8px #00000020}
-body[data-style=folio] .note-head h1{color:#a34535;font-size:clamp(35px,3.5vw,50px);text-decoration-color:#b04d3c50;text-decoration-thickness:3px;text-underline-offset:8px}
-body[data-style=folio] .edition{justify-content:center}
-body[data-style=folio] .subtitle{font-size:21px;color:#645449;margin-bottom:14px}
-body[data-style=folio] .meta{padding:5px 0;font-size:10px}
-body[data-style=folio] .tabs{width:100%;justify-content:center;border:0;border-radius:0;background:#f5f0e8;margin:0;padding:10px 9px 18px}
-body[data-style=folio] .learning-hub{display:block;background:#f5f0e8;margin:0;padding:0 35px 14px;border-radius:0 0 4px 4px;border-bottom:1px solid #ddd0bc}
+body[data-style=folio] .note-head{position:absolute;width:1px;height:1px;padding:0;margin:0;overflow:hidden;clip-path:inset(50%)}
+body[data-style=folio] .learning-hub{order:2;display:block;background:transparent;margin:0;padding:9px 5px 0;border:0}
 body[data-style=folio] .hub-heading,body[data-style=folio] .mastery-line,body[data-style=folio] .route-grid{display:none}
 body[data-style=folio] .folio-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}
-.folio-controls button{border:1px solid #a99479;border-radius:45% 3% 40% 3% / 3% 40% 3% 45%;padding:6px 14px;background:#fffcf2;color:#73543d;box-shadow:2px 2px 0 #a9947925;min-height:36px;font-size:12px}
-.folio-controls button:disabled{opacity:.4;cursor:default}.folio-controls span{font:24px SeagullHand,cursive;color:#8b6745}
+.folio-controls button{border:0;border-radius:3px;padding:4px 12px;background:transparent;color:#f7e8cc;min-height:32px;font-size:11px}
+.folio-controls button:disabled{opacity:.4;cursor:default}.folio-controls span{font:17px SeagullHand,cursive;color:#f7e8cc}
 body[data-style=folio][data-view]:not([data-view=notes]) .learning-hub{display:none}
-body[data-style=folio] .panel{border:0;border-radius:3px 8px 8px 3px;padding:30px 35px 35px 52px;background:#fdfbf7;background-image:linear-gradient(90deg,transparent 36px,#d8938555 36px,#d8938555 37px,transparent 37px),repeating-linear-gradient(transparent,transparent 38px,#b5b8b22e 38px,#b5b8b22e 39px);box-shadow:2px 3px 7px #00000024,inset 0 0 45px #8b451308;margin-top:13px}
-body[data-style=folio] .chapter{border-top:0;min-height:420px;padding:0 0 20px;margin:0}
+body[data-style=folio] .panel{order:1;min-height:0;overflow:auto;scrollbar-width:thin;border:0;border-radius:3px 8px 8px 3px;padding:30px 35px 35px 52px;background:#fdfbf7;background-image:linear-gradient(90deg,transparent 36px,#d8938555 36px,#d8938555 37px,transparent 37px),repeating-linear-gradient(transparent,transparent 31px,#a4b0be66 31px,#a4b0be66 32px);box-shadow:2px 3px 7px #00000024,inset 0 0 45px #8b451308;margin:0}
+body[data-style=folio] .chapter{border-top:0;min-height:0;padding:0 0 14px;margin:0}
 body[data-style=folio][data-view=notes] .chapter:not(.folio-current){display:none}
 body[data-style=folio] .chapter.folio-current{animation:journal-turn .48s cubic-bezier(.2,.8,.2,1) both;transform-origin:left center}
-body[data-style=folio] .chapter header{align-items:baseline;padding-bottom:13px;border-bottom:1px dashed #b04d3c55;margin-bottom:18px}
-body[data-style=folio] .chapter .number{font-size:38px;min-width:48px}
-body[data-style=folio].journal-reading #notes>.summary,body[data-style=folio].journal-reading #notes>.takeaways,body[data-style=folio].journal-reading #notes>.cover{display:none}
+body[data-style=folio] .chapter header{align-items:baseline;padding-bottom:8px;border:0;margin-bottom:12px}
+body[data-style=folio] .chapter h2{color:#38678b;text-decoration-color:#38678b55;font-size:23px}
+body[data-style=folio] .chapter .number{font-size:21px;min-width:24px;color:#38678b}
+body[data-style=folio] .book-overview{margin:0 0 16px}
 body[data-style=folio] .study-widgets{padding-top:25px;border-top:1px dashed #c8ad79}
-body[data-style=folio] .reader-nav{width:190px;border-radius:5px}
-body[data-style=folio] footer{color:#fff4df;padding:14px 6px 10px;margin-bottom:0}
+body[data-style=folio] .reader-nav,body[data-style=folio] footer{display:none}
+body[data-style=folio][data-view=map] .workspace>main{perspective:none}
+body[data-style=folio] .panel{min-width:0}
+body:is([data-style=atlas],[data-style=folio]) .map-toolbar{flex-wrap:wrap;gap:12px}
+body[data-style=folio] .notebook-tape,body[data-style=folio] .notebook-clip,body[data-style=folio] .notebook-doodle,body[data-style=folio] .notebook-fold{display:none}
 body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:10px}
 
 @keyframes write-in{from{opacity:.2;transform:translateY(7px)}to{opacity:1;transform:none}}
 @keyframes journal-turn{from{opacity:.25;transform:perspective(1500px) rotateY(-12deg) translateX(12px)}to{opacity:1;transform:none}}
 @media(max-width:850px){
  .style-picker span{display:none}.style-picker select{font-size:10px;min-height:36px}
- body[data-style=atlas] .workspace,body[data-style=folio] .workspace{grid-template-columns:1fr;gap:18px;padding:0 20px}
+ body[data-style=atlas] .workspace,body[data-style=folio] .workspace{padding:0;width:calc(100% - 40px);margin-top:60px}
  body[data-style=atlas] .workspace>main{padding:27px 22px 22px 55px;background-image:linear-gradient(90deg,transparent 39px,#d8938555 39px,#d8938555 41px,transparent 41px),linear-gradient(#e8e0cc 1px,transparent 1px)}
  body[data-style=atlas] .workspace>main:before{left:8px;width:22px}
  body[data-style=folio] .workspace>main{padding:17px 13px 19px 31px}
  body[data-style=folio] .workspace>main:before{left:2px;width:25px;background-size:25px 82px}
- body[data-style=folio] .note-head{padding:27px 19px 15px}
- body[data-style=folio] .learning-hub{padding:0 17px 14px}
- body[data-style=folio] .panel{padding:24px 20px 26px 32px;background-image:linear-gradient(90deg,transparent 21px,#d8938555 21px,#d8938555 22px,transparent 22px),repeating-linear-gradient(transparent,transparent 38px,#b5b8b22e 38px,#b5b8b22e 39px)}
- body:is([data-style=atlas],[data-style=folio]) .note-head h1{font-size:35px}
- body:is([data-style=atlas],[data-style=folio]) .subtitle{font-size:20px}
- body:is([data-style=atlas],[data-style=folio]) .prose{font-size:20px}
- body:is([data-style=atlas],[data-style=folio]) .chapter h2{font-size:26px}
- body:is([data-style=atlas],[data-style=folio]) .reader-nav{width:calc(100% - 32px)}
+ body[data-style=folio] .learning-hub{padding:8px 0 0}
+ body[data-style=folio] .panel{padding:23px 20px 24px 32px;background-image:linear-gradient(90deg,transparent 21px,#d8938555 21px,#d8938555 22px,transparent 22px),repeating-linear-gradient(transparent,transparent 31px,#a4b0be66 31px,#a4b0be66 32px)}
+ body:is([data-style=atlas],[data-style=folio]) .note-head h1{font-size:28px}
+ body:is([data-style=atlas],[data-style=folio]) .subtitle{font-size:15px}
+ body:is([data-style=atlas],[data-style=folio]) .prose{font-size:16px}
+ body:is([data-style=atlas],[data-style=folio]) .chapter h2{font-size:21px}
+ body[data-style=atlas] .reader-nav{width:175px}
  body:is([data-style=atlas],[data-style=folio]) .takeaways{grid-template-columns:1fr;gap:19px}
  body:is([data-style=atlas],[data-style=folio]) .takeaway{padding:14px}
  .explorer,.review-deck,.extension-deck{padding:17px}.explorer header{flex-wrap:wrap;gap:8px}
@@ -121,15 +139,15 @@ body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:1
  .tape-left{left:40px;width:80px}.tape-right{right:18px;width:65px}
 }
 @media(max-width:460px){
- body[data-style=atlas] .workspace,body[data-style=folio] .workspace{padding:0 12px}
+ body[data-style=atlas] .workspace,body[data-style=folio] .workspace{width:calc(100% - 24px)}
  body[data-style=atlas] .workspace>main{padding-right:17px;padding-left:48px}
  body[data-style=folio] .panel{padding-right:14px;padding-left:28px}
- body:is([data-style=atlas],[data-style=folio]) .note-head h1{font-size:31px}
- body:is([data-style=atlas],[data-style=folio]) .chapter h2{font-size:24px;min-width:0}
- body:is([data-style=atlas],[data-style=folio]) .chapter .number{font-size:28px;min-width:28px}
+ body:is([data-style=atlas],[data-style=folio]) .note-head h1{font-size:26px}
+ body:is([data-style=atlas],[data-style=folio]) .chapter h2{font-size:20px;min-width:0}
+ body:is([data-style=atlas],[data-style=folio]) .chapter .number{font-size:20px;min-width:24px}
  body:is([data-style=atlas],[data-style=folio]) .chapter header{gap:9px}
  body:is([data-style=atlas],[data-style=folio]) .summary{padding:14px}.summary p{overflow-wrap:anywhere}
- body:is([data-style=atlas],[data-style=folio]) .summary p{font-size:20px}
+ body:is([data-style=atlas],[data-style=folio]) .summary p{font-size:16px}
  .extension-card summary span{float:none;display:block}.explore-steps button{min-width:132px}
  body[data-style=folio] .tabs button{font-size:10px;padding:8px 4px}
  body:is([data-style=atlas],[data-style=folio]) .prose th,body:is([data-style=atlas],[data-style=folio]) .prose td{padding:10px 7px;overflow-wrap:anywhere}
@@ -137,12 +155,15 @@ body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:1
 }
 @media(prefers-reduced-motion:reduce){body[data-style=atlas] .chapter.is-visible,body[data-style=folio] .chapter.folio-current,.explore-panel,.review-card[open] .prose,.extension-card[open] .prose{animation:none!important}}
 @media print{
- .style-picker,.learning-hub,.mastery-button,.explore-play,.notebook-decoration{display:none!important}
- body[data-style=atlas] .workspace>main,body[data-style=folio] .workspace>main{padding:0;background:white;box-shadow:none;border:0}
+ .topbar,.sidebar,.reader-nav,.style-picker,.learning-hub,.mastery-button,.explore-play,.notebook-decoration{display:none!important}
+ body:is([data-style=atlas],[data-style=folio]){background:white}
+ body:is([data-style=atlas],[data-style=folio]) .workspace{width:100%;max-width:none;margin:0}
+ body[data-style=atlas] .workspace>main,body[data-style=folio] .workspace>main{display:block;height:auto;min-height:0;padding:0;background:white;box-shadow:none;border:0}
+ body[data-style=folio] .note-head{position:static;clip-path:none;width:auto;height:auto;overflow:visible;padding:0 0 20px}
  body[data-style=atlas] .workspace>main:before,body[data-style=folio] .workspace>main:before{display:none}
  body[data-style=atlas] .chapter,body[data-style=folio] .chapter{display:block!important;min-height:0;animation:none!important;transform:none!important}
- body[data-style=folio] #notes{box-shadow:none;padding:0;background:white}
- body[data-style=folio].journal-reading #notes>.summary,body[data-style=folio].journal-reading #notes>.takeaways,body[data-style=folio].journal-reading #notes>.cover{display:block!important}
+ body[data-style=folio] #notes{height:auto;overflow:visible;box-shadow:none;padding:0;background:white}
+ #notes>.book-overview{display:block!important}#notes>.book-overview>summary{display:none}
  .explore-panel[hidden]{display:block!important}.review-card .prose,.extension-card .prose{display:block!important}.explore-steps{flex-wrap:wrap}.explorer,.review-deck,.extension-deck{break-inside:auto}
  body:is([data-style=atlas],[data-style=folio]) .takeaway{transform:none;box-shadow:none}
  body:is([data-style=atlas],[data-style=folio]) .cover{transform:none}

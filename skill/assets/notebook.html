@@ -52,7 +52,7 @@ $experience_css
 </head>
 <body data-view="notes" data-style="$style" data-note-id="$note_id">
 <a class="skip-link" href="#notes">跳到笔记正文</a>
-<div class="topbar"><div class="brand"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M3 18c5-6 10-7 13-1 3-6 8-5 13 1M10 23c4 2 8 2 12 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>SEAGULL NOTES</div><div class="tools">$library_action<label class="style-picker"><span>阅读风格</span><select id="style-select" aria-label="阅读风格"><option value="paper">米色纸页</option><option value="atlas">学霸笔记本</option><option value="folio">手账皮革本</option></select></label>$obsidian_action$source_action<button class="print" type="button" onclick="window.print()">打印 / PDF</button></div></div>
+<div class="topbar"><div class="brand"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M3 18c5-6 10-7 13-1 3-6 8-5 13 1M10 23c4 2 8 2 12 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>SEAGULL NOTES</div><button type="button" class="tools-toggle" id="tools-toggle" aria-expanded="false" aria-controls="reader-tools">笔记工具</button><div class="tools" id="reader-tools">$library_action<label class="style-picker"><span>阅读风格</span><select id="style-select" aria-label="阅读风格"><option value="paper">米色纸页</option><option value="atlas">学霸笔记本</option><option value="folio">手账皮革本</option></select></label>$obsidian_action$source_action<button class="print" type="button" onclick="window.print()">打印 / PDF</button></div></div>
 <div class="workspace">
 <aside class="sidebar"><div class="label">THE READING ROOM</div><h3>这篇笔记的脉络</h3><button type="button" class="toc-toggle" id="toc-toggle" aria-expanded="false" aria-controls="toc-panel">章节目录<span>$chapter_count 章 · 搜索与跳转</span></button><div class="toc-panel" id="toc-panel"><input type="search" class="toc-search" id="toc-search" aria-label="搜索章节" placeholder="搜索章节，如回滚、stash"><nav class="toc" aria-label="章节目录">$toc</nav><p class="toc-empty" id="toc-empty" role="status" hidden>没有匹配的章节</p></div><p class="side-note">让值得理解的内容，<br>成为可以回看的笔记。<br><br>$source_hint</p></aside>
 <main>
@@ -108,7 +108,7 @@ function updateReading(){
  position.textContent='第 '+(index+1)+' / '+chapters.length+' 章';position.title=chapters[index].querySelector('h2').textContent;document.getElementById('reading-progress').value=index+1;previous.disabled=index===0;next.disabled=index===chapters.length-1;
  links.forEach((link,i)=>{link.classList.toggle('active',i===index);if(i===index)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
  document.dispatchEvent(new CustomEvent('seagull:position',{detail:index}));
- const active=links[index];if(!active.hidden&&innerWidth>850){const a=active.getBoundingClientRect(),s=sidebar.getBoundingClientRect();if(a.top<s.top+105)sidebar.scrollTop+=a.top-s.top-105;else if(a.bottom>s.bottom-10)sidebar.scrollTop+=a.bottom-s.bottom+10}
+ const active=links[index];if(!active.hidden&&active.getClientRects().length&&innerWidth>850){const a=active.getBoundingClientRect(),s=sidebar.getBoundingClientRect();if(a.top<s.top+105)sidebar.scrollTop+=a.top-s.top-105;else if(a.bottom>s.bottom-10)sidebar.scrollTop+=a.bottom-s.bottom+10}
 }
 function queueReading(){if(!readingFrame)readingFrame=requestAnimationFrame(updateReading)}
 function scrollBehavior(){return matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}

@@ -1,5 +1,11 @@
 // Each reading mode uses the same complete body, sources and notebook identity.
 const stylePicker=document.getElementById('style-select'),routeCards=Array.from(document.querySelectorAll('.route-card'));
+const notebookTools=document.querySelector('.topbar'),toolsToggle=document.getElementById('tools-toggle'),formatTabs=document.querySelector('.tabs'),tabsHome=formatTabs.parentElement,tabsNext=formatTabs.nextElementSibling;
+const overview=document.createElement('details');overview.className='book-overview';const overviewTitle=document.createElement('summary');overviewTitle.textContent='概览、重点与配图';overview.append(overviewTitle);const introPieces=Array.from(document.querySelectorAll('#notes>.summary,#notes>.takeaways,#notes>.cover'));document.getElementById('notes').prepend(overview);
+function closeNotebookTools(){notebookTools.classList.remove('tools-open');toolsToggle.setAttribute('aria-expanded','false')}
+toolsToggle.addEventListener('click',()=>{const open=notebookTools.classList.toggle('tools-open');toolsToggle.setAttribute('aria-expanded',String(open));requestAnimationFrame(updateIndicator)});
+document.addEventListener('seagull:view',closeNotebookTools);
+document.addEventListener('click',event=>{if(!notebookTools.contains(event.target))closeNotebookTools()});document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeNotebookTools();sidebar.classList.remove('toc-open');tocToggle.setAttribute('aria-expanded','false')}});
 const learningKey='seagull:mastery:'+document.body.dataset.noteId,styleKey='seagull:style:'+location.pathname;let mastered=new Set(),folioIndex=0;
 function loadPreference(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
 function savePreference(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch{}}
@@ -12,7 +18,7 @@ function updateMastery(){
 chapters.forEach((chapter,index)=>{const button=document.createElement('button');button.type='button';button.className='mastery-button';button.setAttribute('aria-label','切换掌握状态：'+chapter.querySelector('h2').textContent);button.addEventListener('click',()=>{mastered.has(index)?mastered.delete(index):mastered.add(index);savePreference(learningKey,Array.from(mastered));updateMastery()});chapter.append(button)});
 function selectFolioChapter(index){
  folioIndex=Math.max(0,Math.min(chapters.length-1,index));
- document.body.classList.toggle('journal-reading',folioIndex>0);
+ overview.hidden=folioIndex>0;
  chapters.forEach((chapter,position)=>{chapter.classList.toggle('folio-current',position===folioIndex)});
  document.getElementById('folio-position').textContent=String(folioIndex+1).padStart(2,'0')+' / '+chapters.length;
  document.querySelector('[data-folio=previous]').disabled=folioIndex===0;document.querySelector('[data-folio=next]').disabled=folioIndex===chapters.length-1;
@@ -20,6 +26,8 @@ function selectFolioChapter(index){
 }
 function applyReadingStyle(style){
  if(!['paper','atlas','folio'].includes(style))style='paper';document.body.dataset.style=style;stylePicker.value=style;
+ if(style==='paper'){tabsHome.insertBefore(formatTabs,tabsNext);introPieces.forEach(piece=>overview.before(piece));overview.hidden=true}else{document.getElementById('reader-tools').append(formatTabs);introPieces.forEach(piece=>overview.append(piece));overview.hidden=false}
+ closeNotebookTools();
  document.querySelector('.hub-heading .label').textContent=style==='folio'?'MY STUDY JOURNAL':'MY STUDY NOTES';document.querySelector('.hub-heading h2').textContent=style==='folio'?'翻开这一页，继续理解。':'把重点写在纸上。';document.querySelector('.hub-heading p').textContent=style==='folio'?'从目录选一章，或用左右键继续阅读。':chapters.length+' 个章节，保留完整学习内容。';
  if(style==='folio'){const index=chapters.findIndex(chapter=>'#'+chapter.id===location.hash);selectFolioChapter(index>=0?index:Math.max(0,currentChapter))}
  currentChapter=-1;queueReading();requestAnimationFrame(updateIndicator);
