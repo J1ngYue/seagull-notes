@@ -90,7 +90,7 @@ body[data-style=atlas] .reader-controls button,body[data-style=atlas] .chapter-p
 body[data-style=atlas] .toc a.active{background:#f4e6bc;color:#9f4135;box-shadow:inset 3px 0 #be8060}
 body[data-style=atlas] footer{border-top:1px dashed #c9b794;padding-top:16px}
 
-/* Style B: leather cover, metal rings, lined paper and one full chapter per page. */
+/* Style B: leather cover, metal rings and measured ruled pages. */
 body[data-style=folio] .workspace>main{display:grid;grid-template-rows:minmax(0,1fr) auto;height:min(740px,calc(100dvh - 75px));min-height:440px;background:#8b4513;background-image:repeating-linear-gradient(90deg,transparent,transparent 2px,#0000000a 2px,#0000000a 4px),linear-gradient(180deg,#8b4513,#733b16);border-radius:10px 14px 14px 10px;padding:20px 19px 12px 35px;box-shadow:0 0 0 2px #5c2e0b,0 20px 50px #0006,inset 0 1px 0 #ffffff20;perspective:1600px}
 body[data-style=folio] .workspace>main:before{content:"";position:absolute;left:9px;top:36px;bottom:32px;width:32px;background:radial-gradient(ellipse 12px 7px at 16px 20px,#87847e 20%,#ddd9d0 55%,#99968f 70%,transparent 74%),linear-gradient(90deg,transparent 11px,#c5c2ba 11px,#88847c 18px,transparent 18px);background-size:32px 82px;pointer-events:none;z-index:3;border-radius:6px}
 body[data-style=folio] .note-head{position:absolute;width:1px;height:1px;padding:0;margin:0;overflow:hidden;clip-path:inset(50%)}
@@ -157,7 +157,14 @@ body[data-style=folio][data-view=notes] .workspace>main:before,body[data-style=f
 body[data-style=folio] #notes{padding:0;background:none;overflow:hidden;box-shadow:none;border-radius:4px;isolation:isolate}
 .book-spread{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;height:100%;perspective:2200px;isolation:isolate}
 .book-spread:before{content:"";position:absolute;left:calc(50% - 23px);top:0;bottom:0;width:46px;background:linear-gradient(90deg,transparent,#69583e13 30%,#49332038 49%,#fffdf5aa 51%,#69583e15 73%,transparent);z-index:8;pointer-events:none}
-body[data-style=folio] .book-page{position:relative;height:100%;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:30px 35px 20px;border:0;margin:0;background:#fdfbf5;background-image:repeating-linear-gradient(transparent,transparent 31px,#a4b0be44 31px,#a4b0be44 32px);border-radius:4px 0 0 4px;box-shadow:inset -15px 0 22px -18px #4b372899}
+body[data-style=folio] .book-page{position:relative;height:100%;min-height:0;min-width:0;overflow:hidden;padding:30px 35px 20px;border:0;margin:0;background:#fdfbf5;background-image:repeating-linear-gradient(transparent,transparent 31px,#a4b0be44 31px,#a4b0be44 32px);border-radius:4px 0 0 4px;box-shadow:inset -15px 0 22px -18px #4b372899}
+body[data-style=folio] #notes>.chapter,body[data-style=folio] #notes>.book-overview,body[data-style=folio] #notes>.study-widgets,body[data-style=folio] #notes>.source-list{display:none}
+body[data-style=folio] .book-page-body{min-width:0}
+body[data-style=folio] .book-page-body>header{display:flex;align-items:baseline;gap:9px;margin-bottom:12px}
+body[data-style=folio] .book-page-footer{display:flex;align-items:center;justify-content:space-between;position:absolute;bottom:10px;left:35px;right:35px;margin:0;padding:0;min-height:30px;color:#a18e75;font-size:11px;letter-spacing:0}
+body[data-style=folio] .book-page-footer .book-page-number{margin:0;padding:0;font-size:13px}
+body[data-style=folio] .book-page-footer .mastery-button{margin:0}
+.book-atomic-overflow{overflow:auto}.book-question{font:19px/1.7 SeagullHand,cursive;color:#38678b;margin:10px 0}
 body[data-style=folio] .book-page.book-right{border-radius:0 4px 4px 0;box-shadow:inset 15px 0 22px -18px #4b372899}
 body[data-style=folio] .book-page:not(.folio-visible){display:none}
 body[data-style=folio] .book-page h2{font:23px/1.5 SeagullHand,cursive;color:#38678b;text-decoration:underline;text-decoration-color:#38678b55;text-underline-offset:5px;margin:0 0 14px}
@@ -176,7 +183,7 @@ body[data-style=folio] .book-source-description{font:16px/1.9 SeagullHand,cursiv
 .book-turn-leaf,.book-held-page{position:absolute;top:0;bottom:0;width:50%;pointer-events:none}
 .book-turn-leaf{z-index:20;transform-style:preserve-3d;will-change:transform;box-shadow:0 4px 20px #39261335}
 .turn-forward{left:50%;transform-origin:left center}.turn-backward{left:0;transform-origin:right center}
-.book-turn-face{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:#fdfbf5}
+.book-turn-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;overflow:hidden;background:#fdfbf5}
 .book-turn-face:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#7b654322,transparent 35%,#f7f0d91f 70%,#7b65430b);pointer-events:none}
 .book-turn-back{transform:rotateY(180deg)}.book-held-page{z-index:10;overflow:hidden}.book-held-left{left:0}.book-held-right{left:50%}
 @media(max-width:700px){
@@ -184,6 +191,7 @@ body[data-style=folio] .book-source-description{font:16px/1.9 SeagullHand,cursiv
  .book-spread{grid-template-columns:minmax(0,1fr)}.book-spread:before{display:none}
  body[data-style=folio] .book-page{padding:24px 38px 18px;border-radius:3px;box-shadow:inset 3px 0 8px #76532a10}
  body[data-style=folio] .book-page h2{font-size:21px}
+ body[data-style=folio] .book-page-footer{left:38px;right:38px}
  .book-turn-leaf{width:100%}.turn-forward{left:0;transform-origin:left center}.turn-backward{left:0;transform-origin:right center}
  .book-edge{width:38px}
 }
@@ -200,6 +208,8 @@ body[data-style=folio] .book-source-description{font:16px/1.9 SeagullHand,cursiv
  body[data-style=folio] #notes{height:auto;overflow:visible;box-shadow:none;padding:0;background:white}
  .book-spread{display:block;height:auto;perspective:none}.book-spread:before{display:none}
  body[data-style=folio] .book-page{display:block!important;height:auto;overflow:visible;box-shadow:none;padding:18px 0;margin-bottom:25px;background:white;break-inside:auto}
+ body[data-style=folio] #notes>.chapter{display:none!important}
+ body[data-style=folio] .book-page-footer{position:static;padding-top:12px}.book-atomic-overflow{max-height:none!important;overflow:visible}
  #notes>.book-overview{display:block!important}#notes>.book-overview>summary{display:none}
  .explore-panel[hidden]{display:block!important}.review-card .prose,.extension-card .prose{display:block!important}.explore-steps{flex-wrap:wrap}.explorer,.review-deck,.extension-deck{break-inside:auto}
  body:is([data-style=atlas],[data-style=folio]) .takeaway{transform:none;box-shadow:none}

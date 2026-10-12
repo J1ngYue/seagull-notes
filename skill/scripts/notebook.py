@@ -258,7 +258,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         style=style, note_id=html.escape(note_id or title, quote=True),
         experience_css=(assets / "experiences.css").read_text(encoding="utf-8"),
         handwriting_assets=handwriting_assets,
-        experience_js=(assets / "experiences.js").read_text(encoding="utf-8"),
+        experience_js=(assets / "book-pagination.js").read_text(encoding="utf-8") + "\n" + (assets / "experiences.js").read_text(encoding="utf-8"),
         route=route, widgets=widgets,
         math_css=math_css, math_js=math_js, code_css=code_css,
         library_action=f'<a class="library-link" href="{html.escape(library_href, quote=True)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2-3h9v16H3V7z"/></svg>笔记夹</a>' if library_href else "",

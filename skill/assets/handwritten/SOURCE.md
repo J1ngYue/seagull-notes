@@ -10,9 +10,10 @@ adapted from UncleCheng's MIT-licensed **note-skill** templates:
 
 Seagull Notes keeps its own source ingestion, full note body, shelf, navigation,
 code/formula copying and accessible interactions. Study pages scroll continuously;
-long journal chapters scroll within two facing pages without cutting content.
+long journal chapters and review answers continue across measured facing pages.
 The open-book spread, page-edge hover controls, front/back paper-turn animation,
-appendix pages and single-page mobile reading are Seagull Notes implementations.
+automatic pagination, complete code copying across fragments, appendix pages
+and single-page mobile reading are Seagull Notes implementations.
 Both replicas use a charcoal desk, centered pages and compact tool/directory
 popovers as requested in the supplied screenshots. Paper remains the existing reader.
 The legacy `atlas` / `folio` values now select Study Notebook / Leather Journal.

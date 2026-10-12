@@ -139,7 +139,7 @@ if(window.katex){document.querySelectorAll('.arithmatex').forEach(element=>{
  const wrapped=element.textContent.trim(),latex=wrapped.slice(2,-2).trim(),display=element.tagName==='DIV';
  try{katex.render(latex,element,{displayMode:display,throwOnError:true,trust:false,strict:'warn',maxExpand:1000})}
  catch(error){element.classList.add('math-error');element.title='LaTeX 格式错误，请检查源码';return}
- element.dataset.latex=latex;element.setAttribute('role','button');element.tabIndex=0;element.title='单击复制 LaTeX 公式';element.setAttribute('aria-label','复制 LaTeX 公式：'+latex);
+ element.dataset.latex=latex;element.dataset.copyBound='true';element.setAttribute('role','button');element.tabIndex=0;element.title='单击复制 LaTeX 公式';element.setAttribute('aria-label','复制 LaTeX 公式：'+latex);
  element.addEventListener('click',()=>copyFormula(element));element.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();copyFormula(element)}});
 })}
 $experience_js
