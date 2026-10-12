@@ -11,7 +11,7 @@
   --h1-color: #3b332a;
   --h2-color: #785c42;
   --h3-color: #785c42;
-  --code-background: #faf5eb;
+  --code-background: #fcf9f3;
   --code-normal: #473b2e;
   --code-comment: #88785f;
   --code-function: #31558a;
@@ -28,9 +28,9 @@
   --h1-size: 2em;
   --h2-size: 1.4em;
   --h3-size: 1.12em;
-  --table-header-background: #f2e8d7;
+  --table-header-background: #f8f1e7;
   --table-border-color: #e7dccb;
-  --blockquote-background-color: #f7efdf;
+  --blockquote-background-color: #fcf7ee;
   --blockquote-border-color: #af8c63;
   color: #3b332a;
   background: #fffefa;
@@ -47,11 +47,11 @@
 .seagull-notes .HyperMD-codeblock { border-radius: 12px; }
 .seagull-notes.markdown-rendered pre { border: 1px solid #e1d3bd; padding: 18px 21px; }
 .seagull-notes.markdown-rendered code { border-radius: 4px; }
-.seagull-notes .callout { border: 1px solid #e1d3bd; border-radius: 12px; background: #f7efdf; }
+.seagull-notes .callout { border: 1px solid #e1d3bd; border-radius: 12px; background: #fcf7ee; }
 .seagull-notes .callout-title { color: #785c42; }
 .seagull-notes .callout-content { color: #3b332a; }
 .seagull-notes .image-embed img { border: 1px solid #e7dccb; border-radius: 12px; }
-.seagull-notes .math-block { margin: 22px 0; padding: 19px 22px; background: #f7efdf; border: 1px solid #e1d3bd; border-radius: 10px; overflow-x: auto; }
+.seagull-notes .math-block { margin: 22px 0; padding: 19px 22px; background: #fcf7ee; border: 1px solid #e1d3bd; border-radius: 10px; overflow-x: auto; }
 @media(max-width:650px) {
   .seagull-notes .markdown-preview-sizer { padding: 12px 8px 40px; }
   .seagull-notes.markdown-rendered pre { padding: 15px 14px; }

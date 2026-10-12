@@ -109,7 +109,7 @@ def _layout(nodes: list[dict[str, Any]], title: str = "") -> tuple[list[dict[str
 # ---------------------------------------------------------------- SVG 渲染
 
 PALETTE = ["#aa8662", "#b17e60", "#9c8b71", "#a58b80", "#a38e5d", "#947960"]
-FILLS = ["#f7eddb", "#f8eee3", "#f5efe3", "#f6eee7", "#f8f0db", "#f2e9dc"]
+FILLS = ["#fbf5e9", "#fcf6ef", "#faf6ed", "#faf6f1", "#fcf8eb", "#f8f3eb"]
 BG = "#fffefa"
 TEXT = "#3b332a"
 
@@ -152,7 +152,7 @@ def render_svg(nodes: list[dict[str, Any]], title: str = "") -> str:
         x, y, depth = node["x"] + PADDING, node["y"] + PADDING, node["depth"]
         color, fill = PALETTE[node["branch"] % len(PALETTE)], FILLS[node["branch"] % len(FILLS)]
         parts.append(f'<g class="map-node" data-depth="{depth}"><title>{html.escape(node["title"])}</title>')
-        parts.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{node["w"]:.1f}" height="{node["h"]:.1f}" rx="{16 if depth == 0 else 10}" fill="{"#eee0c8" if depth == 0 else fill if depth == 1 else "#fffefa"}" stroke="{"#cfb796" if depth == 0 else color}" stroke-opacity=".45" filter="url(#card-shadow)"/>')
+        parts.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{node["w"]:.1f}" height="{node["h"]:.1f}" rx="{16 if depth == 0 else 10}" fill="{"#f5ecdc" if depth == 0 else fill if depth == 1 else "#fffefa"}" stroke="{"#cfb796" if depth == 0 else color}" stroke-opacity=".45" filter="url(#card-shadow)"/>')
         if depth == 0:
             parts.append(f'<text x="{x + node["w"] / 2:.1f}" y="{y + 23:.1f}" text-anchor="middle" font-size="8" letter-spacing="2.3" fill="#8d7356">KNOWLEDGE MAP</text>')
         else:

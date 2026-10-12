@@ -52,7 +52,7 @@ def canvas_tree(tree: list[dict], title: str = "") -> dict:
     placed, _, _ = export._layout(tree, title)
     for index, item in enumerate(placed):
         identity = f"node-{index}"
-        color = "#eee0c8" if item["depth"] == 0 else export.FILLS[item["branch"] % len(export.FILLS)]
+        color = "#f5ecdc" if item["depth"] == 0 else export.FILLS[item["branch"] % len(export.FILLS)]
         nodes.append({"id": identity, "type": "text", "text": item["title"],
                       "x": round(item["x"] * 1.4), "y": round(item["y"] * 1.4),
                       "width": round(item["w"] * 1.4), "height": round(item["h"] * 1.4), "color": color})
