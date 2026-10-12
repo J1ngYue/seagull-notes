@@ -168,7 +168,19 @@ def _html_to_text(html: str, url: str) -> tuple[str, str]:
     try:
         from lxml import html as lxml_html
 
-        tree = lxml_html.fromstring(content_html)
+        original = lxml_html.fromstring(html)
+        container = None
+        for selector in [
+            '//*[contains(concat(" ", normalize-space(@class), " "), " markdown-body ")]',
+            '//article', '//main', '//*[@role="main"]', '//*[@id="main" or @id="main-content"]', '//*[@id="content"]',
+        ]:
+            candidates = original.xpath(selector)
+            if candidates:
+                container = max(candidates, key=lambda element: len(element.text_content()))
+                break
+        tree = container if container is not None else lxml_html.fromstring(content_html)
+        for element in tree.xpath('.//script|.//style|.//noscript|.//nav|.//aside'):
+            element.drop_tree()
         text = tree.text_content()
     except Exception:
         import re

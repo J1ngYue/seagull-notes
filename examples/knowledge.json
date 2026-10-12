@@ -1,0 +1,190 @@
+{
+  "title": "Git 与 GitHub：从版本到协作",
+  "subtitle": "主题知识示例 · 7 个学习章节 · 用状态、流程和协作串起版本管理",
+  "source_kind": "topic",
+  "source_text": "给我整理 Git 与 GitHub 相关的基础知识，并用交互可视化帮助学习。",
+  "source_origin": "官方资料核对与独立整理",
+  "style": "atlas",
+  "tags": [
+    "Git",
+    "GitHub",
+    "版本管理",
+    "团队协作"
+  ],
+  "summary": "先分清 Git 的本地版本记录与 GitHub 的协作托管，再沿着工作区、暂存区、提交、分支和远程的路径理解日常操作。重点是知道每次命令改变了哪一层状态，并通过差异、历史和远程结果完成检查。",
+  "takeaways": [
+    "add 选择下一次提交的内容，commit 记录本地版本。",
+    "分支隔开开发路线；合并后仍要验证实际功能。",
+    "push 发布提交，Pull Request 组织协作与审查。"
+  ],
+  "cover": {
+    "path": "git-journey.svg",
+    "kind": "diagram",
+    "caption": "根据官方命令说明整理的学习路线示意图，非视频截图。"
+  },
+  "sources": [
+    {
+      "title": "Git status",
+      "url": "https://git-scm.com/docs/git-status"
+    },
+    {
+      "title": "Git add",
+      "url": "https://git-scm.com/docs/git-add"
+    },
+    {
+      "title": "Git commit",
+      "url": "https://git-scm.com/docs/git-commit"
+    },
+    {
+      "title": "Git switch",
+      "url": "https://git-scm.com/docs/git-switch"
+    },
+    {
+      "title": "Git merge",
+      "url": "https://git-scm.com/docs/git-merge"
+    },
+    {
+      "title": "Git fetch",
+      "url": "https://git-scm.com/docs/git-fetch"
+    },
+    {
+      "title": "Git pull",
+      "url": "https://git-scm.com/docs/git-pull"
+    },
+    {
+      "title": "Git push",
+      "url": "https://git-scm.com/docs/git-push"
+    },
+    {
+      "title": "Git revert",
+      "url": "https://git-scm.com/docs/git-revert"
+    },
+    {
+      "title": "GitHub Pull requests",
+      "url": "https://docs.github.com/en/pull-requests/reference/pull-requests"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Git 与 GitHub，各自负责什么",
+      "markdown": "**Git 管理版本；GitHub 提供托管与协作。** 在本地仓库中可以创建提交、查看历史和建立分支，不必先连接 GitHub。把仓库推送到托管平台后，团队才有共同的远程位置，并能围绕 Pull Request 讨论和审查改动。\n\n| 你要解决的问题 | 对应的层面 |\n| --- | --- |\n| 留下本地可回看的版本 | Git 提交 |\n| 独立开发一项功能 | Git 分支 |\n| 把提交发布到远程 | Git push 与远程仓库 |\n| 讨论、审查和整合改动 | GitHub Pull Request |\n\n学习时把“本地已经有提交”和“远程已经收到提交”分开检查。这两个动作承担不同职责。"
+    },
+    {
+      "title": "工作区、暂存区与提交：三种状态",
+      "markdown": "工作区是正在编辑的文件；暂存区（index）准备下一次提交的内容；提交记录一个版本。`git status` 展示这些状态之间的差异，以及未被跟踪的文件。\n\n```bash\ngit status\ngit diff\ngit diff --staged\n```\n\n`git diff` 帮助检查工作区相对暂存区的变化，`git diff --staged` 帮助检查准备提交的变化。**先看差异，再决定提交什么。** 文件没有出现在改动列表中，表示当前没有相应差异，并不表示文件被删除。\n\n下面的步骤演示把“修改、选择、记录”连起来；每一步的检查对象不同。"
+    },
+    {
+      "title": "完成一次可解释的提交",
+      "markdown": "以下是整理的练习示例。先在一个独立练习目录中建立说明文件，再选择文件并提交。作者身份应先按你的实际情况配置，代码块中的提交说明是示例。\n\n```bash\ngit init\n# 创建或修改 README.md 后再继续\ngit status\ngit add README.md\ngit diff --staged\ngit commit -m \"添加项目说明\"\ngit log --oneline\n```\n\n`git add` 选择执行该命令时的文件内容。之后若再次修改文件，新改动还需要重新检查与暂存。`git commit` 记录已经准备好的内容；一次提交应有清楚目的，让未来的自己能解释这一版完成了什么。"
+    },
+    {
+      "title": "分支与合并：给功能一条开发路线",
+      "markdown": "分支提供一个可以继续前进的版本位置。新功能可以从当前可用版本建立独立分支，完成修改与验证，再合入接收改动的分支。下面假设主分支叫 `main`；以项目实际分支名为准。\n\n```bash\ngit switch main\ngit switch -c feature/readme\n# 修改并验证功能，然后 add 和 commit\ngit switch main\ngit merge feature/readme\ngit status\n```\n\n**合并的目标是当前分支。** 若出现冲突，需要理解双方修改，整理文件后完成当前合并流程；不能把“删掉冲突标记”当作功能已经正确。代码能运行、预期行为仍存在，才是验证结果。"
+    },
+    {
+      "title": "远程、fetch、pull 与 push",
+      "markdown": "远程仓库是另一个位置上的仓库，`origin` 是常见的远程名称。日常先确认连接到哪里，再决定取回或发布哪些提交。\n\n```bash\ngit remote -v\ngit fetch origin\ngit status\n# 检查当前分支和项目约定后，再执行合适的同步操作\ngit push origin main\n```\n\n`fetch` 取得远程对象与引用信息；`pull` 还会把取得的内容按所选方式整合进当前分支。`push` 将选定引用及相关对象发布到远程。先理解这些区别，避免把“取到了信息”与“当前工作文件已经被整合更新”混为一谈。"
+    },
+    {
+      "title": "Pull Request：让改动进入讨论与审查",
+      "markdown": "在 GitHub 中，Pull Request 是围绕一组拟议改动进行协作的入口。说明要解决的问题，展示改动与验证结果，让协作者有依据审查。\n\n一条清楚的协作路线是：从合适的起点开发 → 本地验证与提交 → 推送分支 → 创建 Pull Request → 讨论和调整 → 按项目约定合并。\n\n**提交说明解释一个版本，PR 描述解释一项工作。** 不要只写“更新了代码”；写出触发条件、预期行为和已经完成的验证，审查者才能判断改动是否达成目标。"
+    },
+    {
+      "title": "复习：每次操作都回答三个问题",
+      "markdown": "整理的复习方法：操作前，确认当前位置、需要保留的内容和预期变化；操作后，核对文件、状态与历史。\n\n1. 我在哪个分支，哪些改动还未提交？\n2. 下一次提交准备包含哪些内容？\n3. 本地与远程各自拥有哪些提交？\n\n可以用一个独立的小项目练习“只暂存部分文件”“创建功能分支”“取回远程信息”这三种场景，并把观察写成自己的解释。后面的自测卡用于检验理解；拓展阅读进一步讨论撤销与协作边界。"
+    }
+  ],
+  "mind_map": [
+    {
+      "title": "Git 与 GitHub",
+      "children": [
+        {
+          "title": "本地状态",
+          "children": [
+            {
+              "title": "工作区编辑"
+            },
+            {
+              "title": "暂存区选择"
+            },
+            {
+              "title": "提交记录"
+            }
+          ]
+        },
+        {
+          "title": "开发路线",
+          "children": [
+            {
+              "title": "建立分支"
+            },
+            {
+              "title": "验证与合并"
+            }
+          ]
+        },
+        {
+          "title": "远程协作",
+          "children": [
+            {
+              "title": "fetch / pull"
+            },
+            {
+              "title": "push 发布"
+            },
+            {
+              "title": "Pull Request 审查"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "explorers": [
+    {
+      "title": "一次改动怎样成为可发布的版本",
+      "steps": [
+        {
+          "title": "修改文件",
+          "markdown": "工作区出现变化。先用 `git status` 与差异检查说明改动目的，不急着把所有文件一次加入提交。"
+        },
+        {
+          "title": "选择内容",
+          "markdown": "用 `git add` 准备下一次提交，再检查暂存差异。若文件之后又改动，重新判断是否把新变化也加入。"
+        },
+        {
+          "title": "记录版本",
+          "markdown": "创建有清楚说明的 `git commit`，并查看历史。这个阶段记录的是本地版本。"
+        },
+        {
+          "title": "发布与协作",
+          "markdown": "把适当分支推送到远程，并在平台核对结果。需要审查时，通过 Pull Request 说明目标和验证。"
+        }
+      ]
+    }
+  ],
+  "review": [
+    {
+      "question": "add 成功是否表示版本已经存档？",
+      "answer": "还没有。它准备下一次提交的内容，创建提交后才留下相应的本地版本。"
+    },
+    {
+      "question": "fetch 与 pull 的关键区别是什么？",
+      "answer": "fetch 取得远程信息；pull 还会进行后续整合。是否以及怎样整合，要结合当前分支和操作选项。"
+    },
+    {
+      "question": "为什么合并后还要检查功能？",
+      "answer": "Git 能组织历史与文件变化，但不能替你证明业务行为正确。状态与代码运行结果都需要检查。"
+    }
+  ],
+  "extensions": [
+    {
+      "title": "撤销、回退与保留历史",
+      "markdown": "补充阅读：`git revert` 通过新的提交抵消既有提交的变化。它与移动分支位置的操作有不同目的；协作历史的处理还要考虑其他人的工作。[Git revert 官方说明](https://git-scm.com/docs/git-revert)。"
+    },
+    {
+      "title": "把学习变成自己的知识体系",
+      "markdown": "整理的延伸练习：把一个真实项目的操作记录画成“改动在哪里”的图；给每条命令写下前提、状态变化和验证。主动标记已掌握，不能仅因浏览过页面就当作理解。"
+    }
+  ]
+}

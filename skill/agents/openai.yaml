@@ -1,6 +1,6 @@
 interface:
   display_name: "Seagull Notes"
-  short_description: "Turn video links into illustrated notes with browser sign-in"
-  default_prompt: "Use $seagull-notes to read the video's full platform captions, let me sign in through the in-app browser if needed, then create illustrated Chinese notes with timestamps, a mind map and a CuteNote-inspired HTML page."
+  short_description: "Interactive notes from topics, text, webpages and videos"
+  default_prompt: "Use $seagull-notes to turn this topic or material into complete illustrated Chinese notes. Read and verify the sources, choose a suitable reading style, include useful visualizations and review cards, and add the result to my notebook shelf. Reuse sign-in for captioned videos when needed."
 policy:
   allow_implicit_invocation: true

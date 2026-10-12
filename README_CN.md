@@ -2,7 +2,7 @@
 
 [English](README.md) | 简体中文
 
-把 B站、YouTube 和本地音视频整理成**图文笔记、思维导图、Markdown 和可离线阅读的 HTML**。
+把知识主题、粘贴笔记、文章网址、B站、YouTube 和本地材料整理成**有自己笔记夹的交互式图文笔记**。
 
 这是一套 Codex skill 与本地 Python 工具：脚本负责取素材和渲染，AI 客户端负责读完素材、理解内容并写笔记。默认流程无需另配笔记生成 API key。
 
@@ -10,6 +10,38 @@
 - **B站自动采集**：BV 链接默认走本地采集器，复用完整字幕缓存；`--anonymous` 明确跳过凭证。
 - **需要时交接登录**：由用户在 Codex 内置浏览器完成登录，再读取该会话可访问的内容。
 - **图文交付**：摘要、核心收获、章节、来源画面、解释示意图和脑图，生成自包含 HTML。
+- **主题、文字与网址**：可以直接说“给我做 Git 和 GitHub 的知识笔记”、粘贴别人的笔记或提供文章链接。AI 先研究或阅读材料，保留出处，区分原文与自己的拓展。
+- **三种阅读体验**：保留米色纸页，新增知识图谱与叙事卷册；可现场切换、标记掌握进度、操作步骤可视化、展开自测答案。
+
+## 主题、文本和网页笔记
+
+素材入口负责保存真实原文，当前 AI 负责研究和编写笔记，渲染器负责页面；不会把主题名或抓取结果冒充完整教程。
+
+```bash
+python skill/scripts/prepare.py --kind topic --source "Git 与 GitHub"
+python skill/scripts/prepare.py --kind text --file pasted-notes.txt
+python skill/scripts/prepare.py --kind url --source "https://example.com/article"
+python skill/scripts/notebook.py note.json --style atlas
+```
+
+| 风格 | 体验 |
+| --- | --- |
+| 米色纸页 (`paper`) | 原有的连续图文精读 |
+| 知识图谱 (`atlas`) | 学习路线卡片、掌握进度环、概念章节、步骤演示与入场动画 |
+| 叙事卷册 (`folio`) | 编辑式排版、逐章书页、左右键导航与书页过渡 |
+
+主题、文本、网页默认使用知识图谱；已有视频和本地笔记保留米色纸页。三种风格共用完整正文、出处、代码与公式复制、脑图、目录和打印；卷册打印包含全部章节，不会只打印当前页。风格偏好和主动标记的掌握状态保存在本地浏览器。
+
+笔记夹支持来源类别筛选，以及标题、摘要和标签搜索。`explorers/review/extensions` 支持互动步骤、自测卡与拓展阅读，见 [通用材料与风格](skill/references/materials-and-styles.md)。新风格以网页笔记为主要体验，Obsidian 保留为可选导出。
+
+多风格思路参考了 [note-skill](https://github.com/Unclecheng-li/note-skill)；Atlas、Folio 的布局、组件与实现为独立设计。
+
+仓库自带 Git/GitHub 主题示例，包括官方资料链接、自绘流程图、互动步骤、自测与拓展：
+
+```bash
+python skill/scripts/notebook.py examples/knowledge.json --style atlas --out data/artifacts/git-atlas
+python skill/scripts/notebook.py examples/knowledge.json --style folio --out data/artifacts/git-folio
+```
 
 ![视频到图文笔记的流程示意图](examples/workflow.svg)
 
@@ -114,7 +146,7 @@ python skill/scripts/notebook.py note.json --obsidian-vault "/实际vault的绝�
 
 正文可直接编辑；删除或移动图片的 `![[...]]` 行即可删图、换位置，替换附件即可换图，修改 `|760` 可调显示宽度。SVG 保留矢量源文件，截图仍是原图片；Canvas 脑图可拖节点、改字和连接箭头，不需额外插件。保留淡色配色、标题、重点框、代码和图文结构，导航采用 Obsidian 自带界面。重导入保留已有文件，避免覆盖用户修改。
 
-输入 JSON 由 AI 客户端整理，渲染器本身不生成摘要。格式见 [notebook-format.md](skill/references/notebook-format.md)。网络来源填写 `source_url`，本地来源填写实际文件绝对路径 `source_ref`。本地时间显示为素材位置标记，网络时间可跳转原视频。
+输入 JSON 由 AI 客户端整理，渲染器本身不生成摘要。格式见 [notebook-format.md](skill/references/notebook-format.md)。视频与网页填写 `source_url`，本地来源填写实际文件绝对路径 `source_ref`，主题与粘贴文字填写 `source_kind/source_text/source_origin`。本地时间显示为素材位置标记，视频时间可跳转原视频；主题、文本和网页章节不编造时间戳。
 
 截图使用经过核实的原视频画面，自绘图明确标注示意图。图片嵌入 HTML，离线仍可读；Markdown 保留图片原本地路径，移动 Markdown 时需一并保留图片。
 

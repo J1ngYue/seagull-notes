@@ -2,7 +2,7 @@
 
 English | [简体中文](README_CN.md)
 
-Turn Bilibili, YouTube, and local media into **illustrated notes, mind maps, Markdown, and an offline HTML notebook**.
+Turn knowledge topics, pasted notes, article URLs, Bilibili, YouTube, and local materials into **illustrated, interactive notebooks with a personal shelf**.
 
 Seagull Notes combines a Codex skill with local Python helpers. The helpers extract source material and render the notebook; your AI client reads the material and writes the notes. This workflow does not require a separate note-generation API key.
 
@@ -10,6 +10,8 @@ Seagull Notes combines a Codex skill with local Python helpers. The helpers extr
 - **Automatic Bilibili collection.** BV links use the local collector and reuse complete caption caches. `--anonymous` explicitly skips credentials.
 - **Browser sign-in when needed.** Let the user complete sign-in in Codex's in-app browser, then read what that session can access.
 - **Illustrated delivery.** Summaries, takeaways, chapters, source images, explanatory diagrams, and a mind map in a self-contained HTML file.
+- **Topics, text, and webpages.** Ask for a subject tutorial, paste someone else's notes, or provide an article URL. The AI reads or researches the material, preserves attribution, and separates source content from its own extensions.
+- **Three reading experiences.** Keep the beige Paper view, explore the new Knowledge Atlas, or read chapter by chapter in Narrative Folio. Switch styles in the page, mark mastered chapters, explore step visualizations, and reveal review answers.
 
 ![From video link to illustrated notes](examples/workflow-en.svg)
 
@@ -34,6 +36,38 @@ Copy `skill/` into your client's skills directory as `seagull-notes`, for exampl
 Ask Codex:
 
 > Use seagull-notes to turn this video into illustrated Chinese notes: VIDEO_URL
+
+You can also ask “Make me notes about Git and GitHub,” paste study text, or send an article URL. Topic requests are researched rather than treated as source material. Article notes retain their source links; video notes keep their caption workflow.
+
+## Topic and text notebooks
+
+The AI prepares the material, writes the notebook JSON, then renders it. The preparation command does not generate a finished lesson:
+
+```bash
+python skill/scripts/prepare.py --kind topic --source "Git and GitHub"
+python skill/scripts/prepare.py --kind text --file pasted-notes.txt
+python skill/scripts/prepare.py --kind url --source "https://example.com/article"
+python skill/scripts/notebook.py note.json --style atlas
+```
+
+| Style | Experience |
+| --- | --- |
+| Paper (`paper`) | The existing beige illustrated reader |
+| Knowledge Atlas (`atlas`) | Learning-route cards, mastery progress, concept chapters, step explorers, and reveal animations |
+| Narrative Folio (`folio`) | Editorial typography, chapter pages, arrow-key navigation, and page transitions |
+
+Topic, text, and article notes default to Atlas; existing video and local-media notebooks retain Paper. Every style keeps complete chapters, source attribution, code and formula copying, mind maps, search, and print support. Folio prints every chapter, not just the currently selected page. Mastery marks and reading-style preferences are stored locally in the browser.
+
+The shelf filters notes by source type and searches titles, summaries, and tags. `explorers`, `review`, and `extensions` add interactive learning components; see [the material and style guide](skill/references/materials-and-styles.md). Obsidian remains an optional export; the web notebook is the primary experience for the new styles.
+
+The multi-style direction was informed by [note-skill](https://github.com/Unclecheng-li/note-skill). Atlas, Folio, and their components are independently implemented.
+
+Try the included Git/GitHub topic notebook with its official reference links, original flow diagram, step explorer, review questions, and extensions:
+
+```bash
+python skill/scripts/notebook.py examples/knowledge.json --style atlas --out data/artifacts/git-atlas
+python skill/scripts/notebook.py examples/knowledge.json --style folio --out data/artifacts/git-folio
+```
 
 The included skill instructions and notebook interface are currently in Chinese. This English README describes the same workflow.
 
@@ -114,7 +148,7 @@ python skill/scripts/notebook.py note.json --obsidian-vault "/absolute/path/to/v
 
 Edit the text normally. Delete or move an image's `![[...]]` line, replace its attachment, or change `|760` to another width. SVG files remain editable vectors; raster screenshots remain images. The Canvas mind map supports changing text, moving nodes, and reconnecting arrows without a community plugin. Colors, headings, callouts, code cards, and illustrations retain the reading style; navigation uses Obsidian's interface. Existing vault files are preserved on re-import, so user edits are not overwritten.
 
-The AI client prepares the JSON input; the renderer does not generate a summary. See [the input format](skill/references/notebook-format.md). Use `source_url` for a web source or `source_ref` for an existing local file's absolute path. Local timestamps are position labels; web timestamps link back to the video.
+The AI client prepares the JSON input; the renderer does not generate a summary. See [the input format](skill/references/notebook-format.md). Use `source_url` for a video or article, `source_ref` for an existing local file's absolute path, or `source_kind` with `source_text/source_origin` for topics and pasted text. Local timestamps are position labels; video timestamps link back to the video. Topic, text, and article chapters do not invent timestamps.
 
 Use verified video frames for screenshots and label explanatory diagrams clearly. Images are embedded in HTML for offline reading; Markdown retains local image paths, so keep those files when moving the Markdown output.
 

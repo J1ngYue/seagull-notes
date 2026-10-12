@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 from string import Template
 
-from . import config
+from . import config, sources
 
 
 def notebook_id(source: Path) -> str:
@@ -35,7 +35,7 @@ def render_index(entries: list[dict], template_file: Path) -> str:
         title = html.escape(entry["title"])
         summary = html.escape(entry["summary"])
         platform = html.escape(entry["platform"])
-        search = html.escape(" ".join([entry["title"], entry["summary"], entry["platform"]]), quote=True)
+        search = html.escape(" ".join([entry["title"], entry["summary"], entry["platform"], " ".join(entry.get("tags", []))]), quote=True)
         if entry.get("cover"):
             kind = ' class="diagram"' if entry["cover_diagram"] else ""
             image = f'<img{kind} src="{entry["cover"]}" alt="{title}配图" loading="lazy">'
@@ -43,8 +43,10 @@ def render_index(entries: list[dict], template_file: Path) -> str:
             image = f'<div class="cover-placeholder"><span>{entry["chapters"]:02}</span><small>个学习章节</small></div>'
         duration = duration_label(entry.get("duration"))
         details = " · ".join(value for value in [duration, f'{entry["chapters"]} 个章节'] if value)
-        cards.append(f'<a class="note-card" href="{entry["html"]}" aria-labelledby="note-title-{index}" data-search="{search}" style="--delay:{min(index, 6)*45}ms">'
-                     f'<div class="card-cover">{image}</div><div class="card-body"><span class="platform">{platform}</span>'
+        kind = html.escape(entry.get("source_kind", "video"), quote=True)
+        style_label = html.escape(sources.STYLE_LABELS.get(entry.get("style", "paper"), "米色纸页"))
+        cards.append(f'<a class="note-card" href="{entry["html"]}" aria-labelledby="note-title-{index}" data-kind="{kind}" data-search="{search}" style="--delay:{min(index, 6)*45}ms">'
+                     f'<div class="card-cover">{image}</div><div class="card-body"><div class="card-labels"><span class="platform">{platform}</span><span class="style-label">{style_label}</span></div>'
                      f'<h2 id="note-title-{index}">{title}</h2><p>{summary}</p><div class="card-foot"><span>{details}</span>'
                      '<span class="read-label">阅读笔记 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>'
                      '</div></div></a>')
@@ -63,7 +65,8 @@ def register(note: dict, source: Path, page: str, markdown: str, template_file: 
     entries = json.loads(manifest.read_text(encoding="utf-8")) if manifest.exists() else {}
     now = time.time()
     entry = {"title": note["title"], "summary": note.get("summary", ""),
-             "platform": note.get("platform") or ("本地文件" if note.get("source_ref") else "视频"),
+             "platform": note.get("platform") or sources.SOURCE_LABELS[sources.source_kind(note)],
+             "source_kind": sources.source_kind(note), "style": sources.reading_style(note), "tags": note.get("tags", []),
              "duration": note.get("duration"), "chapters": len(note["sections"]),
              "html": identity + ".html", "markdown": identity + ".md",
              "created_at": entries.get(identity, {}).get("created_at", now), "updated_at": now}

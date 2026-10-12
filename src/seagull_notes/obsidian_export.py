@@ -7,7 +7,7 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from . import export, notebook_library
+from . import export, notebook_library, sources
 
 ASSETS = Path(__file__).resolve().parents[2] / "skill" / "assets"
 INSTRUCTIONS = """---
@@ -85,7 +85,9 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
     if note.get("subtitle"):
         body.append(note["subtitle"])
     if note.get("source_url"):
-        source_line = f"来源：[{note.get('platform', '原视频')}]({note['source_url']})"
+        source_line = f"来源：[{note.get('platform', sources.SOURCE_LABELS[sources.source_kind(note)])}]({note['source_url']})"
+    elif sources.source_kind(note) in {"topic", "text"}:
+        source_line = f"来源：{sources.SOURCE_LABELS[sources.source_kind(note)]}"
     else:
         source_line = f"来源：本地文件 `{Path(note['source_ref']).name}`"
     meta = [source_line, note.get("uploader"), _timestamp(note["duration"]) if note.get("duration") else None,
@@ -99,7 +101,7 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
         body.append(picture(note["cover"]))
     for section in note["sections"]:
         heading = f"## {section['title']}"
-        if section.get("start") is not None:
+        if section.get("start") is not None and sources.source_kind(note) in {"video", "local"}:
             label = _timestamp(section["start"])
             if note.get("source_url"):
                 parts = urlsplit(note["source_url"])
@@ -121,6 +123,16 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
         files[transcript] = ("# 字幕与出处\n\n" + note["transcript"]).encode("utf-8")
         body.append(f"## 字幕与出处\n\n[[{transcript}|查看完整字幕与出处]]")
     body.append("[[Seagull Notes/导入与编辑|图片尺寸、移动、替换与样式说明]]")
+    if sources.source_links(note):
+        body.append("## 参考资料\n\n" + "\n".join(f'- [{item["title"]}]({item["url"]})' for item in sources.source_links(note)))
+    for item in note.get("explorers", []):
+        body.append(f'## {item["title"]}')
+        for step in item.get("steps", []):
+            body.extend([f'### {step["title"]}', step["markdown"]])
+    for item in note.get("review", []):
+        body.extend([f'### 自测：{item["question"]}', item["answer"]])
+    for item in note.get("extensions", []):
+        body.extend([f'## 拓展：{item["title"]}', item["markdown"]])
     files[note_name] = "\n\n".join(body).encode("utf-8")
     files[".obsidian/snippets/seagull-notes.css"] = (ASSETS / "obsidian.css").read_bytes()
     files["Seagull Notes/导入与编辑.md"] = INSTRUCTIONS.encode("utf-8")

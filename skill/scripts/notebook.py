@@ -28,7 +28,7 @@ from pygments.util import ClassNotFound
 PROJECT_HOME = Path(os.environ.get("SEAGULL_NOTES_HOME", str(Path(__file__).resolve().parents[2])))
 sys.path.insert(0, str(PROJECT_HOME / "src"))
 
-from seagull_notes import export, notebook_library, obsidian_export
+from seagull_notes import export, notebook_library, obsidian_export, sources
 
 
 class NotebookBashLexer(BashLexer):
@@ -133,13 +133,37 @@ def math_assets() -> tuple[str, str]:
     return f"<style>{css}</style>", f"<script>{script}</script>"
 
 
-def render_note(note: dict, base: Path, library_href: str | None = None, obsidian_href: str | None = None) -> tuple[str, str]:
+def render_widgets(note: dict) -> str:
+    widgets = []
+    for index, explorer in enumerate(note.get("explorers", [])):
+        steps = explorer.get("steps", [])
+        if not steps:
+            continue
+        buttons = ''.join(f'<button type="button" role="tab" id="explore-{index}-tab-{step}" aria-controls="explore-{index}-panel-{step}" aria-selected="{str(step == 0).lower()}" tabindex="{0 if step == 0 else -1}" data-step="{step}"><span>{step + 1:02}</span>{html.escape(item["title"])}</button>' for step, item in enumerate(steps))
+        panels = ''.join(f'<div class="explore-panel prose" role="tabpanel" id="explore-{index}-panel-{step}" aria-labelledby="explore-{index}-tab-{step}" {"hidden" if step else ""}>{rich_text(item["markdown"])}</div>' for step, item in enumerate(steps))
+        widgets.append(f'<section class="explorer"><header><div><span class="label">EXPLORE · 互动演示</span><h3>{html.escape(explorer["title"])}</h3></div><button type="button" class="explore-play" aria-pressed="false">自动演示</button></header><div class="explore-steps" role="tablist" aria-label="{html.escape(explorer["title"], quote=True)}">{buttons}</div><progress value="1" max="{len(steps)}" aria-label="演示步骤"></progress>{panels}</section>')
+    if note.get("review"):
+        questions = ''.join(f'<details class="review-card"><summary><span>{index:02}</span>{html.escape(item["question"])}</summary><div class="prose">{rich_text(item["answer"])}</div></details>' for index, item in enumerate(note["review"], 1))
+        widgets.append('<section class="review-deck"><span class="label">RECALL · 自测卡片</span><h3>合上答案，你能解释吗？</h3>' + questions + '</section>')
+    if note.get("extensions"):
+        extras = ''.join(f'<details class="extension-card"><summary>{html.escape(item["title"])}<span>拓展阅读 ＋</span></summary><div class="prose">{rich_text(item["markdown"])}</div></details>' for item in note["extensions"])
+        widgets.append('<section class="extension-deck"><span class="label">GO FURTHER · 拓展</span>' + extras + '</section>')
+    return '<div class="study-widgets">' + ''.join(widgets) + '</div>' if widgets else ""
+
+
+def render_note(note: dict, base: Path, library_href: str | None = None, obsidian_href: str | None = None, note_id: str = "") -> tuple[str, str]:
     title = note["title"]
+    kind = sources.source_kind(note)
+    style = sources.reading_style(note)
     local_source = None
     if note.get("source_url"):
         source = source_link(note["source_url"])
-        source_action = f'<a href="{html.escape(source, quote=True)}" target="_blank" rel="noopener">查看原视频 ↗</a>'
-        source_md = f"[{note.get('platform', '原视频')}]({source})"
+        source_action = f'<a href="{html.escape(source, quote=True)}" target="_blank" rel="noopener">{"查看原视频" if kind == "video" else "查看来源"} ↗</a>'
+        source_md = f"[{note.get('platform', sources.SOURCE_LABELS[kind])}]({source})"
+    elif kind in {"topic", "text"}:
+        source = ""
+        source_action = f'<span class="source-local">{sources.SOURCE_LABELS[kind]}</span>'
+        source_md = sources.SOURCE_LABELS[kind]
     else:
         local_source = Path(note["source_ref"])
         if not local_source.is_absolute() or not local_source.is_file():
@@ -147,7 +171,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         source = str(local_source)
         source_action = f'<span class="source-local" title="{html.escape(source, quote=True)}">本地素材：{html.escape(local_source.name)}</span>'
         source_md = f"本地文件 `{source}`"
-    origin = note.get("subtitle_origin", "字幕来源待核实")
+    origin = note.get("subtitle_origin") or note.get("source_origin") or ("字幕来源待核实" if kind == "video" else "")
     summary = note.get("summary", "")
     cover = ""
     cover_md = ""
@@ -162,7 +186,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         cards = [f'<div class="takeaway"><span>{i:02}</span><p>{html.escape(point)}</p></div>' for i, point in enumerate(note["takeaways"], 1)]
         takeaways = '<div class="takeaways">' + "".join(cards) + '</div>'
     meta = " · ".join(str(value) for value in [
-        note.get("platform", "本地文件" if local_source else "视频"), note.get("uploader"),
+        note.get("platform", sources.SOURCE_LABELS[kind]), note.get("uploader"),
         timestamp(note["duration"]) if note.get("duration") else None, origin,
     ] if value)
     toc, sections = [], []
@@ -176,7 +200,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         start = section.get("start")
         time_link = ""
         heading = section["title"]
-        if start is not None:
+        if start is not None and kind in {"video", "local"}:
             if local_source:
                 time_link = f'<span class="time">{timestamp(start)}</span>'
                 heading += f" · {timestamp(start)}"
@@ -195,22 +219,42 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
             image_md = f"![{caption}](<{path.as_posix()}>)"
         sections.append(f'<section class="chapter" id="chapter-{i}"><header><span class="number">{i:02}</span><h2>{name}</h2>{time_link}</header><div class="prose">{rich_text(section["markdown"])}</div>{figure}</section>')
         body.extend([f"## {heading}", section["markdown"], image_md])
+    reference_links = sources.source_links(note)
+    references = '<div class="source-list">' + ''.join(f'<a href="{html.escape(item["url"], quote=True)}" target="_blank" rel="noopener">{html.escape(item["title"])} ↗</a>' for item in reference_links) + '</div>' if reference_links else ""
+    if reference_links:
+        body.append("## 参考资料\n\n" + "\n".join(f'- [{item["title"]}]({item["url"]})' for item in reference_links))
+    for item in note.get("explorers", []):
+        body.append(f'## {item["title"]}')
+        for step in item.get("steps", []):
+            body.extend([f'### {step["title"]}', step["markdown"]])
+    for item in note.get("review", []):
+        body.extend([f'### 自测：{item["question"]}', item["answer"]])
+    for item in note.get("extensions", []):
+        body.extend([f'## 拓展：{item["title"]}', item["markdown"]])
     markdown_body = "\n\n".join(value for value in body if value)
     tree = note.get("mind_map")
     mindmap = '<p class="muted">这篇笔记没有提供脑图。</p>'
     if tree:
         mindmap = export.render_mindmap(tree, title)
-    math_css, math_js = math_assets() if any('class="arithmatex"' in section for section in sections) else ("", "")
+    widgets = render_widgets(note)
+    math_css, math_js = math_assets() if any('class="arithmatex"' in section for section in [*sections, widgets]) else ("", "")
     code_css = "\n".join(line for line in CODE_FORMATTER.get_style_defs(".code-source").splitlines() if line.startswith(".code-source"))
     template = Template((Path(__file__).resolve().parents[1] / "assets" / "notebook.html").read_text(encoding="utf-8"))
+    assets = Path(__file__).resolve().parents[1] / "assets"
+    route = ''.join(f'<button type="button" class="route-card" data-chapter="{index}"><span>{index + 1:02}</span><strong>{html.escape(section["title"])}</strong><small>展开学习 ↗</small></button>' for index, section in enumerate(note["sections"]))
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
         source_action=source_action, toc="".join(toc), sections="".join(sections), chapter_count=len(note["sections"]),
-        source_kicker="LOCAL NOTES · 本地精读" if local_source else "VIDEO NOTES · 视频精读",
-        source_hint="章节时间对应本地素材的位置。" if local_source else "点击章节时间，回到原视频。",
+        source_kicker={"local": "LOCAL NOTES · 本地精读", "video": "VIDEO NOTES · 视频精读", "topic": "TOPIC NOTES · 主题知识", "text": "TEXT NOTES · 文本整理", "article": "SOURCE NOTES · 网页精读"}[kind],
+        source_hint="点击章节时间，回到原视频。" if kind == "video" else "章节时间对应本地素材的位置。" if kind == "local" else "通过目录定位知识点，参考资料保留出处。",
         cover=cover, takeaways=takeaways, subtitle=html.escape(note.get("subtitle", "")),
         mindmap=mindmap, markdown=html.escape(markdown_body),
-        transcript=html.escape(note.get("transcript") or "未提供完整字幕原文。"),
+        transcript=html.escape(note.get("transcript") or note.get("source_text") or ("未提供完整字幕原文。" if kind == "video" else "本笔记依据整理需求与所列资料编写。")),
+        original_tab="字幕与出处" if kind == "video" else "资料与出处", references=references,
+        style=style, note_id=html.escape(note_id or title, quote=True),
+        experience_css=(assets / "experiences.css").read_text(encoding="utf-8"),
+        experience_js=(assets / "experiences.js").read_text(encoding="utf-8"),
+        route=route, widgets=widgets,
         math_css=math_css, math_js=math_js, code_css=code_css,
         library_action=f'<a class="library-link" href="{html.escape(library_href, quote=True)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2-3h9v16H3V7z"/></svg>笔记夹</a>' if library_href else "",
         obsidian_action=f'<a class="obsidian-link" href="{html.escape(obsidian_href, quote=True)}" download>导入 Obsidian ↓</a>' if obsidian_href else "",
@@ -225,10 +269,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="笔记 JSON → 图文 HTML + Markdown")
     parser.add_argument("note", type=Path)
     parser.add_argument("--out", type=Path, help="输出文件基名，不含扩展名")
+    parser.add_argument("--style", choices=["paper", "atlas", "folio"], help="米色纸页 / 知识图谱 / 叙事卷册")
     parser.add_argument("--obsidian-vault", type=Path, help="将可编辑笔记与图片导入指定 vault，保留已存在的文件")
     args = parser.parse_args()
     try:
         note = json.loads(args.note.read_text(encoding="utf-8-sig"))
+        if args.style:
+            note["style"] = args.style
         source = args.note.resolve()
         folder = notebook_library.directory().resolve()
         identity = notebook_library.notebook_id(source)
@@ -241,11 +288,11 @@ def main() -> int:
         except ValueError:
             library_href = (folder / "index.html").as_uri()
         obsidian_href = library_href.rsplit("/", 1)[0] + "/" + identity + ".obsidian.zip" if "/" in library_href else identity + ".obsidian.zip"
-        page, body = render_note(note, source.parent, library_href, obsidian_href)
+        page, body = render_note(note, source.parent, library_href, obsidian_href, identity)
         html_path.write_text(page, encoding="utf-8")
         md_path.write_text(body, encoding="utf-8")
         canonical = folder / (notebook_library.notebook_id(source) + ".html")
-        canonical_page = page if html_path.resolve() == canonical else render_note(note, source.parent, "index.html", identity + ".obsidian.zip")[0]
+        canonical_page = page if html_path.resolve() == canonical else render_note(note, source.parent, "index.html", identity + ".obsidian.zip", identity)[0]
         collected = notebook_library.register(note, source, canonical_page, body, Path(__file__).resolve().parents[1] / "assets" / "library.html", bundle)
         if args.obsidian_vault:
             collected["obsidian_import"] = obsidian_export.import_bundle(Path(bundle["obsidian_zip"]), args.obsidian_vault)

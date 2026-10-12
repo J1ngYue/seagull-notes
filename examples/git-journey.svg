@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="320" viewBox="0 0 1120 320">
+<rect width="1120" height="320" rx="22" fill="#fbf7ee"/>
+<text x="44" y="44" font-family="Microsoft YaHei,sans-serif" font-size="12" letter-spacing="3" fill="#9d7954">FROM CHANGE TO COLLABORATION</text>
+<text x="44" y="88" font-family="Microsoft YaHei,sans-serif" font-size="26" font-weight="600" fill="#3b332a">一条改动，经过四个不同的检查点。</text>
+<rect x="44" y="128" width="230" height="143" rx="14" fill="#fffefa" stroke="#deceb5"/>
+<text x="62" y="153" font-family="Georgia,serif" font-size="14" fill="#af8c63">01</text>
+<text x="62" y="190" font-family="Microsoft YaHei,sans-serif" font-size="22" font-weight="600" fill="#68513a">工作区</text>
+<text x="62" y="222" font-family="Microsoft YaHei,sans-serif" font-size="14" fill="#776b5f">编辑与检查</text>
+<text x="62" y="250" font-family="Consolas,monospace" font-size="14" fill="#9d7954">git diff</text>
+<path d="M283 199h19m-5-5 5 5-5 5" fill="none" stroke="#b8956e" stroke-width="1.7"/>
+<rect x="310" y="128" width="230" height="143" rx="14" fill="#fffefa" stroke="#deceb5"/>
+<text x="328" y="153" font-family="Georgia,serif" font-size="14" fill="#af8c63">02</text>
+<text x="328" y="190" font-family="Microsoft YaHei,sans-serif" font-size="22" font-weight="600" fill="#68513a">暂存区</text>
+<text x="328" y="222" font-family="Microsoft YaHei,sans-serif" font-size="14" fill="#776b5f">选择下一次内容</text>
+<text x="328" y="250" font-family="Consolas,monospace" font-size="14" fill="#9d7954">git add</text>
+<path d="M549 199h19m-5-5 5 5-5 5" fill="none" stroke="#b8956e" stroke-width="1.7"/>
+<rect x="576" y="128" width="230" height="143" rx="14" fill="#fffefa" stroke="#deceb5"/>
+<text x="594" y="153" font-family="Georgia,serif" font-size="14" fill="#af8c63">03</text>
+<text x="594" y="190" font-family="Microsoft YaHei,sans-serif" font-size="22" font-weight="600" fill="#68513a">提交历史</text>
+<text x="594" y="222" font-family="Microsoft YaHei,sans-serif" font-size="14" fill="#776b5f">记录本地版本</text>
+<text x="594" y="250" font-family="Consolas,monospace" font-size="14" fill="#9d7954">git commit</text>
+<path d="M815 199h19m-5-5 5 5-5 5" fill="none" stroke="#b8956e" stroke-width="1.7"/>
+<rect x="842" y="128" width="230" height="143" rx="14" fill="#fffefa" stroke="#deceb5"/>
+<text x="860" y="153" font-family="Georgia,serif" font-size="14" fill="#af8c63">04</text>
+<text x="860" y="190" font-family="Microsoft YaHei,sans-serif" font-size="22" font-weight="600" fill="#68513a">远程协作</text>
+<text x="860" y="222" font-family="Microsoft YaHei,sans-serif" font-size="14" fill="#776b5f">发布与审查</text>
+<text x="860" y="250" font-family="Consolas,monospace" font-size="14" fill="#9d7954">git push / PR</text>
+</svg>

@@ -4,6 +4,8 @@
 
 默认阅读配色为暖白、米色和暖棕：代码框、公式框、重点卡片与脑图节点统一使用米色底，不使用偏绿背景；Obsidian CSS 和 Canvas 同步采用该配色。代码语法颜色保留，视频截图与原始配图的内容不随界面换色。
 
+主题、粘贴文本和网页也使用同一个渲染器：`source_kind` 设为 `topic/text/article`，主题或文字可用 `source_text/source_origin`，无需伪造视频或文件地址；网页填写真实 `source_url`。`sources` 保存 `title/url` 资料数组，`style` 为 `paper/atlas/folio`，`tags` 用于笔记夹搜索。互动步骤、自测与拓展字段见 [materials-and-styles.md](materials-and-styles.md)。非视频来源不添加虚构时间戳。
+
 ```json
 {
   "title": "笔记标题",
@@ -29,7 +31,7 @@
 }
 ```
 
-必需：`title/sections` 和来源。网络来源使用 `source_url`；本地来源使用 `source_ref`，填实际存在的文件绝对路径，不需要编造视频链接。章节必需：`title/markdown`。其他字段只有实际知道时才填。可加 `subtitle` 一句话说明主题，`takeaways` 用字符串数组列出核心收获，`cover` 与章节 `image` 使用相同结构提供一张主题画面。`start` 单位为秒，缺失则省略，不用 0 代替未知。本地来源的时间显示为位置标记，网络来源的时间可跳转原视频。`image` 可省略；提供时文件必须真实存在，路径相对 JSON 所在目录或绝对路径，支持 PNG/JPEG/WebP/SVG。图注需说明视频时间或“根据字幕绘制的示意图”。
+必需：`title/sections` 和来源类型。视频、网页使用 `source_url`；本地来源使用 `source_ref`，填实际存在的文件绝对路径；主题和粘贴文本明确填写 `source_kind/source_text/source_origin`，不需要编造链接。章节必需：`title/markdown`。其他字段只有实际知道时才填。可加 `subtitle` 一句话说明主题，`takeaways` 用字符串数组列出核心收获，`cover` 与章节 `image` 使用相同结构提供一张主题画面。`start` 单位为秒，仅用于视频或本地时间轴，缺失则省略，不用 0 代替未知。本地来源的时间显示为位置标记，视频来源的时间可跳转原视频。`image` 可省略；提供时文件必须真实存在，路径相对 JSON 所在目录或绝对路径，支持 PNG/JPEG/WebP/SVG。图注需说明真实出处、视频时间或自绘示意图的依据。
 
 Markdown 正文中的外部图片不会加载；用 `image` 提供已经核实的配图。原文 HTML 作为普通文字展示。HTML 中的配图与脑图嵌入文件，Markdown 中的配图链接指向原本地文件，移动 Markdown 时需一并保留图片。
 
