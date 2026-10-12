@@ -17,7 +17,7 @@ cssclasses:
 # Seagull Notes：导入与编辑
 
 将包里的 `Seagull Notes` 文件夹复制到 vault 根目录，保留其目录结构。
-将 `.obsidian/snippets/seagull-notes.css` 放到 vault 同名目录，在设置 → 外观 → CSS 代码片段中启用 `seagull-notes`，即可使用淡色阅读样式。
+将 `.obsidian/snippets/seagull-notes.css` 放到 vault 同名目录，在设置 → 外观 → CSS 代码片段中启用 `seagull-notes`，即可使用米色阅读样式。
 
 ## 修改笔记和图片
 
@@ -33,7 +33,7 @@ cssclasses:
 
 ## 排版与内容
 
-保留原笔记全部章节、时间链接、代码围栏、LaTeX、图注和脑图内容。淡色样式用于这些笔记的阅读视图与 Live Preview；导航与代码复制使用 Obsidian 自带界面。CSS 不把正文变成 HTML，内容仍可编辑。
+保留原笔记全部章节、时间链接、代码围栏、LaTeX、图注和脑图内容。米色样式用于这些笔记的阅读视图与 Live Preview；导航与代码复制使用 Obsidian 自带界面。CSS 不把正文变成 HTML，内容仍可编辑。
 
 `字幕原文.md` 保存原笔记实际提供的完整字幕。重导入时，本工具保留 vault 已有文件，不覆盖你改过的笔记或图片；新版导出包仍会更新。
 
@@ -52,7 +52,7 @@ def canvas_tree(tree: list[dict], title: str = "") -> dict:
     placed, _, _ = export._layout(tree, title)
     for index, item in enumerate(placed):
         identity = f"node-{index}"
-        color = "#e4eedf" if item["depth"] == 0 else export.FILLS[item["branch"] % len(export.FILLS)]
+        color = "#eee0c8" if item["depth"] == 0 else export.FILLS[item["branch"] % len(export.FILLS)]
         nodes.append({"id": identity, "type": "text", "text": item["title"],
                       "x": round(item["x"] * 1.4), "y": round(item["y"] * 1.4),
                       "width": round(item["w"] * 1.4), "height": round(item["h"] * 1.4), "color": color})

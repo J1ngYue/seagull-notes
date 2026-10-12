@@ -108,10 +108,10 @@ def _layout(nodes: list[dict[str, Any]], title: str = "") -> tuple[list[dict[str
 
 # ---------------------------------------------------------------- SVG 渲染
 
-PALETTE = ["#66866b", "#b27d5e", "#658a9b", "#9b85a7", "#97915d", "#65938c"]
-FILLS = ["#edf3e9", "#faf0e8", "#edf3f6", "#f3eef6", "#f5f3e6", "#eaf4f0"]
+PALETTE = ["#aa8662", "#b17e60", "#9c8b71", "#a58b80", "#a38e5d", "#947960"]
+FILLS = ["#f7eddb", "#f8eee3", "#f5efe3", "#f6eee7", "#f8f0db", "#f2e9dc"]
 BG = "#fffefa"
-TEXT = "#2d3c32"
+TEXT = "#3b332a"
 
 
 def render_svg(nodes: list[dict[str, Any]], title: str = "") -> str:
@@ -127,7 +127,7 @@ def render_svg(nodes: list[dict[str, Any]], title: str = "") -> str:
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w:.0f}" height="{total_h:.0f}" '
         f'viewBox="0 0 {total_w:.0f} {total_h:.0f}" role="img">',
         f'<title>{html.escape(title or placed[0]["title"])}</title>',
-        '<defs><filter id="card-shadow" x="-15%" y="-30%" width="130%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#334e38" flood-opacity=".045"/></filter><pattern id="paper-dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".65" fill="#82917a" opacity=".13"/></pattern></defs>',
+        '<defs><filter id="card-shadow" x="-15%" y="-30%" width="130%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#725a3f" flood-opacity=".045"/></filter><pattern id="paper-dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".65" fill="#ad9577" opacity=".13"/></pattern></defs>',
         f'<rect width="100%" height="100%" fill="{BG}"/>',
         '<rect width="100%" height="100%" fill="url(#paper-dots)"/>',
         '<g font-family="Microsoft YaHei,PingFang SC,system-ui,sans-serif">',
@@ -152,9 +152,9 @@ def render_svg(nodes: list[dict[str, Any]], title: str = "") -> str:
         x, y, depth = node["x"] + PADDING, node["y"] + PADDING, node["depth"]
         color, fill = PALETTE[node["branch"] % len(PALETTE)], FILLS[node["branch"] % len(FILLS)]
         parts.append(f'<g class="map-node" data-depth="{depth}"><title>{html.escape(node["title"])}</title>')
-        parts.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{node["w"]:.1f}" height="{node["h"]:.1f}" rx="{16 if depth == 0 else 10}" fill="{"#e4eedf" if depth == 0 else fill if depth == 1 else "#fffefa"}" stroke="{"#b6caae" if depth == 0 else color}" stroke-opacity=".45" filter="url(#card-shadow)"/>')
+        parts.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{node["w"]:.1f}" height="{node["h"]:.1f}" rx="{16 if depth == 0 else 10}" fill="{"#eee0c8" if depth == 0 else fill if depth == 1 else "#fffefa"}" stroke="{"#cfb796" if depth == 0 else color}" stroke-opacity=".45" filter="url(#card-shadow)"/>')
         if depth == 0:
-            parts.append(f'<text x="{x + node["w"] / 2:.1f}" y="{y + 23:.1f}" text-anchor="middle" font-size="8" letter-spacing="2.3" fill="#5f785c">KNOWLEDGE MAP</text>')
+            parts.append(f'<text x="{x + node["w"] / 2:.1f}" y="{y + 23:.1f}" text-anchor="middle" font-size="8" letter-spacing="2.3" fill="#8d7356">KNOWLEDGE MAP</text>')
         else:
             parts.append(f'<circle cx="{x + 14:.1f}" cy="{y + node["h"] / 2:.1f}" r="{3 if depth == 1 else 2}" fill="{color}" opacity=".8"/>')
         text_y = y + (node["h"] - len(node["lines"]) * 23) / 2 + 17 + (7 if depth == 0 else 0)
@@ -191,7 +191,7 @@ def render_html(nodes: list[dict[str, Any]], title: str) -> str:
 <style>
   body {{ margin: 0; padding: 32px; background: #f5f3ed;
          font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }}
-  h1 {{ font-size: 22px; color: #2d3c32; margin: 0 0 24px; }}
+  h1 {{ font-size: 22px; color: #3b332a; margin: 0 0 24px; }}
   .canvas {{ background: #fff; border-radius: 16px; padding: 24px;
              box-shadow: 0 4px 24px rgba(0,0,0,0.06); overflow: auto; }}
   @media(max-width:650px) {{ body {{ padding:16px; }} .canvas {{ padding:0; }} h1 {{ font-size:19px; }} }}
