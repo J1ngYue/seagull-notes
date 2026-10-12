@@ -54,9 +54,11 @@ python skill/scripts/notebook.py note.json --style atlas
 | --- | --- |
 | Paper (`paper`) | The existing beige illustrated reader |
 | Study Notebook (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
-| Leather Journal (`folio`) | Brown leather cover, metal binding rings, ruled chapter pages, arrow-key navigation, and page-turn transitions |
+| Leather Journal (`folio`) | An open leather book with facing note pages, a shaded spine, hover arrows on outer page edges, keyboard navigation, and animated paper fronts and backs |
 
-Topic, text, and article notes default to Study Notebook; existing video and local-media notebooks retain Paper. The two replicas center compact handwritten pages on a charcoal desk, with tools and chapter navigation in popovers. Study Notebook scrolls continuously; Leather Journal keeps a fixed cover and scrolls long chapters inside the paper. Every style keeps complete content, source attribution, code/formula copying, mind maps, search, and print support. Printing includes all chapters and expanded content. Mastery marks and reading-style preferences are stored locally in the browser. The existing `atlas` and `folio` values select the two replacement styles.
+![Facing pages in Leather Journal](examples/open-book-preview.jpg)
+
+Topic, text, and article notes default to Study Notebook; existing video and local-media notebooks retain Paper. The two replicas center compact handwritten pages on a charcoal desk, with tools and chapter navigation in popovers. Study Notebook scrolls continuously. Leather Journal displays two facing chapter pages, turns spreads from the outer edges, and keeps long content scrollable within each page. Overview, illustrations, reviews and references remain in appendix pages. Below 700px it uses a single page; reduced-motion preferences skip the turn animation. Every style keeps complete content, code/formula copying, mind maps and print support. Printing includes all chapters and appendices. Mastery marks and style preferences are stored locally. The existing `atlas` and `folio` values select the two replacement styles.
 
 The shelf filters notes by source type and searches titles, summaries, and tags. `explorers`, `review`, and `extensions` add interactive learning components; see [the material and style guide](skill/references/materials-and-styles.md). Obsidian remains an optional export; the web notebook is the primary experience for the new styles.
 

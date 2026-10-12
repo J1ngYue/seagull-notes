@@ -3,7 +3,7 @@
 .style-picker{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
 .style-picker select{max-width:125px;background:#fcf9f3;color:#785c42;border:1px solid #e1d3bd;border-radius:7px;padding:6px;font:inherit;font-size:11px;cursor:pointer}
 .source-list{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 18px}.source-list a{font-size:11px;line-height:1.6;color:var(--accent);padding:6px 11px;border:1px solid var(--line);border-radius:20px;text-decoration:none}.source-list a:hover{background:#f5ecdc}
-.learning-hub,.mastery-button,.notebook-decoration,.tools-toggle{display:none}
+.learning-hub,.mastery-button,.notebook-decoration,.tools-toggle,.book-page-number{display:none}
 .book-overview{margin-bottom:18px}.book-overview>summary{cursor:pointer;color:#38678b;font:15px/1.8 SeagullHand,cursive;padding:6px 0;border-bottom:1px dashed #c8b69b}
 .study-widgets{margin-top:35px}.explorer,.review-deck,.extension-deck{margin:28px 0;border:1px solid #e1d3bd;border-radius:15px;background:#fcf9f3;padding:25px}
 .explorer header{display:flex;align-items:center;justify-content:space-between;gap:20px}.explorer h3,.review-deck h3{font-size:20px;margin:8px 0 20px}
@@ -16,7 +16,8 @@
 /* Both replicas use a real handwritten Chinese font, local and offline. */
 body:is([data-style=atlas],[data-style=folio]){--ink:#34302b;--muted:#736657;--accent:#b04d3c;--green:#765c42;--paper:#fffbf2;--line:#e1d4ba;background:#3d3f3e;min-height:100vh}
 body:is([data-style=atlas],[data-style=folio]) .workspace{display:block;padding:0;margin:30px auto 50px;width:calc(100% - 64px)}
-body[data-style=atlas] .workspace{max-width:680px}body[data-style=folio] .workspace{max-width:860px}
+body[data-style=atlas] .workspace{max-width:680px}body[data-style=folio] .workspace{max-width:1000px}
+body[data-style=folio] .workspace{margin-bottom:15px}
 body:is([data-style=atlas],[data-style=folio]) .topbar{position:fixed;top:16px;right:18px;z-index:40;display:block;padding:0;background:transparent;border:0}
 body:is([data-style=atlas],[data-style=folio]) .brand{display:none}
 body:is([data-style=atlas],[data-style=folio]) .tools-toggle{display:block;margin-left:auto;padding:7px 12px;min-height:36px;border:1px solid #ffffff35;border-radius:5px;background:#303331;color:#e4dece;font-size:11px}
@@ -101,8 +102,6 @@ body[data-style=folio] .folio-controls{display:flex;align-items:center;justify-c
 body[data-style=folio][data-view]:not([data-view=notes]) .learning-hub{display:none}
 body[data-style=folio] .panel{order:1;min-height:0;overflow:auto;scrollbar-width:thin;border:0;border-radius:3px 8px 8px 3px;padding:30px 35px 35px 52px;background:#fdfbf7;background-image:linear-gradient(90deg,transparent 36px,#d8938555 36px,#d8938555 37px,transparent 37px),repeating-linear-gradient(transparent,transparent 31px,#a4b0be66 31px,#a4b0be66 32px);box-shadow:2px 3px 7px #00000024,inset 0 0 45px #8b451308;margin:0}
 body[data-style=folio] .chapter{border-top:0;min-height:0;padding:0 0 14px;margin:0}
-body[data-style=folio][data-view=notes] .chapter:not(.folio-current){display:none}
-body[data-style=folio] .chapter.folio-current{animation:journal-turn .48s cubic-bezier(.2,.8,.2,1) both;transform-origin:left center}
 body[data-style=folio] .chapter header{align-items:baseline;padding-bottom:8px;border:0;margin-bottom:12px}
 body[data-style=folio] .chapter h2{color:#38678b;text-decoration-color:#38678b55;font-size:23px}
 body[data-style=folio] .chapter .number{font-size:21px;min-width:24px;color:#38678b}
@@ -116,7 +115,6 @@ body[data-style=folio] .notebook-tape,body[data-style=folio] .notebook-clip,body
 body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:10px}
 
 @keyframes write-in{from{opacity:.2;transform:translateY(7px)}to{opacity:1;transform:none}}
-@keyframes journal-turn{from{opacity:.25;transform:perspective(1500px) rotateY(-12deg) translateX(12px)}to{opacity:1;transform:none}}
 @media(max-width:850px){
  .style-picker span{display:none}.style-picker select{font-size:10px;min-height:36px}
  body[data-style=atlas] .workspace,body[data-style=folio] .workspace{padding:0;width:calc(100% - 40px);margin-top:60px}
@@ -153,9 +151,46 @@ body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:1
  body:is([data-style=atlas],[data-style=folio]) .prose th,body:is([data-style=atlas],[data-style=folio]) .prose td{padding:10px 7px;overflow-wrap:anywhere}
  body:is([data-style=atlas],[data-style=folio]) .time{margin-left:37px}
 }
-@media(prefers-reduced-motion:reduce){body[data-style=atlas] .chapter.is-visible,body[data-style=folio] .chapter.folio-current,.explore-panel,.review-card[open] .prose,.extension-card[open] .prose{animation:none!important}}
+/* An open book: separate reading pages, a shaded gutter and paper turning faces. */
+body[data-style=folio][data-view=notes] .workspace>main{padding:18px 19px 11px;border-radius:12px 12px 15px 15px;background-image:repeating-linear-gradient(90deg,transparent,transparent 3px,#00000008 3px,#00000008 5px),linear-gradient(180deg,#87512b,#633919)}
+body[data-style=folio][data-view=notes] .workspace>main:before,body[data-style=folio][data-view=notes] .notebook-decoration{display:none}
+body[data-style=folio] #notes{padding:0;background:none;overflow:hidden;box-shadow:none;border-radius:4px;isolation:isolate}
+.book-spread{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;height:100%;perspective:2200px;isolation:isolate}
+.book-spread:before{content:"";position:absolute;left:calc(50% - 23px);top:0;bottom:0;width:46px;background:linear-gradient(90deg,transparent,#69583e13 30%,#49332038 49%,#fffdf5aa 51%,#69583e15 73%,transparent);z-index:8;pointer-events:none}
+body[data-style=folio] .book-page{position:relative;height:100%;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:30px 35px 20px;border:0;margin:0;background:#fdfbf5;background-image:repeating-linear-gradient(transparent,transparent 31px,#a4b0be44 31px,#a4b0be44 32px);border-radius:4px 0 0 4px;box-shadow:inset -15px 0 22px -18px #4b372899}
+body[data-style=folio] .book-page.book-right{border-radius:0 4px 4px 0;box-shadow:inset 15px 0 22px -18px #4b372899}
+body[data-style=folio] .book-page:not(.folio-visible){display:none}
+body[data-style=folio] .book-page h2{font:23px/1.5 SeagullHand,cursive;color:#38678b;text-decoration:underline;text-decoration-color:#38678b55;text-underline-offset:5px;margin:0 0 14px}
+body[data-style=folio] .book-page .prose{font-size:16px}
+body[data-style=folio] .book-page .book-overview{display:block;margin:0 0 18px}
+body[data-style=folio] .book-page .study-widgets{margin:0;padding:0;border:0}
+body[data-style=folio] .book-page .explorer,body[data-style=folio] .book-page .review-deck,body[data-style=folio] .book-page .extension-deck{padding:17px;margin:18px 0}
+body[data-style=folio] .book-page .takeaways{grid-template-columns:1fr;gap:18px}
+body[data-style=folio] .book-page-number{display:block;text-align:center;font:14px SeagullHand,cursive;color:#a18e75;margin-top:20px;padding:8px 0}
+body[data-style=folio] .book-source-description{font:16px/1.9 SeagullHand,cursive;color:#736657}
+.book-edge{position:absolute;top:0;bottom:0;z-index:25;width:34px;padding:0;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.book-edge-previous{left:0}.book-edge-next{right:0}.book-edge:disabled{pointer-events:none}
+.book-edge-arrow{display:flex;align-items:center;justify-content:center;width:29px;height:46px;border-radius:5px;background:#d5bc8e80;color:#75532f;box-shadow:0 2px 12px #76532a22;opacity:0;transform:translateX(3px);transition:opacity .18s,transform .18s}
+.book-edge-previous .book-edge-arrow{transform:translateX(-3px)}.book-edge svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.book-edge:hover .book-edge-arrow,.book-edge:focus-visible .book-edge-arrow{opacity:1;transform:none}.book-edge:disabled .book-edge-arrow{opacity:0}
+.book-turn-leaf,.book-held-page{position:absolute;top:0;bottom:0;width:50%;pointer-events:none}
+.book-turn-leaf{z-index:20;transform-style:preserve-3d;will-change:transform;box-shadow:0 4px 20px #39261335}
+.turn-forward{left:50%;transform-origin:left center}.turn-backward{left:0;transform-origin:right center}
+.book-turn-face{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:#fdfbf5}
+.book-turn-face:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#7b654322,transparent 35%,#f7f0d91f 70%,#7b65430b);pointer-events:none}
+.book-turn-back{transform:rotateY(180deg)}.book-held-page{z-index:10;overflow:hidden}.book-held-left{left:0}.book-held-right{left:50%}
+@media(max-width:700px){
+ body[data-style=folio][data-view=notes] .workspace>main{padding:13px 12px 9px}
+ .book-spread{grid-template-columns:minmax(0,1fr)}.book-spread:before{display:none}
+ body[data-style=folio] .book-page{padding:24px 38px 18px;border-radius:3px;box-shadow:inset 3px 0 8px #76532a10}
+ body[data-style=folio] .book-page h2{font-size:21px}
+ .book-turn-leaf{width:100%}.turn-forward{left:0;transform-origin:left center}.turn-backward{left:0;transform-origin:right center}
+ .book-edge{width:38px}
+}
+@media(hover:none){.book-edge:not(:disabled) .book-edge-arrow{opacity:.7}}
+@media(prefers-reduced-motion:reduce){body[data-style=atlas] .chapter.is-visible,.explore-panel,.review-card[open] .prose,.extension-card[open] .prose{animation:none!important}.book-edge-arrow{transition:none}}
 @media print{
- .topbar,.sidebar,.reader-nav,.style-picker,.learning-hub,.mastery-button,.explore-play,.notebook-decoration{display:none!important}
+ .topbar,.sidebar,.reader-nav,.style-picker,.learning-hub,.mastery-button,.explore-play,.notebook-decoration,.book-edge,.book-turn-leaf,.book-held-page{display:none!important}
  body:is([data-style=atlas],[data-style=folio]){background:white}
  body:is([data-style=atlas],[data-style=folio]) .workspace{width:100%;max-width:none;margin:0}
  body[data-style=atlas] .workspace>main,body[data-style=folio] .workspace>main{display:block;height:auto;min-height:0;padding:0;background:white;box-shadow:none;border:0}
@@ -163,6 +198,8 @@ body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:1
  body[data-style=atlas] .workspace>main:before,body[data-style=folio] .workspace>main:before{display:none}
  body[data-style=atlas] .chapter,body[data-style=folio] .chapter{display:block!important;min-height:0;animation:none!important;transform:none!important}
  body[data-style=folio] #notes{height:auto;overflow:visible;box-shadow:none;padding:0;background:white}
+ .book-spread{display:block;height:auto;perspective:none}.book-spread:before{display:none}
+ body[data-style=folio] .book-page{display:block!important;height:auto;overflow:visible;box-shadow:none;padding:18px 0;margin-bottom:25px;background:white;break-inside:auto}
  #notes>.book-overview{display:block!important}#notes>.book-overview>summary{display:none}
  .explore-panel[hidden]{display:block!important}.review-card .prose,.extension-card .prose{display:block!important}.explore-steps{flex-wrap:wrap}.explorer,.review-deck,.extension-deck{break-inside:auto}
  body:is([data-style=atlas],[data-style=folio]) .takeaway{transform:none;box-shadow:none}
