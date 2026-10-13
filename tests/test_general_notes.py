@@ -42,6 +42,18 @@ def test_all_styles_keep_complete_topic_content_and_references(tmp_path, style):
     assert not document.xpath('//script[@src] | //link[@rel="stylesheet"]')
 
 
+@pytest.mark.parametrize("style", ["paper", "atlas", "folio"])
+def test_markdown_view_preserves_complete_source_without_executing_markup(tmp_path, style):
+    note = dict(topic(), style=style)
+    note["sections"][0]["markdown"] = '```html\n<script>alert("display only")</script>\n```\n\n$$x^2+1$$\n\n尾部内容。'
+    page, markdown = script("notebook").render_note(note, tmp_path)
+    document = html.fromstring(page)
+    raw = document.cssselect('#markdown .raw')[0]
+    assert raw.text_content() == markdown
+    assert not raw.cssselect('script')
+    assert '$$x^2+1$$' in raw.text_content() and '尾部内容。' in raw.text_content()
+
+
 def test_pasted_text_is_material_but_topic_requires_research(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "ARTIFACT_DIR", tmp_path)
     prepare = script("prepare")

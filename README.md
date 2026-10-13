@@ -152,6 +152,8 @@ Edit the text normally. Delete or move an image's `![[...]]` line, replace its a
 
 The AI client prepares the JSON input; the renderer does not generate a summary. See [the input format](skill/references/notebook-format.md). Use `source_url` for a video or article, `source_ref` for an existing local file's absolute path, or `source_kind` with `source_text/source_origin` for topics and pasted text. Local timestamps are position labels; video timestamps link back to the video. Topic, text, and article chapters do not invent timestamps.
 
+The Markdown tab shows the complete source with copy-all and `.md` download controls. Switching views preserves the reading position. Map and source views omit the original notebook decorations; the map's binding follows its own canvas when expanded or collapsed.
+
 Use verified video frames for screenshots and label explanatory diagrams clearly. Images are embedded in HTML for offline reading; Markdown retains local image paths, so keep those files when moving the Markdown output.
 
 ### Code blocks and copying

@@ -56,7 +56,7 @@ $experience_css
 <div class="workspace">
 <aside class="sidebar"><div class="label">THE READING ROOM</div><h3>这篇笔记的脉络</h3><button type="button" class="toc-toggle" id="toc-toggle" aria-expanded="false" aria-controls="toc-panel">章节目录<span>$chapter_count 章 · 搜索与跳转</span></button><div class="toc-panel" id="toc-panel"><input type="search" class="toc-search" id="toc-search" aria-label="搜索章节" placeholder="搜索章节，如回滚、stash"><nav class="toc" aria-label="章节目录">$toc</nav><p class="toc-empty" id="toc-empty" role="status" hidden>没有匹配的章节</p></div><p class="side-note">让值得理解的内容，<br>成为可以回看的笔记。<br><br>$source_hint</p></aside>
 <main>
-<div class="notebook-decoration" aria-hidden="true"><span class="notebook-tape tape-left"></span><span class="notebook-tape tape-right"></span><span class="notebook-clip"></span><span class="notebook-coffee"></span><span class="notebook-fold"></span><svg class="notebook-doodle" viewBox="0 0 100 80" fill="none"><path d="m8 52 12-22 17 18 13-35 18 31 19-12M50 13l-2 13m2-13 12 8M15 68q32 8 66-2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div class="notebook-decoration" aria-hidden="true"><span class="notebook-tape tape-left"></span><span class="notebook-tape tape-right"></span><span class="notebook-clip"></span><span class="notebook-fold"></span><svg class="notebook-doodle" viewBox="0 0 100 80" fill="none"><path d="m8 52 12-22 17 18 13-35 18 31 19-12M50 13l-2 13m2-13 12 8M15 68q32 8 66-2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
 <header class="note-head"><div class="edition label">$source_kicker</div><h1>$title</h1><p class="subtitle">$subtitle</p><div class="meta">$meta</div></header>
 <nav class="tabs" role="tablist" aria-label="笔记格式">
 <span class="tab-indicator" aria-hidden="true"></span>
@@ -68,7 +68,7 @@ $experience_css
 <section class="learning-hub"><div class="hub-heading"><div><span class="label">THE LEARNING JOURNEY</span><h2>让知识，从理解走向掌握。</h2><p>$chapter_count 个章节，连成你的学习路线。</p></div><div class="mastery-orbit"><strong id="mastery-percent">0%</strong><span>已掌握</span></div></div><div class="mastery-line"><span id="mastery-count">已掌握 0 / $chapter_count 章</span><progress id="mastery-progress" max="$chapter_count" value="0"></progress></div><div class="route-grid">$route</div><div class="folio-controls"><button type="button" data-folio="previous" aria-label="上一页">← 上一页</button><span id="folio-position">01 / $chapter_count</span><button type="button" data-folio="next" aria-label="下一页">下一页 →</button></div></section>
 <article class="panel" id="notes" role="tabpanel" aria-labelledby="tab-notes" tabindex="-1"><div class="summary"><div class="label">THE ESSENTIALS · 核心概览</div><p>$summary</p></div>$takeaways$cover$sections$widgets$references</article>
 <article class="panel" id="map" role="tabpanel" aria-labelledby="tab-map" hidden>$mindmap</article>
-<article class="panel" id="markdown" role="tabpanel" aria-labelledby="tab-markdown" hidden><pre class="raw">$markdown</pre></article>
+<article class="panel" id="markdown" role="tabpanel" aria-labelledby="tab-markdown" hidden><header class="markdown-toolbar"><span>Markdown 源码</span><div><button type="button" id="copy-markdown">复制全部</button><button type="button" id="download-markdown">下载 .md</button></div></header><pre class="raw" tabindex="0" aria-label="完整 Markdown 源码">$markdown</pre></article>
 <article class="panel" id="transcript" role="tabpanel" aria-labelledby="tab-transcript" hidden>$references<pre class="raw">$transcript</pre></article>
 <footer><span>SEAGULL NOTES</span><span>Watch with curiosity. Keep with clarity.</span></footer>
 </main>
@@ -79,17 +79,20 @@ $experience_css
 $math_js
 <script>
 const tabs=Array.from(document.querySelectorAll('.tabs [role=tab]'));
+const panelScrollPositions=new Map();
 const indicator=document.querySelector('.tab-indicator');
 function updateIndicator(){const active=tabs.find(tab=>tab.getAttribute('aria-selected')==='true');indicator.style.width=active.offsetWidth+'px';indicator.style.transform='translateX('+(active.offsetLeft-5)+'px)'}
 window.addEventListener('resize',updateIndicator);window.addEventListener('load',updateIndicator);updateIndicator();
 function activate(tab){
  if(tab.getAttribute('aria-selected')==='true')return;
+ const previousPanel=document.getElementById(document.body.dataset.view);panelScrollPositions.set(previousPanel.id,{window:window.scrollY,panel:previousPanel.scrollTop});
  tabs.forEach(item=>{const active=item===tab;item.setAttribute('aria-selected',String(active));item.tabIndex=active?0:-1});
  document.querySelectorAll('.panel[role=tabpanel]').forEach(panel=>{panel.hidden=panel.id!==tab.dataset.panel});
  document.body.dataset.view=tab.dataset.panel;
  document.dispatchEvent(new CustomEvent('seagull:view',{detail:tab.dataset.panel}));
  updateIndicator();
  queueReading();
+ requestAnimationFrame(()=>{if(document.body.dataset.view!==tab.dataset.panel)return;const panel=document.getElementById(tab.dataset.panel),saved=panelScrollPositions.get(panel.id);panel.scrollTop=saved?.panel||0;window.scrollTo({top:saved?.window??Math.max(0,panel.getBoundingClientRect().top+window.scrollY-16),behavior:'auto'})});
 }
 tabs.forEach((tab,index)=>{
  tab.addEventListener('click',()=>activate(tab));
@@ -133,6 +136,11 @@ async function copyText(text,success,failure){
  catch(error){try{if(!copyFallback(text))throw error;reportCopy(success);return true}catch(error){reportCopy(failure);return false}}
 }
 function copyFormula(element){return copyText(element.dataset.latex,'已复制 LaTeX 公式','复制失败，请在 Markdown 中选择公式复制')}
+document.getElementById('copy-markdown').addEventListener('click',()=>copyText(document.querySelector('#markdown .raw').textContent,'已复制完整 Markdown','复制失败，请选择 Markdown 源码手动复制'));
+document.getElementById('download-markdown').addEventListener('click',()=>{
+ const text=document.querySelector('#markdown .raw').textContent,url=URL.createObjectURL(new Blob([text],{type:'text/markdown;charset=utf-8'})),link=document.createElement('a');
+ link.href=url;link.download=document.querySelector('h1').textContent.replace(/[<>:"/\\|?*\x00-\x1f]/g,'_')+'.md';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
 document.querySelectorAll('.wrap-code').forEach(button=>button.addEventListener('click',()=>{const wrapped=button.closest('.code-block').classList.toggle('wrapped');button.setAttribute('aria-pressed',String(wrapped));button.textContent=wrapped?'取消换行':'换行'}));
 document.querySelectorAll('.copy-code').forEach(button=>{let timer;button.addEventListener('click',async()=>{if(!await copyText(button.closest('.code-block').querySelector('code').textContent,'已复制代码','复制失败，请选择代码手动复制'))return;clearTimeout(timer);button.classList.add('copied');button.querySelector('span').textContent='已复制';timer=setTimeout(()=>{button.classList.remove('copied');button.querySelector('span').textContent='复制'},1800)})});
 if(window.katex){document.querySelectorAll('.arithmatex').forEach(element=>{

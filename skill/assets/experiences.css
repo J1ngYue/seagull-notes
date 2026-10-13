@@ -12,6 +12,9 @@
 .explorer progress{width:100%;height:3px;accent-color:#af8c63}.explore-panel{padding-top:15px;animation:write-in .25s ease}.explore-panel[hidden]{display:none}
 .review-card,.extension-card{border-top:1px solid #e7dccb;margin-top:12px}.review-card summary,.extension-card summary{cursor:pointer;padding:16px 0;font-size:14px;font-weight:600;line-height:1.7}.review-card summary span{font:italic 20px Georgia,serif;color:#af8c63;margin-right:14px}.review-card[open] .prose,.extension-card[open] .prose{animation:write-in .25s ease}.extension-card summary span{float:right;font-size:11px;font-weight:400;color:var(--muted)}
 .folio-controls{display:none}
+.markdown-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+.markdown-toolbar>div{display:flex;gap:8px}.markdown-toolbar button{border:1px solid var(--line);border-radius:6px;background:#fcf8f0;color:#785c42;padding:6px 11px;min-height:34px;font:inherit}.markdown-toolbar button:hover{background:#f0e3cf}
+#markdown .raw{min-width:0;max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere;user-select:text}
 
 /* Both replicas use a real handwritten Chinese font, local and offline. */
 body:is([data-style=atlas],[data-style=folio]){--ink:#34302b;--muted:#736657;--accent:#b04d3c;--green:#765c42;--paper:#fffbf2;--line:#e1d4ba;background:#3d3f3e;min-height:100vh}
@@ -36,6 +39,7 @@ body:is([data-style=atlas],[data-style=folio]) .toc{display:block;max-height:60v
 body:is([data-style=atlas],[data-style=folio]) .toc a{white-space:normal;margin:0;padding:8px;font-size:11px}
 body:is([data-style=atlas],[data-style=folio]) .workspace>main{position:relative;min-width:0}
 body:is([data-style=atlas],[data-style=folio]) .notebook-decoration{display:block;position:absolute;inset:0;pointer-events:none;z-index:2}
+body[data-view]:not([data-view=notes]) .notebook-decoration,body[data-view]:not([data-view=notes]) .workspace>main:before{display:none}
 body:is([data-style=atlas],[data-style=folio]) .note-head h1,body:is([data-style=atlas],[data-style=folio]) .chapter h2,body:is([data-style=atlas],[data-style=folio]) .prose h3,body:is([data-style=atlas],[data-style=folio]) .subtitle,body:is([data-style=atlas],[data-style=folio]) .summary p,body:is([data-style=atlas],[data-style=folio]) .takeaway p,body:is([data-style=atlas],[data-style=folio]) .prose{font-family:SeagullHand,"KaiTi",cursive;font-weight:400}
 body:is([data-style=atlas],[data-style=folio]) .prose{font-size:16px;line-height:1.9}
 body:is([data-style=atlas],[data-style=folio]) .prose strong{font-weight:400;color:#9f4135;background:linear-gradient(transparent 55%,#f4d97670 55%,#f4d97670 94%,transparent 94%);padding:0 2px}
@@ -73,7 +77,6 @@ body:is([data-style=atlas],[data-style=folio]) .notebook-tape{position:absolute;
 .tape-left{top:-11px;left:72px;transform:rotate(-4deg)}.tape-right{top:-10px;right:44px;transform:rotate(3deg)}
 .notebook-clip{position:absolute;top:25px;right:21px;width:22px;height:60px;border:3px solid #b0aca4;border-top:0;border-radius:0 0 12px 12px;transform:rotate(-6deg);box-shadow:2px 2px 2px #584f4120}
 .notebook-clip:before{content:"";position:absolute;top:-8px;left:4px;width:10px;height:27px;border:2px solid #c0bbb2;border-bottom:0;border-radius:8px 8px 0 0}
-.notebook-coffee{position:absolute;right:45px;top:105px;width:95px;height:95px;border:3px solid #b0874920;border-radius:50%;box-shadow:0 0 0 7px #b087490a,0 0 0 14px #b0874906}
 .notebook-fold{position:absolute;right:0;bottom:0;width:38px;height:38px;background:linear-gradient(135deg,transparent 50%,#e9ddc2 50%);box-shadow:-1px -1px 1px #8a6a3420}
 .notebook-doodle{position:absolute;right:17px;top:250px;width:55px;height:44px;color:#97674077;transform:rotate(-10deg)}
 
@@ -108,7 +111,14 @@ body[data-style=folio] .chapter .number{font-size:21px;min-width:24px;color:#386
 body[data-style=folio] .book-overview{margin:0 0 16px}
 body[data-style=folio] .study-widgets{padding-top:25px;border-top:1px dashed #c8ad79}
 body[data-style=folio] .reader-nav,body[data-style=folio] footer{display:none}
-body[data-style=folio][data-view=map] .workspace>main{perspective:none}
+body[data-style=folio][data-view=map] .workspace>main{perspective:none;grid-template-rows:minmax(0,1fr)}
+body[data-style=folio][data-view=map] .mindmap-viewer{height:100%;display:flex;flex-direction:column}
+body[data-style=folio][data-view=map] .mindmap-viewer.expanded{height:auto}
+body[data-style=folio][data-view=map] .map-stage{flex:1;min-height:0;height:auto}
+body:is([data-style=atlas],[data-style=folio]) .mindmap-viewer{position:relative;padding-left:30px}
+body:is([data-style=atlas],[data-style=folio]) .mindmap-viewer.expanded{position:fixed}
+body[data-style=atlas] .mindmap-viewer:before{content:"";position:absolute;left:4px;top:18px;bottom:18px;width:26px;background:radial-gradient(circle at 10px 18px,#82796b 0 6px,#fff8e4 6px 8px,transparent 8px),linear-gradient(180deg,transparent 4px,#a3a09a 4px,#ece8df 7px,#9b978f 10px,transparent 10px);background-size:26px 46px;pointer-events:none}
+body[data-style=folio] .mindmap-viewer:before{content:"";position:absolute;left:3px;top:18px;bottom:18px;width:25px;background:radial-gradient(ellipse 12px 7px at 12px 20px,#87847e 20%,#ddd9d0 55%,#99968f 70%,transparent 74%),linear-gradient(90deg,transparent 8px,#c5c2ba 8px,#88847c 15px,transparent 15px);background-size:25px 82px;pointer-events:none}
 body[data-style=folio] .panel{min-width:0}
 body:is([data-style=atlas],[data-style=folio]) .map-toolbar{flex-wrap:wrap;gap:12px}
 body[data-style=folio] .notebook-tape,body[data-style=folio] .notebook-clip,body[data-style=folio] .notebook-doodle,body[data-style=folio] .notebook-fold{display:none}
@@ -133,7 +143,7 @@ body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:1
  body:is([data-style=atlas],[data-style=folio]) .takeaway{padding:14px}
  .explorer,.review-deck,.extension-deck{padding:17px}.explorer header{flex-wrap:wrap;gap:8px}
  .explore-play,.mastery-button,.folio-controls button{min-height:44px}
- .notebook-coffee{right:20px;width:64px;height:64px;opacity:.6}.notebook-clip{display:none}.notebook-doodle{width:35px;right:3px}
+ .notebook-clip{display:none}.notebook-doodle{width:35px;right:3px}
  .tape-left{left:40px;width:80px}.tape-right{right:18px;width:65px}
 }
 @media(max-width:460px){
@@ -198,7 +208,8 @@ body[data-style=folio] .book-source-description{font:16px/1.9 SeagullHand,cursiv
 @media(hover:none){.book-edge:not(:disabled) .book-edge-arrow{opacity:.7}}
 @media(prefers-reduced-motion:reduce){body[data-style=atlas] .chapter.is-visible,.explore-panel,.review-card[open] .prose,.extension-card[open] .prose{animation:none!important}.book-edge-arrow{transition:none}}
 @media print{
- .topbar,.sidebar,.reader-nav,.style-picker,.learning-hub,.mastery-button,.explore-play,.notebook-decoration,.book-edge,.book-turn-leaf,.book-held-page{display:none!important}
+ .topbar,.sidebar,.reader-nav,.style-picker,.learning-hub,.mastery-button,.explore-play,.notebook-decoration,.book-edge,.book-turn-leaf,.book-held-page,.markdown-toolbar{display:none!important}
+ .mindmap-viewer:before{display:none!important}.mindmap-viewer{padding-left:0!important}
  body:is([data-style=atlas],[data-style=folio]){background:white}
  body:is([data-style=atlas],[data-style=folio]) .workspace{width:100%;max-width:none;margin:0}
  body[data-style=atlas] .workspace>main,body[data-style=folio] .workspace>main{display:block;height:auto;min-height:0;padding:0;background:white;box-shadow:none;border:0}

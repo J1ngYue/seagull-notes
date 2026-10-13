@@ -43,6 +43,7 @@ document.querySelectorAll('.mindmap-viewer').forEach(viewer=>{
  stage.addEventListener('pointermove',event=>{if(drag){stage.scrollLeft=drag.left+drag.x-event.clientX;stage.scrollTop=drag.top+drag.y-event.clientY}});
  function release(){drag=null;stage.classList.remove('dragging')}
  stage.addEventListener('pointerup',release);stage.addEventListener('pointercancel',release);
+ document.addEventListener('seagull:view',event=>{if(event.detail!=='map'&&viewer.classList.contains('expanded'))toggleExpanded()});
  new ResizeObserver(()=>{if(automatic)fit()}).observe(stage);image.addEventListener('load',()=>{if(automatic)fit()});fit();
 });
 </script>

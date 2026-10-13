@@ -150,6 +150,8 @@ python skill/scripts/notebook.py note.json --obsidian-vault "/实际vault的绝�
 
 输入 JSON 由 AI 客户端整理，渲染器本身不生成摘要。格式见 [notebook-format.md](skill/references/notebook-format.md)。视频与网页填写 `source_url`，本地来源填写实际文件绝对路径 `source_ref`，主题与粘贴文字填写 `source_kind/source_text/source_origin`。本地时间显示为素材位置标记，视频时间可跳转原视频；主题、文本和网页章节不编造时间戳。
 
+Markdown 标签显示完整源码，支持复制全部与下载 `.md`，切换视图保留阅读位置。导图和源码视图不叠加原纸本的装饰；导图装订条跟随画布容器，展开或收起时保持在画布左侧。
+
 截图使用经过核实的原视频画面，自绘图明确标注示意图。图片嵌入 HTML，离线仍可读；Markdown 保留图片原本地路径，移动 Markdown 时需一并保留图片。
 
 ### 代码框与复制
