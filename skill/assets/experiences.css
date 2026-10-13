@@ -20,21 +20,23 @@
 body:is([data-style=atlas],[data-style=folio]){--ink:#34302b;--muted:#736657;--accent:#b04d3c;--green:#765c42;--paper:#fffbf2;--line:#e1d4ba;background:#3d3f3e;min-height:100vh}
 body:is([data-style=atlas],[data-style=folio]) .workspace{display:block;padding:0;margin:30px auto 50px;width:calc(100% - 64px)}
 body[data-style=atlas] .workspace{max-width:680px}body[data-style=folio] .workspace{max-width:1000px}
-body[data-style=folio] .workspace{margin-bottom:15px}
+body[data-style=folio]{background:#302c28;background-image:radial-gradient(ellipse at 50% 35%,#544a3e55,transparent 65%),linear-gradient(135deg,#37332f,#242321)}
+body[data-style=folio] .workspace{margin-top:76px;margin-bottom:15px}
+body[data-style=folio][data-view] .sidebar{top:16px;right:125px}
 body:is([data-style=atlas],[data-style=folio]) .topbar{position:fixed;top:16px;right:18px;z-index:40;display:block;padding:0;background:transparent;border:0}
 body:is([data-style=atlas],[data-style=folio]) .brand{display:none}
-body:is([data-style=atlas],[data-style=folio]) .tools-toggle{display:block;margin-left:auto;padding:7px 12px;min-height:36px;border:1px solid #ffffff35;border-radius:5px;background:#303331;color:#e4dece;font-size:11px}
+body:is([data-style=atlas],[data-style=folio]) .tools-toggle{display:block;margin-left:auto;padding:8px 13px;min-height:36px;border:1px solid #ffffff25;border-radius:10px;background:#302e2bed;color:#eee4d2;font-size:11px;box-shadow:0 3px 14px #0002}
 body:is([data-style=atlas],[data-style=folio]) .topbar .tools{display:none;position:absolute;right:0;top:44px;width:300px;max-width:calc(100vw - 32px);padding:16px;background:#fffaf0;border:1px solid #c8ad79;border-radius:6px;box-shadow:0 8px 28px #0004}
-body:is([data-style=atlas],[data-style=folio]) .topbar.tools-open .tools{display:flex;flex-wrap:wrap;gap:12px 17px}
+body:is([data-style=atlas],[data-style=folio]) .topbar.tools-open .tools{display:flex;flex-wrap:wrap;gap:12px 17px;animation:tools-unfold .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:top right}
 body:is([data-style=atlas],[data-style=folio]) .topbar .tabs{width:100%;margin:5px 0 0;padding:3px;background:#f7eddb;border:1px dashed #c7ad83;border-radius:3px}
 body:is([data-style=atlas],[data-style=folio]) .topbar .tabs button{flex:1;font-size:10px;padding:7px 3px}
 body:is([data-style=atlas],[data-style=folio]) .sidebar{position:fixed;top:62px;right:18px;left:auto;z-index:30;width:110px;max-height:none;padding:0;overflow:visible}
 body:is([data-style=atlas],[data-style=folio]) .sidebar>.label,body:is([data-style=atlas],[data-style=folio]) .sidebar>h3,body:is([data-style=atlas],[data-style=folio]) .sidebar>.side-note{display:none}
-body:is([data-style=atlas],[data-style=folio]) .toc-toggle{display:block;width:100%;min-height:36px;padding:6px 11px;border:1px solid #ffffff35;border-radius:5px;background:#303331;color:#e4dece;font-size:11px;text-align:center}
+body:is([data-style=atlas],[data-style=folio]) .toc-toggle{display:block;width:100%;min-height:36px;padding:7px 11px;border:1px solid #ffffff25;border-radius:10px;background:#302e2bed;color:#eee4d2;font-size:11px;text-align:center;box-shadow:0 3px 14px #0002}
 body:is([data-style=atlas],[data-style=folio]) .toc-toggle span{display:none}
 body:is([data-style=atlas],[data-style=folio]) .sidebar:not(.toc-open) .toc-panel{display:none}
 body:is([data-style=atlas],[data-style=folio]) .sidebar.toc-open{width:280px}
-body:is([data-style=atlas],[data-style=folio]) .toc-panel{padding:14px;margin-top:8px;background:#fffaf0;border:1px solid #c8ad79;border-radius:6px;box-shadow:0 8px 28px #0004}
+body:is([data-style=atlas],[data-style=folio]) .toc-panel{padding:14px;margin-top:8px;background:#fffaf0;border:1px solid #c8ad79;border-radius:10px;box-shadow:0 8px 28px #0004;animation:tools-unfold .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:top right}
 body:is([data-style=atlas],[data-style=folio]) .toc{display:block;max-height:60vh;overflow:auto;margin-top:9px;border:0}
 body:is([data-style=atlas],[data-style=folio]) .toc a{white-space:normal;margin:0;padding:8px;font-size:11px}
 body:is([data-style=atlas],[data-style=folio]) .workspace>main{position:relative;min-width:0}
@@ -86,7 +88,8 @@ body[data-style=atlas] .workspace>main:before{content:"";position:absolute;left:
 body[data-style=atlas] .note-head{padding:3px 0 15px}.note-head{position:relative}
 body[data-style=atlas] .panel{border:0;padding:0;background:transparent;box-shadow:none;border-radius:0}
 body[data-style=atlas] .chapter{position:relative;border-top:0;padding:5px 0 18px;margin:0 0 14px;background:transparent}
-body[data-style=atlas] .chapter.is-visible{animation:write-in .38s ease both}
+body[data-style=atlas] .chapter.is-visible{animation:atlas-write .46s cubic-bezier(.2,.8,.2,1) both}
+body[data-style=paper] .chapter.is-visible{animation:paper-rise .42s cubic-bezier(.2,.8,.2,1) both}
 body[data-style=atlas] .chapter header{margin-bottom:14px;align-items:baseline}
 body[data-style=atlas] .reader-nav{width:175px;left:50%;transform:translateX(-50%);bottom:12px;background:#303331;color:#e4dece;border-color:#ffffff35}
 body[data-style=atlas] .reader-controls button,body[data-style=atlas] .chapter-position{color:#e4dece;font-size:10px}
@@ -94,13 +97,16 @@ body[data-style=atlas] .toc a.active{background:#f4e6bc;color:#9f4135;box-shadow
 body[data-style=atlas] footer{border-top:1px dashed #c9b794;padding-top:16px}
 
 /* Style B: leather cover, metal rings and measured ruled pages. */
-body[data-style=folio] .workspace>main{display:grid;grid-template-rows:minmax(0,1fr) auto;height:min(740px,calc(100dvh - 75px));min-height:440px;background:#8b4513;background-image:repeating-linear-gradient(90deg,transparent,transparent 2px,#0000000a 2px,#0000000a 4px),linear-gradient(180deg,#8b4513,#733b16);border-radius:10px 14px 14px 10px;padding:20px 19px 12px 35px;box-shadow:0 0 0 2px #5c2e0b,0 20px 50px #0006,inset 0 1px 0 #ffffff20;perspective:1600px}
+body[data-style=folio] .workspace>main{display:grid;grid-template-rows:minmax(0,1fr) auto;height:min(740px,calc(100dvh - 75px));min-height:440px;background:#533a2b;background-image:radial-gradient(ellipse at 50% 0,#d7a46a18,transparent 65%),repeating-linear-gradient(135deg,#ffffff03 0 1px,transparent 1px 4px),linear-gradient(90deg,#644633,#453025 48%,#302119 50%,#453025 52%,#644633);border:1px solid #78583e;border-radius:17px;padding:20px 19px 12px 35px;box-shadow:0 2px 0 #281a13,0 6px 0 -3px #3c271c,0 22px 50px #0007,inset 0 1px 0 #e6bc8538,inset 0 -2px 3px #1b110a66;perspective:1600px}
+body[data-style=folio][data-view=notes] .workspace>main:after{content:"";position:absolute;inset:8px;border:1px dashed #d3ad754d;border-radius:10px;pointer-events:none}
+body[data-style=folio] .workspace>main{height:min(740px,calc(100dvh - 120px))}
 body[data-style=folio] .workspace>main:before{content:"";position:absolute;left:9px;top:36px;bottom:32px;width:32px;background:radial-gradient(ellipse 12px 7px at 16px 20px,#87847e 20%,#ddd9d0 55%,#99968f 70%,transparent 74%),linear-gradient(90deg,transparent 11px,#c5c2ba 11px,#88847c 18px,transparent 18px);background-size:32px 82px;pointer-events:none;z-index:3;border-radius:6px}
 body[data-style=folio] .note-head{position:absolute;width:1px;height:1px;padding:0;margin:0;overflow:hidden;clip-path:inset(50%)}
 body[data-style=folio] .learning-hub{order:2;display:block;background:transparent;margin:0;padding:9px 5px 0;border:0}
 body[data-style=folio] .hub-heading,body[data-style=folio] .mastery-line,body[data-style=folio] .route-grid{display:none}
 body[data-style=folio] .folio-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}
-.folio-controls button{border:0;border-radius:3px;padding:4px 12px;background:transparent;color:#f7e8cc;min-height:32px;font-size:11px}
+.folio-controls button{border:1px solid transparent;border-radius:8px;padding:4px 12px;background:transparent;color:#e8d3af;min-height:32px;font-size:11px;transition:background .18s,color .18s,border-color .18s}
+.folio-controls button:not(:disabled):hover{background:#e4c49012;border-color:#d3ad7533;color:#fff1d6}
 .folio-controls button:disabled{opacity:.4;cursor:default}.folio-controls span{font:17px SeagullHand,cursive;color:#f7e8cc}
 body[data-style=folio][data-view]:not([data-view=notes]) .learning-hub{display:none}
 body[data-style=folio] .panel{order:1;min-height:0;overflow:auto;scrollbar-width:thin;border:0;border-radius:3px 8px 8px 3px;padding:30px 35px 35px 52px;background:#fdfbf7;background-image:linear-gradient(90deg,transparent 36px,#d8938555 36px,#d8938555 37px,transparent 37px),repeating-linear-gradient(transparent,transparent 31px,#a4b0be66 31px,#a4b0be66 32px);box-shadow:2px 3px 7px #00000024,inset 0 0 45px #8b451308;margin:0}
@@ -125,9 +131,19 @@ body[data-style=folio] .notebook-tape,body[data-style=folio] .notebook-clip,body
 body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:10px}
 
 @keyframes write-in{from{opacity:.2;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes paper-rise{from{opacity:.25;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes atlas-write{from{opacity:.25;transform:translateY(9px) rotate(.3deg)}to{opacity:1;transform:none}}
+@keyframes tools-unfold{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes scene-fade-out{to{opacity:0}}@keyframes scene-fade-in{from{opacity:0}to{opacity:1}}
+::view-transition-old(root){animation:scene-fade-out .16s ease-in both}::view-transition-new(root){animation:scene-fade-in .32s ease-out both}
+.tools-toggle,.toc-toggle,.mastery-button,.copy-code,.wrap-code,.markdown-toolbar button{transition:background .18s,border-color .18s,color .18s,box-shadow .18s}
+.tools-toggle:hover,.toc-toggle:hover{background:#443b31!important;border-color:#d3ad7570!important}
+body[data-style=folio] #notes.panel:not([hidden]){animation:scene-fade-in .3s ease-out both}
+body[data-style=atlas] #notes.panel:not([hidden]){animation:paper-rise .32s cubic-bezier(.2,.8,.2,1) both}
 @media(max-width:850px){
  .style-picker span{display:none}.style-picker select{font-size:10px;min-height:36px}
  body[data-style=atlas] .workspace,body[data-style=folio] .workspace{padding:0;width:calc(100% - 40px);margin-top:60px}
+ body[data-style=folio] .workspace{margin-top:76px}
  body[data-style=atlas] .workspace>main{padding:27px 22px 22px 55px;background-image:linear-gradient(90deg,transparent 39px,#d8938555 39px,#d8938555 41px,transparent 41px),linear-gradient(#e8e0cc 1px,transparent 1px)}
  body[data-style=atlas] .workspace>main:before{left:8px;width:22px}
  body[data-style=folio] .workspace>main{padding:17px 13px 19px 31px}
@@ -162,20 +178,20 @@ body:is([data-style=atlas],[data-style=folio]) .tools .obsidian-link{font-size:1
  body:is([data-style=atlas],[data-style=folio]) .time{margin-left:37px}
 }
 /* An open book: separate reading pages, a shaded gutter and paper turning faces. */
-body[data-style=folio][data-view=notes] .workspace>main{padding:18px 19px 11px;border-radius:12px 12px 15px 15px;background-image:repeating-linear-gradient(90deg,transparent,transparent 3px,#00000008 3px,#00000008 5px),linear-gradient(180deg,#87512b,#633919)}
+body[data-style=folio][data-view=notes] .workspace>main{padding:18px 19px 11px;border-radius:17px}
 body[data-style=folio][data-view=notes] .workspace>main:before,body[data-style=folio][data-view=notes] .notebook-decoration{display:none}
-body[data-style=folio] #notes{padding:0;background:none;overflow:hidden;box-shadow:none;border-radius:4px;isolation:isolate}
+body[data-style=folio] #notes{padding:0;background:none;overflow:hidden;box-shadow:0 2px 0 #eee4d2,0 4px 0 #d7c7ae,0 6px 0 #b5a086,0 10px 19px #1d140e44;border-radius:4px;isolation:isolate}
 .book-spread{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;height:100%;perspective:2200px;isolation:isolate}
-.book-spread:before{content:"";position:absolute;left:calc(50% - 23px);top:0;bottom:0;width:46px;background:linear-gradient(90deg,transparent,#69583e13 30%,#49332038 49%,#fffdf5aa 51%,#69583e15 73%,transparent);z-index:8;pointer-events:none}
-body[data-style=folio] .book-page{position:relative;height:100%;min-height:0;min-width:0;overflow:hidden;padding:30px 35px 20px;border:0;margin:0;background:#fdfbf5;background-image:repeating-linear-gradient(transparent,transparent 31px,#a4b0be44 31px,#a4b0be44 32px);border-radius:4px 0 0 4px;box-shadow:inset -15px 0 22px -18px #4b372899}
+.book-spread:before{content:"";position:absolute;left:calc(50% - 30px);top:0;bottom:0;width:60px;background:linear-gradient(90deg,transparent,#6a513315 27%,#38251945 49%,#fff8eac4 51%,#6a513319 73%,transparent);z-index:8;pointer-events:none}
+body[data-style=folio] .book-page{position:relative;height:100%;min-height:0;min-width:0;overflow:hidden;padding:30px 35px 20px;border:0;margin:0;background:#fdf9ef;background-image:linear-gradient(90deg,#fffdf83d,transparent 70%,#82644409),repeating-linear-gradient(transparent,transparent 31px,#baac932d 31px,#baac932d 32px);border-radius:4px 0 0 4px;box-shadow:inset -15px 0 22px -18px #4b372899}
 body[data-style=folio] #notes>.chapter,body[data-style=folio] #notes>.book-overview,body[data-style=folio] #notes>.study-widgets,body[data-style=folio] #notes>.source-list{display:none}
 body[data-style=folio] .book-page-body{min-width:0}
-body[data-style=folio] .book-page-body>header{display:flex;align-items:baseline;gap:9px;margin-bottom:12px}
-body[data-style=folio] .book-page-footer{display:flex;align-items:center;justify-content:space-between;position:absolute;bottom:10px;left:35px;right:35px;margin:0;padding:0;min-height:30px;color:#a18e75;font-size:11px;letter-spacing:0}
+body[data-style=folio] .book-page-body>header{display:flex;align-items:baseline;gap:9px;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid #d9ccb65e}
+body[data-style=folio] .book-page-footer{display:flex;align-items:center;justify-content:space-between;position:absolute;bottom:10px;left:35px;right:35px;margin:0;padding:7px 0 0;border-top:1px solid #ded2bd70;min-height:30px;color:#8a765d;font-size:11px;letter-spacing:0}
 body[data-style=folio] .book-page-footer .book-page-number{margin:0;padding:0;font-size:13px}
 body[data-style=folio] .book-page-footer .mastery-button{margin:0}
 .book-atomic-overflow{overflow:auto}.book-question{font:19px/1.7 SeagullHand,cursive;color:#38678b;margin:10px 0}
-body[data-style=folio] .book-page.book-right{border-radius:0 4px 4px 0;box-shadow:inset 15px 0 22px -18px #4b372899}
+body[data-style=folio] .book-page.book-right{border-radius:0 4px 4px 0;background-image:linear-gradient(90deg,#82644409,transparent 30%,#fffdf83d),repeating-linear-gradient(transparent,transparent 31px,#baac932d 31px,#baac932d 32px);box-shadow:inset 15px 0 22px -18px #4b372899}
 body[data-style=folio] .book-page:not(.folio-visible){display:none}
 body[data-style=folio] .book-page h2{font:23px/1.5 SeagullHand,cursive;color:#38678b;text-decoration:underline;text-decoration-color:#38678b55;text-underline-offset:5px;margin:0 0 14px}
 body[data-style=folio] .book-page .prose{font-size:16px}
@@ -187,14 +203,17 @@ body[data-style=folio] .book-page-number{display:block;text-align:center;font:14
 body[data-style=folio] .book-source-description{font:16px/1.9 SeagullHand,cursive;color:#736657}
 .book-edge{position:absolute;top:0;bottom:0;z-index:25;width:34px;padding:0;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .book-edge-previous{left:0}.book-edge-next{right:0}.book-edge:disabled{pointer-events:none}
-.book-edge-arrow{display:flex;align-items:center;justify-content:center;width:29px;height:46px;border-radius:5px;background:#d5bc8e80;color:#75532f;box-shadow:0 2px 12px #76532a22;opacity:0;transform:translateX(3px);transition:opacity .18s,transform .18s}
+.book-edge-arrow{display:flex;align-items:center;justify-content:center;width:27px;height:43px;border:1px solid #b59a7040;border-radius:16px;background:#f5e7ccdb;color:#75532f;box-shadow:0 3px 13px #76532a19;opacity:0;transform:translateX(3px);transition:opacity .2s,transform .2s}
+.book-edge-next:after{content:"";position:absolute;right:0;top:0;width:27px;height:27px;background:linear-gradient(225deg,#dcc8a6 48%,#f9f0e0 50%,transparent 54%);opacity:0;transition:opacity .2s;pointer-events:none}.book-edge-next:hover:after,.book-edge-next:focus-visible:after{opacity:.8}
 .book-edge-previous .book-edge-arrow{transform:translateX(-3px)}.book-edge svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .book-edge:hover .book-edge-arrow,.book-edge:focus-visible .book-edge-arrow{opacity:1;transform:none}.book-edge:disabled .book-edge-arrow{opacity:0}
 .book-turn-leaf,.book-held-page{position:absolute;top:0;bottom:0;width:50%;pointer-events:none}
 .book-turn-leaf{z-index:20;transform-style:preserve-3d;will-change:transform;box-shadow:0 4px 20px #39261335}
 .turn-forward{left:50%;transform-origin:left center}.turn-backward{left:0;transform-origin:right center}
-.book-turn-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;overflow:hidden;background:#fdfbf5}
-.book-turn-face:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#7b654322,transparent 35%,#f7f0d91f 70%,#7b65430b);pointer-events:none}
+.book-turn-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;overflow:hidden;background:#fdf9ef}
+.book-turn-face:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#54372745,transparent 45%,#3e281b21);pointer-events:none}
+.book-turn-front:after{animation:turn-front-shade var(--page-turn-duration,760ms) ease both}.book-turn-back:after{animation:turn-back-shade var(--page-turn-duration,760ms) ease both}
+@keyframes turn-front-shade{0%{opacity:.08}50%{opacity:.75}100%{opacity:.2}}@keyframes turn-back-shade{0%{opacity:.6}55%{opacity:.45}100%{opacity:.05}}
 .book-turn-back{transform:rotateY(180deg)}.book-held-page{z-index:10;overflow:hidden}.book-held-left{left:0}.book-held-right{left:50%}
 @media(max-width:700px){
  body[data-style=folio][data-view=notes] .workspace>main{padding:13px 12px 9px}
@@ -206,7 +225,7 @@ body[data-style=folio] .book-source-description{font:16px/1.9 SeagullHand,cursiv
  .book-edge{width:38px}
 }
 @media(hover:none){.book-edge:not(:disabled) .book-edge-arrow{opacity:.7}}
-@media(prefers-reduced-motion:reduce){body[data-style=atlas] .chapter.is-visible,.explore-panel,.review-card[open] .prose,.extension-card[open] .prose{animation:none!important}.book-edge-arrow{transition:none}}
+@media(prefers-reduced-motion:reduce){.chapter.is-visible,.panel:not([hidden]),.tools-open .tools,.toc-panel,.explore-panel,.review-card[open] .prose,.extension-card[open] .prose,.book-turn-face:after{animation:none!important}.tools-toggle,.toc-toggle,.mastery-button,.copy-code,.wrap-code,.markdown-toolbar button,.folio-controls button,.book-edge-arrow,.book-edge-next:after{transition:none!important}::view-transition-old(root),::view-transition-new(root){animation:none!important}}
 @media print{
  .topbar,.sidebar,.reader-nav,.style-picker,.learning-hub,.mastery-button,.explore-play,.notebook-decoration,.book-edge,.book-turn-leaf,.book-held-page,.markdown-toolbar{display:none!important}
  .mindmap-viewer:before{display:none!important}.mindmap-viewer{padding-left:0!important}
@@ -214,7 +233,7 @@ body[data-style=folio] .book-source-description{font:16px/1.9 SeagullHand,cursiv
  body:is([data-style=atlas],[data-style=folio]) .workspace{width:100%;max-width:none;margin:0}
  body[data-style=atlas] .workspace>main,body[data-style=folio] .workspace>main{display:block;height:auto;min-height:0;padding:0;background:white;box-shadow:none;border:0}
  body[data-style=folio] .note-head{position:static;clip-path:none;width:auto;height:auto;overflow:visible;padding:0 0 20px}
- body[data-style=atlas] .workspace>main:before,body[data-style=folio] .workspace>main:before{display:none}
+ body[data-style=atlas] .workspace>main:before,body[data-style=folio] .workspace>main:before,body[data-style=folio] .workspace>main:after{display:none}
  body[data-style=atlas] .chapter,body[data-style=folio] .chapter{display:block!important;min-height:0;animation:none!important;transform:none!important}
  body[data-style=folio] #notes{height:auto;overflow:visible;box-shadow:none;padding:0;background:white}
  .book-spread{display:block;height:auto;perspective:none}.book-spread:before{display:none}

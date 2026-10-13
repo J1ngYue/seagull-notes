@@ -54,7 +54,7 @@ python skill/scripts/notebook.py note.json --style atlas
 | --- | --- |
 | Paper (`paper`) | The existing beige illustrated reader |
 | Study Notebook (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
-| Leather Journal (`folio`) | An open leather book with facing note pages, a shaded spine, hover arrows on outer page edges, keyboard navigation, and animated paper fronts and backs |
+| Leather Journal (`folio`) | A walnut leather cover with stitching, layered cream pages, a shaded spine, edge-hover arrows, keyboard navigation, and paper turns with changing light |
 
 ![Facing pages in Leather Journal](examples/open-book-preview.jpg)
 

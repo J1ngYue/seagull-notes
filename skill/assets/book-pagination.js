@@ -1,6 +1,6 @@
 // Move original note blocks into measured pages; restore them when leaving the book.
 function paginateNotebookBook(spread,documents,options){
- const pages=[],homes=[],paragraphs=[],chapterPages=new Map(),starts=[],moved=new Set(),imageHeights=new Map();let current=null,contexts=new Map();
+ const pages=[],homes=[],paragraphs=[],chapterPages=new Map(),starts=[],moved=new Set(),imageHeights=new Map();let current=null,contexts=new Map(),currentContext=null;
  const width=spread.clientWidth/(matchMedia('(max-width:700px)').matches?1:2),height=spread.clientHeight;
  function remember(node){if(moved.has(node))return;const marker=document.createComment('paged block home');node.before(marker);homes.push([node,marker]);moved.add(node)}
  function newPage(doc){
@@ -10,11 +10,12 @@ function paginateNotebookBook(spread,documents,options){
   const header=doc.header.cloneNode(true);header.removeAttribute('id');header.querySelectorAll('[id]').forEach(element=>element.removeAttribute('id'));
   if(pages.some(item=>item.document===doc)){const title=header.querySelector('h2')||header;title.append(document.createTextNode('（续）'))}body.append(header);
   const footer=document.createElement('footer');footer.className='book-page-footer';const number=document.createElement('span');number.className='book-page-number';number.textContent=String(pages.length+1);footer.append(number);page.append(footer);spread.append(page);
-  current={page,body,footer,document:doc,blocks:0,start:null};contexts=new Map();pages.push(current);if(!chapterPages.has(doc.chapter))chapterPages.set(doc.chapter,pages.length-1);return current;
+  current={page,body,footer,document:doc,blocks:0,start:null};contexts=new Map();currentContext=null;pages.push(current);if(!chapterPages.has(doc.chapter))chapterPages.set(doc.chapter,pages.length-1);return current;
  }
  function available(){const css=getComputedStyle(current.page);return current.page.clientHeight-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom)-58}
  function fits(){return current.body.scrollHeight<=available()+1}
  function target(block){
+  if(block.context!==currentContext){contexts=new Map();currentContext=block.context}
   if(!block.context)return current.body;
   if(!contexts.has(block.context)){const wrapper=block.wrapper();current.body.append(wrapper.outer);contexts.set(block.context,wrapper)}
   return contexts.get(block.context).target;
