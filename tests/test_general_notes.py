@@ -28,7 +28,7 @@ def topic():
             "extensions": [{"title": "进一步学习", "markdown": "自己的补充解释。"}]}
 
 
-@pytest.mark.parametrize("style", ["paper", "atlas", "folio"])
+@pytest.mark.parametrize("style", ["paper", "atlas", "folio", "whale", "anime", "cyber"])
 def test_all_styles_keep_complete_topic_content_and_references(tmp_path, style):
     note = dict(topic(), style=style)
     page, markdown = script("notebook").render_note(note, tmp_path)
@@ -42,7 +42,7 @@ def test_all_styles_keep_complete_topic_content_and_references(tmp_path, style):
     assert not document.xpath('//script[@src] | //link[@rel="stylesheet"]')
 
 
-@pytest.mark.parametrize("style", ["paper", "atlas", "folio"])
+@pytest.mark.parametrize("style", ["paper", "atlas", "folio", "whale", "anime", "cyber"])
 def test_markdown_view_preserves_complete_source_without_executing_markup(tmp_path, style):
     note = dict(topic(), style=style)
     note["sections"][0]["markdown"] = '```html\n<script>alert("display only")</script>\n```\n\n$$x^2+1$$\n\n尾部内容。'

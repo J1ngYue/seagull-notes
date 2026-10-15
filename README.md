@@ -55,10 +55,13 @@ python skill/scripts/notebook.py note.json --style atlas
 | Paper (`paper`) | The existing beige illustrated reader |
 | Handwritten Notes (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
 | Leather Book (`folio`) | A walnut leather cover with stitching, layered cream pages, a shaded spine, edge-hover arrows, keyboard navigation, and paper turns with changing light |
+| Whale Study Room (`whale`) | Ocean-blue surfaces and an original chibi fan-art illustration inspired by the community’s blue whale maid |
+| Anime Theater (`anime`) | Original anime scholar and cat familiar, a right-side episode index, comic panels and drifting petals |
+| Neon Matrix (`cyber`) | A neon HUD core, terminal section panels, pointer-following light, animated grids and readable syntax highlighting |
 
 ![Facing pages in Leather Book](examples/open-book-preview.jpg)
 
-All three styles include a reading-font selector: style default, sans serif, Song-style serif, Kai-style calligraphy, and bundled handwriting. The browser remembers your choice across notebooks. Changing fonts repaginates Leather Book at the current content position; code and math retain their dedicated typography.
+All six styles include a reading-font selector: style default, sans serif, Song-style serif, Kai-style calligraphy, and bundled handwriting. The browser remembers your choice across notebooks. Changing fonts repaginates Leather Book at the current content position; code and math retain their dedicated typography.
 
 Topic, text, and article notes default to Handwritten Notes; existing video and local-media notebooks retain Paper. The two replicas center compact handwritten pages on a charcoal desk, with tools and chapter navigation in popovers. Handwritten Notes scrolls continuously. Leather Book measures the available page space and continues long chapters, paragraphs, lists, tables and review answers across as many facing pages as needed. Long code blocks span pages; each copy button still copies the complete original block. Overview, illustrations, reviews and references remain in appendix pages. Resizing recalculates pagination and preserves the reading position. Below 700px it uses a single page; reduced-motion preferences skip the turn animation. Every style keeps complete content, code/formula copying, mind maps and print support. Printing includes all chapters and appendices. Mastery marks and style preferences are stored locally. The existing `atlas` and `folio` values select the two replacement styles.
 
@@ -217,3 +220,5 @@ Tests cover captions, cache behavior, anonymous mode, timestamps, local source r
 The notebook presentation was inspired by [CuteNote](https://cutenote.cc/). This project is not affiliated with CuteNote.
 
 Figure-generation guidance was informed by the Matplotlib and scientific-visualization skills in Scientific Agent Skills: Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). [Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents](https://doi.org/10.48550/arXiv.2609.00065).
+
+The three additional themes reuse the same complete note, chapter navigation, Markdown, sources and Obsidian exports. Animation respects reduced-motion preferences. Whale-girl artwork is embedded for offline use; [asset provenance](skill/assets/themes/SOURCE.md).

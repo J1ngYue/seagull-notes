@@ -245,6 +245,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
     handwriting_assets = ('/* ' + (assets / "handwritten" / "LICENSE-note-skill.txt").read_text(encoding="utf-8") + '\n'
                           + (assets / "handwritten" / "OFL-MaShanZheng.txt").read_text(encoding="utf-8") + ' */\n'
                           + '@font-face{font-family:SeagullHand;src:url(data:font/woff2;base64,' + hand_font + ') format("woff2");font-weight:400;font-style:normal;font-display:swap}')
+    theme_art = '\n:root{' + ''.join('--' + name + '-art:url(data:image/webp;base64,' + base64.b64encode((assets / 'themes' / file).read_bytes()).decode('ascii') + ');' for name, file in [('whale', 'whale-girl.webp'), ('anime', 'anime-scholar.webp')]) + '}'
     route = ''.join(f'<button type="button" class="route-card" data-chapter="{index}"><span>{index + 1:02}</span><strong>{html.escape(section["title"])}</strong><small>展开学习 ↗</small></button>' for index, section in enumerate(note["sections"]))
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
@@ -256,9 +257,10 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         transcript=html.escape(note.get("transcript") or note.get("source_text") or ("未提供完整字幕原文。" if kind == "video" else "本笔记依据整理需求与所列资料编写。")),
         original_tab="字幕与出处" if kind == "video" else "资料与出处", references=references,
         style=style, note_id=html.escape(note_id or title, quote=True),
-        experience_css=(assets / "experiences.css").read_text(encoding="utf-8"),
+        experience_css=(assets / "experiences.css").read_text(encoding="utf-8") + "\n" + (assets / "themes.css").read_text(encoding="utf-8")
+        + theme_art,
         handwriting_assets=handwriting_assets,
-        experience_js=(assets / "book-pagination.js").read_text(encoding="utf-8") + "\n" + (assets / "experiences.js").read_text(encoding="utf-8"),
+        experience_js=(assets / "book-pagination.js").read_text(encoding="utf-8") + "\n" + (assets / "theme-scenes.js").read_text(encoding="utf-8") + "\n" + (assets / "experiences.js").read_text(encoding="utf-8"),
         route=route, widgets=widgets,
         math_css=math_css, math_js=math_js, code_css=code_css,
         library_action=f'<a class="library-link" href="{html.escape(library_href, quote=True)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2-3h9v16H3V7z"/></svg>笔记夹</a>' if library_href else "",
@@ -274,7 +276,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="笔记 JSON → 图文 HTML + Markdown")
     parser.add_argument("note", type=Path)
     parser.add_argument("--out", type=Path, help="输出文件基名，不含扩展名")
-    parser.add_argument("--style", choices=["paper", "atlas", "folio"], help="米色纸页 / 手写札记 / 皮革书卷")
+    parser.add_argument("--style", choices=list(sources.STYLE_LABELS), help=" / ".join(sources.STYLE_LABELS.values()))
     parser.add_argument("--obsidian-vault", type=Path, help="将可编辑笔记与图片导入指定 vault，保留已存在的文件")
     args = parser.parse_args()
     try:

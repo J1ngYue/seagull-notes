@@ -2,7 +2,8 @@
 from urllib.parse import urlsplit
 
 SOURCE_LABELS = {"video": "视频精读", "local": "本地素材", "topic": "主题知识", "text": "文本整理", "article": "网页笔记"}
-STYLE_LABELS = {"paper": "米色纸页", "atlas": "手写札记", "folio": "皮革书卷"}
+STYLE_LABELS = {"paper": "米色纸页", "atlas": "手写札记", "folio": "皮革书卷",
+                "whale": "肥鱼自习室", "anime": "次元放映厅", "cyber": "霓虹矩阵"}
 
 
 def source_kind(note: dict) -> str:
@@ -23,7 +24,7 @@ def source_kind(note: dict) -> str:
 def reading_style(note: dict) -> str:
     style = note.get("style") or ("paper" if source_kind(note) in {"video", "local"} else "atlas")
     if style not in STYLE_LABELS:
-        raise ValueError("style 必须是 paper/atlas/folio")
+        raise ValueError("style 必须是 " + "/".join(STYLE_LABELS))
     return style
 
 

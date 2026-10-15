@@ -16,7 +16,7 @@ async function open(preference){
 (async()=>{
  const {dom,errors}=await open();const w=dom.window,d=w.document,font=d.querySelector('#font-select'),style=d.querySelector('#style-select');
  const original=d.querySelector('#markdown .raw').textContent,codes=Array.from(d.querySelectorAll('#notes .code-block code')).map(n=>n.textContent);
- for(const mode of ['paper','atlas','folio']){
+ for(const mode of ['paper','atlas','folio','whale','anime','cyber']){
   style.value=mode;style.dispatchEvent(new w.Event('change'));
   for(const value of ['sans','serif','kai','hand','default']){
    font.value=value;font.dispatchEvent(new w.Event('change'));
@@ -30,5 +30,5 @@ async function open(preference){
  for(const [stored,expected] of [[persisted,'serif'],['unknown','default']]){
   const next=await open(stored);assert.equal(next.dom.window.document.querySelector('#font-select').value,expected);assert.equal(next.dom.window.document.body.dataset.readerFont,expected);assert.deepEqual(next.errors,[]);next.dom.window.close();
  }
- process.stdout.write('Five font choices work across three styles; preference reloads and source/code remain exact.\n');
+ process.stdout.write('Five font choices work across six styles; preference reloads and source/code remain exact.\n');
 })().catch(error=>{process.stderr.write(String(error.stack));process.exitCode=1});

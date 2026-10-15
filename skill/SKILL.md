@@ -1,6 +1,6 @@
 ---
 name: seagull-notes
-description: Create illustrated, interactive Chinese notebooks from knowledge topics, pasted notes, article URLs, Bilibili/YouTube links and local materials. Includes a personal notebook shelf, chapter navigation, mind maps, three reading styles, step explorers and review cards. Use for making or extending learning notes; video sources prefer platform captions and reuse sign-in when needed.
+description: Create illustrated, interactive Chinese notebooks from knowledge topics, pasted notes, article URLs, Bilibili/YouTube links and local materials. Includes a personal notebook shelf, chapter navigation, mind maps, six reading styles, step explorers and review cards. Use for making or extending learning notes; video sources prefer platform captions and reuse sign-in when needed.
 ---
 
 # Seagull Notes
@@ -129,3 +129,7 @@ YouTube 优先尝试浏览器提供的 `tab.content.exportYouTubeTranscript()`�
 没有具体视频时只能交付明确标注的 UI 示例，不宣称真实平台登录和字幕提取已验证。
 
 依赖见 [setup.md](references/setup.md)；错误排查见 [troubleshooting.md](references/troubleshooting.md)。
+
+## 6. 六种阅读主题
+
+原有 `paper/atlas/folio` 保留；新增 `whale`（肥鱼自习室）、`anime`（次元放映厅）、`cyber`（霓虹矩阵）。均可通过 `--style` 或顶部阅读风格选择；不要为了主题改变原始笔记、代码、公式和出处。鲸鱼娘指社区蓝发圆脸、鲸鳍耳朵、深蓝女仆装的“大肥鱼”，使用随技能提供的原创学习插画，不替换为普通蓝发少女。赛博主题允许深色与青紫霓虹，保证正文、高亮代码和公式的对比度；不要把霓虹和闪烁铺到阅读文字上。原三套继续沿用用户的米色约定。插画离线嵌入，移动端装饰不遮住正文；所有主题尊重减少动态效果和打印。资源见 [主题素材](assets/themes/SOURCE.md)。

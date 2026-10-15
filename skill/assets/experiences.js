@@ -75,6 +75,7 @@ function updateMastery(){
  const percent=chapters.length?Math.round(mastered.size/chapters.length*100):0;
  document.getElementById('mastery-percent').textContent=percent+'%';document.querySelector('.mastery-orbit').style.setProperty('--mastery',percent+'%');document.getElementById('mastery-count').textContent='已掌握 '+mastered.size+' / '+chapters.length+' 章';document.getElementById('mastery-progress').value=mastered.size;
  chapters.forEach((chapter,index)=>{const button=masteryButtons[index];button.setAttribute('aria-pressed',String(mastered.has(index)));button.textContent=mastered.has(index)?'已掌握 · 点击撤销':'标记已掌握';routeCards[index].classList.toggle('is-mastered',mastered.has(index))});
+ updateThemeMeters();
 }
 chapters.forEach((chapter,index)=>{const button=document.createElement('button');button.type='button';button.className='mastery-button';button.setAttribute('aria-label','切换掌握状态：'+chapter.querySelector('h2').textContent);button.addEventListener('click',()=>{mastered.has(index)?mastered.delete(index):mastered.add(index);savePreference(learningKey,Array.from(mastered));updateMastery()});chapter.append(button);masteryButtons.push(button)});
 function selectFolioChapter(index,animate=true){selectBookPage(pagination?.chapterPages.get(index)||0,animate)}
@@ -90,12 +91,15 @@ function turnBook(direction){
  selectBookPage(target);history.replaceState(null,'','#'+bookPages[target].id);currentChapter=-1;queueReading();
 }
 function applyReadingStyle(style){
- if(!['paper','atlas','folio'].includes(style))style='paper';document.body.dataset.style=style;stylePicker.value=style;
+ const readingAnchor=Math.max(0,currentChapter),previousStyle=document.body.dataset.style,keepChapter=window.scrollY>96&&document.body.dataset.view==='notes';
+ if(!['paper','atlas','folio','whale','anime','cyber'].includes(style))style='paper';document.body.dataset.style=style;stylePicker.value=style;
  if(bookMounted)unmountBook();
- if(style==='paper'){tabsHome.insertBefore(formatTabs,tabsNext);introPieces.forEach(piece=>overview.before(piece));overview.hidden=true}else{document.getElementById('reader-tools').append(formatTabs);introPieces.forEach(piece=>overview.append(piece));overview.hidden=false}
+ applyThemeScene(style);
+ if(!['atlas','folio'].includes(style)){tabsHome.insertBefore(formatTabs,tabsNext);introPieces.forEach(piece=>overview.before(piece));overview.hidden=true}else{document.getElementById('reader-tools').append(formatTabs);introPieces.forEach(piece=>overview.append(piece));overview.hidden=false}
  closeNotebookTools();
  document.querySelector('.hub-heading .label').textContent=style==='folio'?'MY STUDY JOURNAL':'MY STUDY NOTES';document.querySelector('.hub-heading h2').textContent=style==='folio'?'翻开这一页，继续理解。':'把重点写在纸上。';document.querySelector('.hub-heading p').textContent=style==='folio'?'从目录选一章，或用左右键继续阅读。':chapters.length+' 个章节，保留完整学习内容。';
  if(style==='folio'){mountBook();const index=bookPages.findIndex(page=>'#'+page.id===location.hash),chapter=chapters.findIndex(page=>'#'+page.id===location.hash);if(index>=0)selectBookPage(index,false);else selectFolioChapter(chapter>=0?chapter:Math.max(0,currentChapter),false);window.scrollTo({top:0,behavior:'auto'})}
+ else if(keepChapter&&previousStyle!==style)chapters[readingAnchor]?.scrollIntoView({behavior:'auto',block:'start'});
  currentChapter=-1;queueReading();requestAnimationFrame(updateIndicator);
 }
 let styleTransition=null;

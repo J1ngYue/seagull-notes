@@ -1,0 +1,212 @@
+/* New reading skins keep the original document and controls. */
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]){isolation:isolate;min-height:100vh}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .tools{flex-wrap:wrap;gap:12px 18px;justify-content:flex-end}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .workspace{max-width:1440px;grid-template-columns:210px minmax(0,980px);gap:44px;position:relative}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .note-head{position:relative;border:1px solid var(--line);border-radius:24px;padding:32px 38px;margin-bottom:28px;overflow:hidden}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .note-head:before{display:block;font:600 10px/1.5 Consolas,"Microsoft YaHei",sans-serif;letter-spacing:2px;color:var(--accent);margin-bottom:20px}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .note-head h1{font-size:clamp(28px,2.5vw,38px);letter-spacing:-.5px;margin-top:12px}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .prose{font-size:16px;line-height:1.95}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .panel{padding:36px 40px;box-shadow:0 20px 60px #20384e08}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .toc a.active{background:var(--theme-tint);box-shadow:inset 3px 0 var(--accent);color:var(--ink)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .takeaway{background:var(--theme-tint);border-color:var(--line)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .chapter h2{letter-spacing:.4px}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .tabs{background:var(--theme-tint);border-color:var(--line)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .tabs button[aria-selected=true]{color:var(--accent)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .time{color:var(--accent);border-color:var(--line)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .reader-nav{border-color:var(--line);background:var(--paper)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) :is(.chapter-position,.reader-controls button){color:var(--muted)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .style-picker select{background:var(--paper);color:var(--ink);border-color:var(--line)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .mastery-button{display:inline-flex;border:1px solid var(--line);background:var(--paper);color:var(--accent);padding:5px 12px;border-radius:20px;font-size:11px;margin-top:12px}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .mastery-button[aria-pressed=true]{background:var(--theme-tint);border-color:var(--accent)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) :is(.toc-search,.toc-toggle){background:var(--paper);color:var(--ink);border-color:var(--line)}
+
+/* DeepSeek fan-art whale girl: soft ocean glass, a real offline cutout, quiet tides. */
+body[data-style=whale]{--bg:#eff6ff;--paper:#fbfdff;--ink:#203755;--muted:#526b88;--line:#cfddf2;--accent:#385fc6;--green:#3a6489;--theme-tint:#edf3ff;background:#eff6ff}
+body[data-style=whale]:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 88% 8%,#c6d7ffb3,transparent 46%),radial-gradient(ellipse at 5% 70%,#bde7ef70,transparent 40%);animation:ocean-light 16s ease-in-out infinite alternate}
+body[data-style=whale] .topbar{background:#f7fbfff0;border-color:#cfddf2}
+body[data-style=whale] .note-head{padding-right:285px;min-height:300px;background:linear-gradient(115deg,#fcfdff,#e3edff)}
+body[data-style=whale] .note-head:before{content:"DEEPSEEK FAN THEME · 鲸鱼娘"}
+body[data-style=whale] .note-head:after{content:"";position:absolute;right:12px;bottom:8px;width:255px;height:290px;background:var(--whale-art) center bottom/contain no-repeat;pointer-events:none;filter:drop-shadow(0 10px 12px #5271a82a);animation:whale-breathe 7s ease-in-out infinite}
+body[data-style=whale] .note-head h1{color:#254782}
+body[data-style=whale] .panel{background:#ffffffeb;border-color:#d6e2f4;box-shadow:0 20px 55px #385fc610}
+body[data-style=whale] .takeaway span{color:#607dc5}
+body[data-style=whale] .chapter header .number{color:#607dc5}
+body[data-style=whale] .chapter h2:after{content:"";display:block;width:45px;height:3px;margin-top:10px;border-radius:3px;background:linear-gradient(90deg,#4d6bfe,#a9dcea)}
+@keyframes ocean-light{to{opacity:.65;transform:translateY(-12px)}}
+@keyframes whale-breathe{50%{transform:translateY(-5px) rotate(.6deg)}}
+
+/* Anime study diary: cherry/lavender, ribbon corners and a celestial cover. */
+body[data-style=anime]{--bg:#fff5fa;--paper:#fffdfd;--ink:#47354d;--muted:#7b627c;--line:#ead1e2;--accent:#9e426d;--green:#795489;--theme-tint:#fff0f6;background:linear-gradient(135deg,#fff7fb,#f2edff)}
+body[data-style=anime]:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.6;background-image:radial-gradient(ellipse 5px 9px at 18% 25%,#eaaaca90 50%,transparent 60%),radial-gradient(ellipse 4px 7px at 76% 68%,#a8a2eb70 50%,transparent 60%),radial-gradient(circle at 90% 10%,#eadbff,transparent 35%);background-size:180px 210px,230px 270px,100% 100%;animation:petal-drift 24s linear infinite}
+body[data-style=anime] .topbar{background:#fffbfdf0}
+body[data-style=anime] .note-head{padding-right:260px;background:linear-gradient(115deg,#fffdfc,#f7e8f3 60%,#ebe6ff);border-radius:24px 60px 24px 24px}
+body[data-style=anime] .note-head:before{content:"STUDY DIARY · 动漫手札"}
+body[data-style=anime] .note-head:after{content:"✦";position:absolute;right:55px;top:50%;width:120px;height:120px;margin-top:-65px;font:110px/120px Georgia;color:#ad87c8;text-align:center;border:1px solid #bc9ed19c;border-radius:50%;box-shadow:0 0 0 13px #ffffff35,0 0 0 25px #c7afd426;animation:anime-crest 10s ease-in-out infinite}
+body[data-style=anime] .note-head h1{color:#75426e;font-family:SeagullHand,"KaiTi",cursive;font-weight:400}
+body[data-style=anime] .panel{border-radius:25px 9px 25px 9px;box-shadow:8px 9px 0 #d9c1dc22,0 20px 50px #9e426d0a}
+body[data-style=anime] .takeaway{position:relative;transform:rotate(-.4deg);border-radius:13px 4px 13px 4px}
+body[data-style=anime] .takeaway:nth-child(2){transform:rotate(.5deg);background:#f6f0ff}
+body[data-style=anime] .takeaway:before{content:"";position:absolute;right:15px;top:-5px;width:35px;height:11px;transform:rotate(15deg);background:#d5b8e8a1}
+body[data-style=anime] .chapter h2{color:#874b7c}
+body[data-style=anime] .chapter .number{font:italic 23px Georgia;color:#af7b9e}
+body[data-style=anime] .chapter.is-visible{animation:anime-page-in .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes petal-drift{to{background-position:35px 210px,-20px 270px,0 0}}
+@keyframes anime-crest{50%{transform:rotate(12deg) scale(1.035)}}
+@keyframes anime-page-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* Cyber terminal: a dark ink surface, neon geometry and interactive focus. */
+body[data-style=cyber]{--bg:#070d19;--paper:#0d182a;--ink:#e5f3ff;--muted:#acbfd5;--line:#28445f;--accent:#7fefff;--green:#b1c2ff;--theme-tint:#11263b;background:#070d19;color-scheme:dark}
+body[data-style=cyber]:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(#2482a414 1px,transparent 1px),linear-gradient(90deg,#2482a414 1px,transparent 1px),radial-gradient(ellipse at 12% 10%,#3959c22b,transparent 50%),radial-gradient(ellipse at 90% 75%,#9a2bc023,transparent 45%);background-size:48px 48px,48px 48px,100% 100%,100% 100%;animation:cyber-grid 32s linear infinite}
+body[data-style=cyber] .topbar{background:#0a1425ed;border-color:#33526b;box-shadow:0 1px 18px #2ccfe712}
+body[data-style=cyber] .note-head{padding-right:230px;background:linear-gradient(120deg,#101d35ee,#10293bdb);border-color:#38627b;border-radius:20px 55px 20px 20px;box-shadow:0 0 35px #56deff0b,inset 0 1px #8eefff20}
+body[data-style=cyber] .note-head:before{content:"SEAGULL://KNOWLEDGE · 赛博终端";color:#8ef5ff}
+body[data-style=cyber] .note-head:after{content:"";position:absolute;right:48px;top:50%;width:125px;height:125px;margin-top:-62px;border:1px solid #76e8ff88;border-radius:24%;transform:rotate(45deg);box-shadow:0 0 25px #50d8ff35,inset 0 0 25px #9a68ff26,0 0 0 18px #7764d512;animation:cyber-core 9s ease-in-out infinite}
+body[data-style=cyber] .note-head h1{color:#eaf8ff;text-shadow:0 0 22px #4de2ff30}
+body[data-style=cyber] .panel{background:#0d182af5;border-color:#315169;border-radius:18px;box-shadow:0 20px 70px #0004,inset 0 1px #95dfff0a}
+body[data-style=cyber] .panel:focus-within{border-color:#53a8bd;box-shadow:0 0 28px #3bd3eb0a}
+body[data-style=cyber] .chapter{border-color:#263d55}
+body[data-style=cyber] .chapter h2{color:#d5f5ff}
+body[data-style=cyber] .chapter header .number{color:#ad9aff;font-family:Consolas,monospace}
+body[data-style=cyber] .takeaway{box-shadow:inset 0 2px #5ed8ec46}
+body[data-style=cyber] .takeaway span{color:#a99aff}
+body[data-style=cyber] .takeaway:hover{border-color:#74d5e3;transform:translateY(-3px);box-shadow:0 10px 25px #0004;transition:transform .2s,border-color .2s,box-shadow .2s}
+body[data-style=cyber] .tabs button:hover{background:#193447}
+body[data-style=cyber] .tabs button[aria-selected=true]{box-shadow:0 0 12px #71dffb17,inset 0 -2px #7fefff}
+body[data-style=cyber] .tab-indicator{background:#0d182a;border:1px solid #46889f}
+body[data-style=cyber] :is(.explorer,.review-deck,.extension-deck){background:#111f33;border-color:#315169}
+body[data-style=cyber] :is(.explore-play,.explore-steps button,.markdown-toolbar button,.copy-code,.wrap-code){background:#10253b;color:#cceeff;border-color:#385d7a}
+body[data-style=cyber] .explore-steps button[aria-selected=true]{background:#18394b;border-color:#76dce8}
+body[data-style=cyber] .prose table{background:#102036;border-color:#315169}
+body[data-style=cyber] .prose th{background:#183046;color:#e6f6ff}
+body[data-style=cyber] .prose td{border-color:#30465b}
+body[data-style=cyber] .prose code{background:#122b40;color:#b6e8ff;border-color:#284a65}
+body[data-style=cyber] .prose .code-block{background:#0a1424;border-color:#31516d;box-shadow:0 0 22px #35bbf508}
+body[data-style=cyber] .code-toolbar{background:#13283e;border-color:#31516d;color:#c9e9ff}
+body[data-style=cyber] .code-language{color:#c9e9ff}
+body[data-style=cyber] .prose .code-source code{background:none;color:inherit;border:0;padding:0}
+body[data-style=cyber] .prose .code-source{background:#0a1424;color:#d8e7ff}
+body[data-style=cyber] .code-source :is(.k,.kd,.kn,.ow){color:#d5a2ff}
+body[data-style=cyber] .code-source :is(.nf,.nb,.nc,.na){color:#85eafa}
+body[data-style=cyber] .code-source :is(.s,.s1,.s2,.sb){color:#ffe3a1}
+body[data-style=cyber] .code-source :is(.c,.c1,.cm,.ch,.cs){color:#a7b8cf}
+body[data-style=cyber] .code-source :is(.o,.p,.n){color:#d8e7ff}
+body[data-style=cyber] .code-source :is(.m,.mi,.mf){color:#ffc49b}
+body[data-style=cyber] .prose div.arithmatex{background:#12253b;border-color:#315a74;color:#e6f8ff}
+body[data-style=cyber] .arithmatex:hover{background:#1c3850}
+body[data-style=cyber] .markdown-rendered{color:#e5f3ff}
+body[data-style=cyber] .raw{color:#c3dbf0;background:#0a1424}
+body[data-style=cyber] .source-list a{background:#102337;color:#99ecff;border-color:#325570}
+body[data-style=cyber] .source-list a:hover{background:#18374b}
+body[data-style=cyber] .copy-status{background:#14354b;color:#e3faff;border:1px solid #5bb1c8}
+body[data-style=cyber] .mindmap-viewer{background:#0a1627;border-color:#315169;color:#dceeff}
+body[data-style=cyber] .mindmap-viewer img{filter:invert(.92) hue-rotate(175deg) saturate(1.35)}
+body[data-style=cyber] :is(button,a):focus-visible{outline-color:#a99aff;box-shadow:0 0 18px #7fefff30}
+@keyframes cyber-grid{to{background-position:48px 96px,48px 96px,0 0,0 0}}
+@keyframes cyber-core{50%{transform:rotate(135deg);box-shadow:0 0 38px #50d8ff45,inset 0 0 30px #9a68ff35,0 0 0 22px #7764d51a}}
+
+.theme-stage[hidden]{display:none!important}
+#notes[hidden]{display:none!important}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .topbar{flex-wrap:wrap;gap:14px;padding:18px max(22px,3vw)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .brand{white-space:nowrap;flex-shrink:0}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .tools{flex:1 1 600px;min-width:0}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .workspace{max-width:1640px;grid-template-columns:215px minmax(0,1fr);gap:34px;margin-top:38px}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage{position:relative;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(270px,.85fr);grid-template-rows:1fr auto;min-height:460px;padding:38px 42px 0;margin-bottom:22px;overflow:hidden;border:1px solid var(--line);border-radius:30px;background:var(--theme-tint)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage .note-head{min-height:0;padding:0;margin:0;background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage .note-head:after{display:none}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage .note-head:before{font-size:11px;margin-bottom:20px;letter-spacing:2.5px}
+.theme-stage-copy{z-index:2;align-self:center;min-width:0;padding:0 0 28px}
+.theme-stage-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.theme-stage-actions button{min-height:44px;border-radius:12px;padding:10px 19px;border:1px solid var(--line);color:var(--accent);background:var(--paper);font-size:12px}
+.theme-stage-actions .theme-read{color:white;background:var(--accent);border-color:transparent;box-shadow:0 8px 18px #3b5fa51c}
+.theme-read span{margin-left:20px}
+.theme-cast{position:relative;min-height:340px;pointer-events:none;align-self:stretch}
+.theme-cast-art{position:absolute;inset:-25px -5px 30px;background:var(--whale-art) center bottom/contain no-repeat;filter:drop-shadow(0 18px 20px #41568118)}
+.theme-cast-caption{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:11px;letter-spacing:1px;color:var(--muted);z-index:2}
+.theme-stage-meter{position:relative;grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:61px;border-top:1px solid var(--line);font:11px/1.6 Consolas,"Microsoft YaHei",sans-serif;color:var(--muted);z-index:2}
+.theme-stage-meter progress{position:absolute;left:-42px;bottom:0;width:calc(100% + 84px);height:3px;border:0;accent-color:var(--accent)}
+.theme-stage-meter progress::-webkit-progress-bar{background:var(--line)}
+.theme-stage-meter progress::-webkit-progress-value{background:var(--accent)}
+.theme-stage-meter progress::-moz-progress-bar{background:var(--accent)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;padding:0;border:0;background:transparent;box-shadow:none}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes>.summary{grid-column:1/-1;padding:26px 30px;border:1px solid var(--line);border-radius:20px;background:var(--paper);margin:0}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes>.takeaways{grid-column:1/-1;margin:0}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes>.cover{grid-column:1/-1;margin:0 0 4px!important}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes>.chapter{grid-column:1/-1;padding:28px 30px;margin:0;border:1px solid var(--line);border-radius:20px;background:var(--paper)}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes>:is(.study-widgets,.source-list){grid-column:1/-1;min-width:0}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .cover img{border:1px solid var(--line);box-shadow:0 15px 30px #3446770b}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]):not([data-view=notes]) .theme-stage{display:block;min-height:0;padding:24px 30px}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]):not([data-view=notes]) .theme-stage :is(.theme-cast,.theme-stage-actions,.theme-stage-meter){display:none}
+body:is([data-style=whale],[data-style=anime],[data-style=cyber]):not([data-view=notes]) .theme-stage-copy{padding:0}
+
+body[data-style=whale] .theme-stage{background:radial-gradient(ellipse at 90% 100%,#bddfe8 0,transparent 62%),linear-gradient(120deg,#f7fbff,#e4edff);box-shadow:0 25px 70px #385fc613;border-radius:30px 70px 30px 30px}
+body[data-style=whale] .theme-stage .note-head:before{content:"DEEPSEEK · 肥鱼自习室"}
+body[data-style=whale] .theme-cast-art{animation:whale-breathe 7s ease-in-out infinite}
+body[data-style=whale] .theme-cast-orbit{position:absolute;inset:15px 0 30px;border:1px solid #ffffffa6;border-radius:50%;background:radial-gradient(ellipse,#ffffff65,transparent 70%);transform:rotate(-16deg);box-shadow:0 0 0 24px #ffffff1a}
+body[data-style=whale] .sidebar{padding:24px 18px;background:#f9fcffbd;border:1px solid #cfddf2;border-radius:24px}
+body[data-style=whale] .sidebar h3{font-size:14px}.theme-count{font-weight:700}
+body[data-style=whale] #notes>.chapter{border-radius:25px 10px 25px 10px;box-shadow:0 9px 25px #42628d08}
+body[data-style=whale] #notes>.chapter:nth-of-type(even){border-left:4px solid #b7d7ec}
+body[data-style=whale] #notes>.summary{background:#f8fbff;border-style:dashed}
+
+body[data-style=anime]{background:radial-gradient(ellipse at 10% 0,#5c3a67,transparent 65%),linear-gradient(135deg,#31283f,#4e3a54 65%,#3a304c)}
+body[data-style=anime] .topbar{background:#2d243dec;border-color:#8e739b55;color:#f9eef9}
+body[data-style=anime] .brand,body[data-style=anime] .tools>a,body[data-style=anime] .tools>.source-local,body[data-style=anime] .print,body[data-style=anime] .style-picker{color:#e7d4eb}
+body[data-style=anime] .workspace{grid-template-columns:minmax(0,1fr) 240px;gap:28px}
+body[data-style=anime] .workspace>main{grid-column:1;grid-row:1;min-width:0}
+body[data-style=anime] .sidebar{grid-column:2;grid-row:1;background:#fff7f2;border:1px solid #ead3e3;padding:26px 22px;border-radius:28px 8px 28px 8px;box-shadow:8px 10px 0 #20152945}
+body[data-style=anime] .sidebar>.label{color:#9e426d}
+body[data-style=anime] .theme-stage{min-height:510px;grid-template-columns:minmax(0,1.05fr) minmax(340px,1fr);padding:42px 36px 0;background:radial-gradient(ellipse at 80% 70%,#bda8db80,transparent 65%),linear-gradient(120deg,#fff4ec,#f4deed 65%,#e6dcff);border:3px solid #e6cadc;border-radius:12px 54px 12px 12px;box-shadow:10px 12px 0 #1e152e42}
+body[data-style=anime] .theme-stage .note-head:before{content:"EPISODE / 次元放映厅";color:#815280}
+body[data-style=anime] .theme-stage .note-head h1{font-size:clamp(30px,3vw,46px);line-height:1.5}
+body[data-style=anime] .theme-cast-art{background-image:var(--anime-art);inset:-40px -35px 28px;filter:drop-shadow(-8px 15px 15px #76527a2b);animation:anime-cast 8s ease-in-out infinite}
+body[data-style=anime] .theme-cast-caption{color:#76577e;background:#fff7f0ba;border-radius:20px;padding:5px 9px;font-size:10px}
+body[data-style=anime] .theme-stage-actions .theme-read{background:#84517e}
+body[data-style=anime] .theme-stage-meter{border-color:#a984aa4d;color:#78537a}
+body[data-style=anime] .tabs{border-radius:8px;background:#fff7ee;border:1px solid #dfc9df;box-shadow:5px 5px 0 #271b3330;padding:7px;gap:4px}
+body[data-style=anime] .tabs button{border-radius:4px}.theme-stage .meta{font-size:11px}
+body[data-style=anime] #notes{counter-reset:anime-scene;gap:22px}
+body[data-style=anime] #notes>.chapter{position:relative;counter-increment:anime-scene;grid-column:auto;border:2px solid #d9bdd5;border-radius:7px;padding:39px 25px 25px;box-shadow:7px 8px 0 #21132f40;background:#fff9f3}
+body[data-style=anime] #notes>.chapter:has(.code-block,table,figure){grid-column:1/-1}
+body[data-style=anime] #notes>.chapter:before{content:"SCENE " counter(anime-scene,decimal-leading-zero);position:absolute;left:22px;top:-11px;background:#80547f;color:#fff4fb;font:600 10px/1.5 Consolas,sans-serif;letter-spacing:2px;padding:4px 12px;transform:rotate(-2deg);box-shadow:2px 2px 0 #c0a2c6}
+body[data-style=anime] #notes>.chapter h2{font-family:SeagullHand,"KaiTi",cursive;font-size:26px;font-weight:400}
+body[data-style=anime] #notes>.summary{background:#fff3dd;border:2px solid #dec298;border-radius:6px;box-shadow:6px 7px 0 #21132f30}
+body[data-style=anime] .takeaway{box-shadow:4px 5px 0 #21132f2b}
+body[data-style=anime] footer{color:#ddc9e1}.theme-stage .edition{font-size:10px}
+@keyframes anime-cast{50%{transform:translateY(-6px) rotate(-.5deg)}}
+
+body[data-style=cyber] .topbar{border-bottom:1px solid #447189;box-shadow:0 1px 35px #62e3ff16}
+body[data-style=cyber] .sidebar{background:#0c1727dd;border:1px solid #2c4b62;border-radius:4px;padding:24px 18px;box-shadow:inset 3px 0 #8d7cef2b}
+body[data-style=cyber] .sidebar>.label{font-family:Consolas,monospace;letter-spacing:2px}
+body[data-style=cyber] .toc a{font-size:11px;border-bottom:1px solid #31475b4d;border-radius:0}
+body[data-style=cyber] .toc a.active{background:#152f45;box-shadow:inset 3px 0 #7fefff}
+body[data-style=cyber] .theme-stage{min-height:365px;grid-template-columns:minmax(0,1fr) 275px;padding:34px 38px 0;border:1px solid #4b7a92;border-radius:0 35px 0 0;background:linear-gradient(110deg,#102238e8,#111b30e0);box-shadow:inset 0 2px #9eeeff35,0 0 55px #2ec4e90c}
+body[data-style=cyber] .theme-stage .note-head:before{content:"SEAGULL:// 霓虹矩阵 · ONLINE";color:#9defff;font-family:Consolas,"Microsoft YaHei",sans-serif}
+body[data-style=cyber] .theme-stage .note-head h1{font-size:clamp(29px,2.8vw,42px);letter-spacing:1px}
+body[data-style=cyber] .theme-cast{min-height:245px}
+body[data-style=cyber] .theme-cast-orbit{position:absolute;width:218px;height:218px;left:50%;top:45%;margin:-109px 0 0 -109px;border:1px dashed #79cfe0a0;border-radius:50%;box-shadow:0 0 0 18px #7fefff08;animation:matrix-orbit 24s linear infinite}
+body[data-style=cyber] .theme-cast-orbit:before,body[data-style=cyber] .theme-cast-orbit:after{content:"";position:absolute;inset:20px;border:2px solid transparent;border-top-color:#b29bff;border-bottom-color:#78e7f3;border-radius:50%}
+body[data-style=cyber] .theme-cast-orbit:after{inset:-16px;border-width:1px;border-left-color:#7fefff;border-right-color:#a79aff;transform:rotate(35deg)}
+body[data-style=cyber] .theme-cast-art{display:grid;place-items:center;inset:auto;width:130px;height:150px;left:50%;top:45%;margin:-75px 0 0 -65px;background:linear-gradient(135deg,#224b68,#1c2349);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);filter:drop-shadow(0 0 22px #77ddff65)}
+body[data-style=cyber] .theme-cast-art:before{content:"SG";font:600 42px/1 Consolas,monospace;letter-spacing:-4px;color:#bdedff;text-shadow:0 0 15px #7fefff70}
+body[data-style=cyber] .theme-cast-caption{font:10px Consolas,monospace;color:#a2d3e6;letter-spacing:1px}
+body[data-style=cyber] .theme-stage-actions button{border-radius:2px;text-transform:uppercase;font-family:Consolas,"Microsoft YaHei",sans-serif;background:#122b40;border-color:#37657b;color:#a4f2ff}
+body[data-style=cyber] .theme-stage-actions .theme-read{background:#193a50;box-shadow:0 0 16px #60dffa17}
+body[data-style=cyber] .theme-stage-meter{font:11px/1.5 Consolas,"Microsoft YaHei",sans-serif;color:#a8d2e7;min-height:55px;border-top-color:#31556e}
+body[data-style=cyber] .tabs{border-radius:3px;box-shadow:0 0 20px #6bdcf10a}
+body[data-style=cyber] #notes{counter-reset:matrix-section}
+body[data-style=cyber] #notes>.chapter{position:relative;counter-increment:matrix-section;padding:32px;border-radius:3px;border-color:#2d4c66;background:radial-gradient(360px circle at var(--spot-x,50%) var(--spot-y,0%),#4cdcf019,transparent 80%),linear-gradient(115deg,#0e1b2d,#101b30);box-shadow:inset 3px 0 #5dd7ef22}
+body[data-style=cyber] #notes>.chapter:before{content:"SECTION // " counter(matrix-section,decimal-leading-zero);position:absolute;top:-9px;left:25px;color:#97d7ed;background:#0b1729;font:10px/1.6 Consolas,monospace;letter-spacing:2px;padding:1px 10px}
+body[data-style=cyber] #notes>.chapter:hover{border-color:#497d98;box-shadow:inset 3px 0 #5dd7ef55,0 0 22px #3ccdf007}
+body[data-style=cyber] #notes>.summary{border-radius:3px;border:1px dashed #38566f;background:#102036}
+body[data-style=cyber] .takeaway{border-radius:3px;background:linear-gradient(140deg,#122a40,#132238)}
+@keyframes matrix-orbit{to{transform:rotate(360deg)}}
+
+@media(max-width:1100px){body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .workspace{grid-template-columns:175px minmax(0,1fr);gap:24px}body[data-style=anime] .workspace{grid-template-columns:minmax(0,1fr) 175px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage{padding:28px 26px 0;grid-template-columns:minmax(0,1fr) 230px}body[data-style=anime] .theme-cast-art{inset:0 -20px 28px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .sidebar{padding:20px 12px}.theme-stage-meter{font-size:10px}}
+@media(max-width:850px){body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .workspace{display:block;margin-top:28px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .panel{padding:28px 24px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .note-head{padding:28px 22px 170px;min-height:0}body[data-style=whale] .note-head:after{height:170px;width:170px;right:20px;bottom:0}body:is([data-style=anime],[data-style=cyber]) .note-head:after{top:auto;bottom:34px;right:40px;margin:0}body[data-style=cyber] .topbar{background:#0a1425}}
+@media(max-width:850px){body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage{grid-template-columns:minmax(0,1fr);min-height:0;padding:26px 22px 0}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage .note-head{padding:0}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-cast{min-height:245px;max-height:270px}body[data-style=anime] .theme-cast-art{inset:-12px 0 26px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage-copy{padding-bottom:10px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage-meter{grid-column:1;font-size:10px;gap:8px;min-height:54px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage-meter progress{left:-22px;width:calc(100% + 44px)}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes{grid-template-columns:minmax(0,1fr);gap:18px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes>.chapter{grid-column:1;padding:28px 21px}body[data-style=anime] .sidebar{box-shadow:none}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage .note-head h1{font-size:29px}}
+@media(prefers-reduced-motion:reduce){body:is([data-style=whale],[data-style=anime],[data-style=cyber]):before,body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .note-head:after,body[data-style=anime] .chapter.is-visible,.theme-cast-art,.theme-cast-orbit{animation:none!important}body[data-style=cyber] .takeaway:hover{transform:none;transition:none}}
+@media print{body:is([data-style=whale],[data-style=anime],[data-style=cyber]){--ink:#222;--muted:#555;--paper:white;--line:#ccc;--accent:#334966;background:white;color:#222;color-scheme:light}body:is([data-style=whale],[data-style=anime],[data-style=cyber]):before,body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .note-head:after{display:none}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) :is(.panel,.note-head){padding:12px 0;background:white;color:#222;box-shadow:none;border:0}body[data-style=cyber] .chapter h2{color:#222}body[data-style=cyber] .prose .code-source{background:#f7f7f7;color:#222}}
+@media print{.theme-cast,.theme-stage-actions,.theme-stage-meter{display:none!important}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-stage{display:block;min-height:0;padding:0;background:white;border:0;box-shadow:none}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes{display:block}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes>.chapter{background:white;color:#222;box-shadow:none;border:0;padding:18px 0}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) #notes>.chapter:before{display:none}body[data-style=cyber] .code-source span{color:#222!important}body[data-style=cyber] .mindmap-viewer{background:white}body[data-style=cyber] .mindmap-viewer svg>rect:first-of-type{fill:white}body[data-style=cyber] .mindmap-viewer .map-node rect{fill:#f5f6fb;stroke:#657c97}body[data-style=cyber] .mindmap-viewer .map-node text{fill:#222}}
+@media print{body[data-style=cyber] .theme-stage h1{color:#222!important;text-shadow:none}}
+@media(max-width:850px){body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .sidebar{position:static;padding:10px 12px;margin-bottom:20px;max-height:none}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .sidebar>h3,body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .sidebar>.side-note{display:none}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .style-picker select{min-height:44px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .tools>a,body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .tools>button{display:inline-flex;align-items:center;min-height:44px}body:is([data-style=whale],[data-style=anime],[data-style=cyber]) .theme-cast{min-height:220px}}
+@media print{body[data-style=cyber] .mindmap-viewer img{filter:none}}
