@@ -1,5 +1,6 @@
 // Each reading mode uses the same complete body, sources and notebook identity.
 const stylePicker=document.getElementById('style-select'),routeCards=Array.from(document.querySelectorAll('.route-card'));
+const fontPicker=document.getElementById('font-select'),fontKey='seagull:reader-font';
 const notebookTools=document.querySelector('.topbar'),toolsToggle=document.getElementById('tools-toggle'),formatTabs=document.querySelector('.tabs'),tabsHome=formatTabs.parentElement,tabsNext=formatTabs.nextElementSibling;
 const overview=document.createElement('details');overview.className='book-overview';const overviewTitle=document.createElement('summary');overviewTitle.textContent='概览、重点与配图';overview.append(overviewTitle);const introPieces=Array.from(document.querySelectorAll('#notes>.summary,#notes>.takeaways,#notes>.cover'));document.getElementById('notes').prepend(overview);
 function closeNotebookTools(){notebookTools.classList.remove('tools-open');toolsToggle.setAttribute('aria-expanded','false')}
@@ -36,9 +37,17 @@ function rebuildBook(){
  if(bookPages.length%2){const page=document.createElement('section');page.className='book-page';page.id='book-page-'+(bookPages.length+1);page.dataset.chapter=String(focus);const body=document.createElement('div');body.className='book-page-body';const title=document.createElement('h2');title.textContent=document.querySelector('h1').textContent;const meta=document.createElement('p');meta.className='book-source-description';meta.textContent=document.querySelector('.meta').textContent;body.append(title,meta);const list=document.createElement('ul');Array.from(new Set([0,Math.floor(chapters.length/2),chapters.length-1])).filter(index=>chapters[index]).forEach(index=>{const item=document.createElement('li'),link=document.createElement('a');link.href='#'+chapters[index].id;link.textContent=chapters[index].querySelector('h2').textContent;link.addEventListener('click',event=>{event.preventDefault();goToChapter(index)});item.append(link);list.append(item)});body.append(list);const footer=document.createElement('footer');footer.className='book-page-footer';footer.textContent=String(bookPages.length+1);page.append(body,footer);bookSpread.append(page);bookPages.push(page)}
  bookSpread.append(...bookEdges);bookLayoutKey=bookSpread.clientWidth+'x'+bookSpread.clientHeight;
  let target=pagination.chapterPages.get(focus)||0;if(anchor){pagination.starts.forEach((start,index)=>{if(start&&start.node===anchor.node&&start.offset<=anchor.offset)target=index})}
- selectBookPage(target,false);currentChapter=-1;queueReading();
+ selectBookPage(target,false);if(anchor&&/^#book-page-\d+$/.test(location.hash))history.replaceState(null,'','#'+bookPages[target].id);currentChapter=-1;queueReading();
 }
 function scheduleBookPagination(){if(!paginationFrame)paginationFrame=requestAnimationFrame(()=>{paginationFrame=0;rebuildBook()})}
+function applyReaderFont(font){
+ if(!['default','sans','serif','kai','hand'].includes(font))font='default';
+ if(bookMounted)stopBookAnimation();document.body.dataset.readerFont=font;fontPicker.value=font;
+ if(bookMounted)scheduleBookPagination();currentChapter=-1;queueReading();
+}
+fontPicker.addEventListener('change',()=>{applyReaderFont(fontPicker.value);savePreference(fontKey,fontPicker.value)});
+window.addEventListener('storage',event=>{if(event.key===fontKey)applyReaderFont(loadPreference(fontKey,'default'))});
+document.fonts.addEventListener('loadingdone',()=>{if(bookMounted)scheduleBookPagination()});
 function mountBook(){
  if(bookMounted)return;overviewBeforeBook=overview.open;openedBookDetails=bookExtra.flatMap(root=>Array.from(root.querySelectorAll('details'))).map(item=>[item,item.open]);openedBookDetails.forEach(([item])=>{item.open=true});notePanel.prepend(bookSpread);bookMounted=true;rebuildBook();
 }
@@ -101,7 +110,7 @@ routeCards.forEach((card,index)=>card.addEventListener('click',()=>{activate(doc
 document.querySelector('[data-folio=previous]').addEventListener('click',()=>turnBook(-1));document.querySelector('[data-folio=next]').addEventListener('click',()=>turnBook(1));
 document.addEventListener('keydown',event=>{if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey||document.body.dataset.style!=='folio'||document.body.dataset.view!=='notes'||event.target.closest('input,textarea,select,pre,dialog,[role=tab]'))return;if(['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();turnBook(event.key==='ArrowRight'?1:-1)}});
 new ResizeObserver(()=>{if(bookMounted&&bookSpread.clientHeight&&bookLayoutKey!==bookSpread.clientWidth+'x'+bookSpread.clientHeight)scheduleBookPagination()}).observe(bookSpread);document.fonts.ready.then(()=>{if(bookMounted)scheduleBookPagination()});document.querySelectorAll('#notes img').forEach(image=>image.addEventListener('load',()=>{if(bookMounted)scheduleBookPagination()}));document.addEventListener('click',event=>{if(bookMounted&&event.target.closest('.wrap-code'))scheduleBookPagination()});document.addEventListener('seagull:view',()=>{stopBookAnimation();if(bookMounted&&document.body.dataset.view==='notes')scheduleBookPagination()});
-applyReadingStyle(loadPreference(styleKey,document.body.dataset.style));updateMastery();
+applyReaderFont(loadPreference(fontKey,'default'));applyReadingStyle(loadPreference(styleKey,document.body.dataset.style));updateMastery();
 const chapterReveal=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');chapterReveal.unobserve(entry.target)}}),{threshold:.08});chapters.forEach(chapter=>chapterReveal.observe(chapter));
 document.querySelectorAll('.explorer').forEach(explorer=>{
  const buttons=Array.from(explorer.querySelectorAll('[data-step]')),panels=Array.from(explorer.querySelectorAll('.explore-panel')),play=explorer.querySelector('.explore-play');let selected=0,timer=null;

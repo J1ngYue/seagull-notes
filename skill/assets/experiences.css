@@ -2,6 +2,12 @@
    The complete copyright/license notices are embedded by notebook.py. */
 .style-picker{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
 .style-picker select{max-width:125px;background:#fcf9f3;color:#785c42;border:1px solid #e1d3bd;border-radius:7px;padding:6px;font:inherit;font-size:11px;cursor:pointer}
+body[data-style=paper] .tools{min-width:0;flex-wrap:wrap;justify-content:flex-end;gap:12px 20px}
+body[data-reader-font=sans]{--reader-font:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",system-ui,sans-serif}
+body[data-reader-font=serif]{--reader-font:"Noto Serif CJK SC","Songti SC","SimSun",serif}
+body[data-reader-font=kai]{--reader-font:"KaiTi","STKaiti","Kaiti SC",serif}
+body[data-reader-font=hand]{--reader-font:SeagullHand,"KaiTi",cursive}
+body[data-reader-font]:not([data-reader-font=default]) .workspace>main :is(.prose,.prose table,h1,h2,h3,h4,.subtitle,.summary p,.takeaway p,.number,.book-page-number,.book-source-description,.book-overview>summary,.review-card>summary,.extension-card>summary,figcaption){font-family:var(--reader-font)}
 .source-list{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 18px}.source-list a{font-size:11px;line-height:1.6;color:var(--accent);padding:6px 11px;border:1px solid var(--line);border-radius:20px;text-decoration:none}.source-list a:hover{background:#f5ecdc}
 .learning-hub,.mastery-button,.notebook-decoration,.tools-toggle,.book-page-number{display:none}
 .book-overview{margin-bottom:18px}.book-overview>summary{cursor:pointer;color:#38678b;font:15px/1.8 SeagullHand,cursive;padding:6px 0;border-bottom:1px dashed #c8b69b}
