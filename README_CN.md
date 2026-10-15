@@ -216,4 +216,4 @@ python -m pytest tests -q
 
 绘图流程参考了 Scientific Agent Skills 的 Matplotlib 与 scientific-visualization 指引：Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). [Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents](https://doi.org/10.48550/arXiv.2609.00065)。
 
-新增三套阅读主题，保留原三套，共六套：`whale` 为 肥鱼自习室（圆脸蓝发女仆“大肥鱼”的原创学习插画）、`anime` 为樱粉与薰衣草色的次元放映厅、`cyber` 为青紫霓虹与动态网格的霓虹矩阵。六套共用完整正文、代码与公式复制、脑图、Markdown、资料出处及 Obsidian 导出；动画遵循减少动态效果设置。
+新增三套独立 HTML 阅读模板，保留原三套，共六套：`whale` 肥鱼自习室采用课程目录、逐章学习桌与常驻大肥鱼搭子；`anime` 次元放映厅采用动漫角色舞台、单集正文和横向集数目录；`cyber` 霓虹矩阵采用白银底色、青紫仪表、节点目录和知识检查面板，始终保持浅色。三套均可进入概览与复习，保留配图、步骤演示、自测与拓展。六套共用原始完整内容节点、代码与公式复制、脑图、Markdown、资料出处及 Obsidian 导出；打印展开全部章节，动画遵循减少动态效果设置。

@@ -94,8 +94,9 @@ function applyReadingStyle(style){
  const readingAnchor=Math.max(0,currentChapter),previousStyle=document.body.dataset.style,keepChapter=window.scrollY>96&&document.body.dataset.view==='notes';
  if(!['paper','atlas','folio','whale','anime','cyber'].includes(style))style='paper';document.body.dataset.style=style;stylePicker.value=style;
  if(bookMounted)unmountBook();
- applyThemeScene(style);
+ unmountThemeScene();
  if(!['atlas','folio'].includes(style)){tabsHome.insertBefore(formatTabs,tabsNext);introPieces.forEach(piece=>overview.before(piece));overview.hidden=true}else{document.getElementById('reader-tools').append(formatTabs);introPieces.forEach(piece=>overview.append(piece));overview.hidden=false}
+ applyThemeScene(style,readingAnchor);
  closeNotebookTools();
  document.querySelector('.hub-heading .label').textContent=style==='folio'?'MY STUDY JOURNAL':'MY STUDY NOTES';document.querySelector('.hub-heading h2').textContent=style==='folio'?'翻开这一页，继续理解。':'把重点写在纸上。';document.querySelector('.hub-heading p').textContent=style==='folio'?'从目录选一章，或用左右键继续阅读。':chapters.length+' 个章节，保留完整学习内容。';
  if(style==='folio'){mountBook();const index=bookPages.findIndex(page=>'#'+page.id===location.hash),chapter=chapters.findIndex(page=>'#'+page.id===location.hash);if(index>=0)selectBookPage(index,false);else selectFolioChapter(chapter>=0?chapter:Math.max(0,currentChapter),false);window.scrollTo({top:0,behavior:'auto'})}

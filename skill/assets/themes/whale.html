@@ -1,0 +1,15 @@
+<template id="reader-whale">
+<section class="reader-scene whale-room" aria-label="肥鱼自习室">
+  <div class="room-mast"><span class="scene-wordmark">SEAGULL / STUDY CLUB</span><span class="room-status"><i></i> 今天，也吃透一点知识</span></div>
+  <div class="room-grid">
+    <aside class="room-library"><div class="scene-eyebrow">我的学习航线</div><div data-slot="index"></div></aside>
+    <div class="room-desk">
+      <header class="room-welcome"><div><span class="scene-eyebrow">WELCOME ABOARD</span><div data-slot="heading"></div><button class="scene-primary" data-scene-action="start">继续学习 <span>↗</span></button></div><div class="room-mini-map" aria-hidden="true"><span>深度理解</span><b>知识入港</b><span>反复回看</span><svg viewBox="0 0 200 130"><path d="M25 100Q150 145 155 72T45 35"/></svg></div></header>
+      <div class="room-session"><div><span class="scene-eyebrow">TODAY'S SESSION</span><h2 class="scene-current-title">学习概览</h2></div><div class="scene-stepper"><button data-scene-action="previous" aria-label="自习室上一章">←</button><span class="scene-position"></span><button data-scene-action="next" aria-label="自习室下一章">→</button></div></div>
+      <div class="scene-format" data-slot="formats"></div>
+      <div class="room-lesson" data-slot="panels"></div>
+    </div>
+    <aside class="room-companion"><div class="companion-name"><span>学习搭子 / 01</span><b>大 肥 鱼</b></div><div class="companion-art" role="img" aria-label="蓝色大肥鱼，DeepSeek 漫改学习搭子"></div><div class="companion-bubble"><span class="scene-message">把不懂的留下，把懂的记住。</span><button data-scene-action="encourage">给我打打气 ↗</button></div><div class="room-stats"><div><strong class="scene-mastery">0%</strong><span>知识已掌握</span></div><progress class="scene-progress" max="100" value="0" aria-label="学习进度"></progress><button data-scene-action="overview">回到概览与复习 →</button><button data-scene-action="map">打开知识地图 →</button></div></aside>
+  </div>
+</section>
+</template>

@@ -76,6 +76,7 @@ $experience_css
 <nav class="reader-nav" aria-label="阅读导航"><div class="reader-controls"><button type="button" id="prev-chapter" aria-label="上一章" title="上一章"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="chapter-position" id="chapter-position" aria-live="polite">第 1 / $chapter_count 章</span><button type="button" id="next-chapter" aria-label="下一章" title="下一章"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><button type="button" id="back-to-top" aria-label="回到顶部" title="回到顶部"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg></button></div><progress id="reading-progress" max="$chapter_count" value="1" aria-label="章节位置"></progress></nav>
 <dialog id="figure-dialog" class="figure-dialog" aria-labelledby="figure-dialog-title"><header><h2 id="figure-dialog-title">配图大图</h2><button type="button" id="close-figure">关闭</button></header><div class="image-scroll"><img id="large-figure" alt=""></div><p id="large-caption"></p><p>可滚动查看完整图示，按 Esc 关闭。</p></dialog>
 <div id="copy-status" class="copy-status" role="status" aria-live="polite" hidden></div>
+$reader_templates
 $math_js
 <script>
 const tabs=Array.from(document.querySelectorAll('.tabs [role=tab]'));
@@ -103,11 +104,11 @@ const sidebar=document.querySelector('.sidebar'),search=document.getElementById(
 function filterChapters(){const query=search.value.trim().toLowerCase();let found=0;links.forEach(link=>{link.hidden=!link.textContent.toLowerCase().includes(query);if(!link.hidden)found++});document.getElementById('toc-empty').hidden=found>0;if(!query){currentChapter=-1;updateReading()}}
 search.addEventListener('input',filterChapters);search.addEventListener('keydown',event=>{if(event.key==='Escape'){search.value='';filterChapters()}});
 tocToggle.addEventListener('click',()=>{const open=sidebar.classList.toggle('toc-open');tocToggle.setAttribute('aria-expanded',String(open));if(open)search.focus()});
- links.forEach((link,index)=>link.addEventListener('click',event=>{sidebar.classList.remove('toc-open');tocToggle.setAttribute('aria-expanded','false');if(document.body.dataset.style==='folio'){event.preventDefault();goToChapter(index)}}));
+ links.forEach((link,index)=>link.addEventListener('click',event=>{sidebar.classList.remove('toc-open');tocToggle.setAttribute('aria-expanded','false');if(document.body.dataset.style==='folio'||document.body.dataset.readerTemplate){event.preventDefault();goToChapter(index)}}));
 const chapters=Array.from(document.querySelectorAll('.chapter')),position=document.getElementById('chapter-position'),previous=document.getElementById('prev-chapter'),next=document.getElementById('next-chapter');let currentChapter=-1,readingFrame;
 function updateReading(){
  readingFrame=0;if(document.body.dataset.view!=='notes'||!chapters.length)return;let index=0,visibleArea=0;
- if(document.body.dataset.style==='folio')index=getFolioReadingChapter();else chapters.forEach((chapter,i)=>{const rect=chapter.getBoundingClientRect(),area=Math.max(0,Math.min(innerHeight,rect.bottom)-Math.max(0,rect.top));if(area>visibleArea){visibleArea=area;index=i}else if(!visibleArea&&rect.top<0)index=i});if(index===currentChapter)return;currentChapter=index;
+ if(document.body.dataset.readerTemplate)index=getThemeReadingChapter();else if(document.body.dataset.style==='folio')index=getFolioReadingChapter();else chapters.forEach((chapter,i)=>{const rect=chapter.getBoundingClientRect(),area=Math.max(0,Math.min(innerHeight,rect.bottom)-Math.max(0,rect.top));if(area>visibleArea){visibleArea=area;index=i}else if(!visibleArea&&rect.top<0)index=i});if(index===currentChapter)return;currentChapter=index;
  position.textContent='第 '+(index+1)+' / '+chapters.length+' 章';position.title=chapters[index].querySelector('h2').textContent;document.getElementById('reading-progress').value=index+1;previous.disabled=index===0;next.disabled=index===chapters.length-1;
  links.forEach((link,i)=>{link.classList.toggle('active',i===index);if(i===index)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
  document.dispatchEvent(new CustomEvent('seagull:position',{detail:index}));

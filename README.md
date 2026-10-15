@@ -55,11 +55,13 @@ python skill/scripts/notebook.py note.json --style atlas
 | Paper (`paper`) | The existing beige illustrated reader |
 | Handwritten Notes (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
 | Leather Book (`folio`) | A walnut leather cover with stitching, layered cream pages, a shaded spine, edge-hover arrows, keyboard navigation, and paper turns with changing light |
-| Whale Study Room (`whale`) | Ocean-blue surfaces and an original chibi fan-art illustration inspired by the community’s blue whale maid |
-| Anime Theater (`anime`) | Original anime scholar and cat familiar, a right-side episode index, comic panels and drifting petals |
-| Neon Matrix (`cyber`) | A neon HUD core, terminal section panels, pointer-following light, animated grids and readable syntax highlighting |
+| Whale Study Room (`whale`) | A dedicated study desk with a course library, one lesson at a time, and a persistent chibi whale companion |
+| Anime Theater (`anime`) | A visual-novel stage with an anime scholar, episode scripts, previous/next controls and a horizontal episode deck |
+| Neon Matrix (`cyber`) | A light silver workspace with cyan/violet instrumentation, a node index, document console and knowledge inspector |
 
 ![Facing pages in Leather Book](examples/open-book-preview.jpg)
+
+The three new readers have separate HTML templates rather than recoloring Paper. Their overview/review controls retain illustrations, interactive exercises and references; every chapter remains accessible. Switching templates moves the original content nodes, preserving copy buttons, formulas, Markdown and exports. Cyber stays light, including its code and math surfaces.
 
 All six styles include a reading-font selector: style default, sans serif, Song-style serif, Kai-style calligraphy, and bundled handwriting. The browser remembers your choice across notebooks. Changing fonts repaginates Leather Book at the current content position; code and math retain their dedicated typography.
 
