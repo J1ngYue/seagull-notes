@@ -274,7 +274,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="笔记 JSON → 图文 HTML + Markdown")
     parser.add_argument("note", type=Path)
     parser.add_argument("--out", type=Path, help="输出文件基名，不含扩展名")
-    parser.add_argument("--style", choices=["paper", "atlas", "folio"], help="米色纸页 / 学霸笔记本 / 手账皮革本")
+    parser.add_argument("--style", choices=["paper", "atlas", "folio"], help="米色纸页 / 手写札记 / 皮革书卷")
     parser.add_argument("--obsidian-vault", type=Path, help="将可编辑笔记与图片导入指定 vault，保留已存在的文件")
     args = parser.parse_args()
     try:

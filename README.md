@@ -11,7 +11,7 @@ Seagull Notes combines a Codex skill with local Python helpers. The helpers extr
 - **Browser sign-in when needed.** Let the user complete sign-in in Codex's in-app browser, then read what that session can access.
 - **Illustrated delivery.** Summaries, takeaways, chapters, source images, explanatory diagrams, and a mind map in a self-contained HTML file.
 - **Topics, text, and webpages.** Ask for a subject tutorial, paste someone else's notes, or provide an article URL. The AI reads or researches the material, preserves attribution, and separates source content from its own extensions.
-- **Three reading experiences.** Keep the beige Paper view, use the handwritten Study Notebook, or turn chapter pages in the Leather Journal. Ruled paper, binding, sticky notes and marker highlights recreate the study-notebook feel; code and formulas remain readable and copyable.
+- **Three reading experiences.** Keep the beige Paper view, use the handwritten Handwritten Notes, or turn chapter pages in the Leather Book. Ruled paper, binding, sticky notes and marker highlights recreate the study-notebook feel; code and formulas remain readable and copyable.
 
 ![From video link to illustrated notes](examples/workflow-en.svg)
 
@@ -53,14 +53,14 @@ python skill/scripts/notebook.py note.json --style atlas
 | Style | Experience |
 | --- | --- |
 | Paper (`paper`) | The existing beige illustrated reader |
-| Study Notebook (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
-| Leather Journal (`folio`) | A walnut leather cover with stitching, layered cream pages, a shaded spine, edge-hover arrows, keyboard navigation, and paper turns with changing light |
+| Handwritten Notes (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
+| Leather Book (`folio`) | A walnut leather cover with stitching, layered cream pages, a shaded spine, edge-hover arrows, keyboard navigation, and paper turns with changing light |
 
-![Facing pages in Leather Journal](examples/open-book-preview.jpg)
+![Facing pages in Leather Book](examples/open-book-preview.jpg)
 
-All three styles include a reading-font selector: style default, sans serif, Song-style serif, Kai-style calligraphy, and bundled handwriting. The browser remembers your choice across notebooks. Changing fonts repaginates Leather Journal at the current content position; code and math retain their dedicated typography.
+All three styles include a reading-font selector: style default, sans serif, Song-style serif, Kai-style calligraphy, and bundled handwriting. The browser remembers your choice across notebooks. Changing fonts repaginates Leather Book at the current content position; code and math retain their dedicated typography.
 
-Topic, text, and article notes default to Study Notebook; existing video and local-media notebooks retain Paper. The two replicas center compact handwritten pages on a charcoal desk, with tools and chapter navigation in popovers. Study Notebook scrolls continuously. Leather Journal measures the available page space and continues long chapters, paragraphs, lists, tables and review answers across as many facing pages as needed. Long code blocks span pages; each copy button still copies the complete original block. Overview, illustrations, reviews and references remain in appendix pages. Resizing recalculates pagination and preserves the reading position. Below 700px it uses a single page; reduced-motion preferences skip the turn animation. Every style keeps complete content, code/formula copying, mind maps and print support. Printing includes all chapters and appendices. Mastery marks and style preferences are stored locally. The existing `atlas` and `folio` values select the two replacement styles.
+Topic, text, and article notes default to Handwritten Notes; existing video and local-media notebooks retain Paper. The two replicas center compact handwritten pages on a charcoal desk, with tools and chapter navigation in popovers. Handwritten Notes scrolls continuously. Leather Book measures the available page space and continues long chapters, paragraphs, lists, tables and review answers across as many facing pages as needed. Long code blocks span pages; each copy button still copies the complete original block. Overview, illustrations, reviews and references remain in appendix pages. Resizing recalculates pagination and preserves the reading position. Below 700px it uses a single page; reduced-motion preferences skip the turn animation. Every style keeps complete content, code/formula copying, mind maps and print support. Printing includes all chapters and appendices. Mastery marks and style preferences are stored locally. The existing `atlas` and `folio` values select the two replacement styles.
 
 The shelf filters notes by source type and searches titles, summaries, and tags. `explorers`, `review`, and `extensions` add interactive learning components; see [the material and style guide](skill/references/materials-and-styles.md). Obsidian remains an optional export; the web notebook is the primary experience for the new styles.
 

@@ -16,7 +16,7 @@ automatic pagination, complete code copying across fragments, appendix pages
 and single-page mobile reading are Seagull Notes implementations.
 Both replicas use a charcoal desk, centered pages and compact tool/directory
 popovers as requested in the supplied screenshots. Paper remains the existing reader.
-The legacy `atlas` / `folio` values now select Study Notebook / Leather Journal.
+The legacy `atlas` / `folio` values now select Handwritten Notes / Leather Book.
 
 Ma Shan Zheng is bundled for offline Chinese handwriting. The WOFF2 file is
 a format conversion of the official regular font, without deleting glyphs:
