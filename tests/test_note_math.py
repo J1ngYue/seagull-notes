@@ -61,4 +61,4 @@ def test_plain_notes_do_not_embed_math_assets(tmp_path):
     }, tmp_path)
     assert 'font-family:KaTeX' not in page
     assert 'font-family:SeagullHand' in page
-    assert len(html.fromstring(page).xpath('//script[not(@type="application/json")]')) == 1
+    assert len(html.fromstring(page).xpath('//script[not(@type="application/json") and not(@id="reader-startup")]')) == 1

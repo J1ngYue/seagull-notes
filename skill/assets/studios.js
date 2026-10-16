@@ -32,9 +32,6 @@ function buildStudio(root,style){
  function filterShelf(query){show('shelf');let count=0;root.querySelectorAll('.all-cards .shelf-card').forEach(card=>{card.hidden=!card.dataset.shelfSearch.includes(query.trim().toLowerCase());if(!card.hidden)count++});root.querySelectorAll('.shelf-empty').forEach(node=>node.hidden=count>0)}
  root.querySelectorAll('.shelf-search').forEach(input=>input.addEventListener('input',()=>filterShelf(input.value)));
  if(style==='journal'){
-  root.querySelector('.journal-thought').append(root.querySelector('.journal-home-sticker'));
-  const poses=['bass','reading','writing','coffee','star'],poseLabels=['弹贝斯','抱书阅读','写笔记','咖啡休息','举星星'];
-  root.querySelectorAll('[data-sticker]').forEach(button=>{function label(){button.setAttribute('aria-label','切换山田凉贴纸，当前：'+poseLabels[poses.indexOf(button.dataset.sticker)])}label();button.addEventListener('click',()=>{button.dataset.sticker=poses[(poses.indexOf(button.dataset.sticker)+1)%poses.length];label()})});
   const today=new Date(),month=new Date(today.getFullYear(),today.getMonth(),1),grid=root.querySelector('.calendar-days');
   function calendar(){root.querySelector('.calendar-title').textContent=month.getFullYear()+'  |  '+String(month.getMonth()+1).padStart(2,'0')+'月';grid.replaceChildren();for(let i=0;i<month.getDay();i++)grid.append(document.createElement('span'));for(let i=1;i<=new Date(month.getFullYear(),month.getMonth()+1,0).getDate();i++){const day=document.createElement('span');day.textContent=i;if(i===today.getDate()&&month.getMonth()===today.getMonth()&&month.getFullYear()===today.getFullYear()){day.classList.add('today');day.setAttribute('aria-label','今天 '+i+' 日')}grid.append(day)}}
   root.querySelectorAll('[data-journal-month]').forEach(button=>button.addEventListener('click',()=>{month.setMonth(month.getMonth()+Number(button.dataset.journalMonth));calendar()}));calendar();

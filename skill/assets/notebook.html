@@ -4,6 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>$title · Seagull Notes</title>
+<style id="reader-startup-style">
+html[data-reader-booting] body{visibility:hidden}
+html[data-initial-style=paper]{background:#f5f3ed}html[data-initial-style=atlas],html[data-initial-style=folio]{background:#3c403f}html[data-initial-style=whale]{background:#d9f0f8}html[data-initial-style=journal]{background:#cad3e0}html[data-initial-style=moonlight]{background:#081c3d}html[data-initial-style=pixel]{background:#07224d}
+</style>
+<script id="reader-startup">
+(function(){
+ const root=document.documentElement,aliases={anime:'journal',cyber:'moonlight'},styles=['paper','atlas','folio','whale','journal','moonlight','pixel'];
+ let stored;try{stored=JSON.parse(localStorage.getItem('seagull:style:'+location.pathname))}catch(error){}
+ const requested=new URLSearchParams(location.search).get('style')||stored||'$style',style=aliases[requested]||requested;
+ window.seagullInitialReaderStyle=styles.includes(style)?style:'$style';
+ root.dataset.initialStyle=window.seagullInitialReaderStyle;root.setAttribute('data-reader-booting','');
+ document.addEventListener('DOMContentLoaded',()=>root.removeAttribute('data-reader-booting'),{once:true});
+})();
+</script>
 $math_css
 <style>
 :root{--bg:#f5f3ed;--paper:#fffefa;--ink:#3b332a;--muted:#776b5f;--line:#e7dccb;--accent:#a55c43;--green:#785c42}
@@ -153,6 +167,7 @@ if(window.katex){document.querySelectorAll('.arithmatex').forEach(element=>{
  element.addEventListener('click',()=>copyFormula(element));element.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();copyFormula(element)}});
 })}
 $experience_js
+document.documentElement.removeAttribute('data-reader-booting');
 </script>
 </body>
 </html>
