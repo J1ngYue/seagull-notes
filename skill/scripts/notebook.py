@@ -283,7 +283,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         original_tab="字幕与出处" if kind == "video" else "资料与出处", references=references,
         style=style, note_id=html.escape(note_id or title, quote=True),
         experience_css=(assets / "experiences.css").read_text(encoding="utf-8") + "\n" + (assets / "themes.css").read_text(encoding="utf-8") + "\n" + (assets / "themes" / "studios.css").read_text(encoding="utf-8")
-        + "\n" + (assets / "themes" / "scrapbook-desktop.css").read_text(encoding="utf-8") + theme_art,
+        + "\n" + (assets / "themes" / "scrapbook-desktop.css").read_text(encoding="utf-8") + theme_art + "\n" + (assets / "reader-tools.css").read_text(encoding="utf-8"),
         handwriting_assets=handwriting_assets,
         experience_js=(assets / "book-pagination.js").read_text(encoding="utf-8") + "\n" + (assets / "theme-scenes.js").read_text(encoding="utf-8") + "\n" + (assets / "studios.js").read_text(encoding="utf-8") + "\n" + (assets / "experiences.js").read_text(encoding="utf-8"),
         route=route, widgets=widgets,

@@ -5,6 +5,7 @@ const notebookTools=document.querySelector('.topbar'),toolsToggle=document.getEl
 const overview=document.createElement('details');overview.className='book-overview';const overviewTitle=document.createElement('summary');overviewTitle.textContent='概览、重点与配图';overview.append(overviewTitle);const introPieces=Array.from(document.querySelectorAll('#notes>.summary,#notes>.takeaways,#notes>.cover'));document.getElementById('notes').prepend(overview);
 function closeNotebookTools(){notebookTools.classList.remove('tools-open');toolsToggle.setAttribute('aria-expanded','false')}
 toolsToggle.addEventListener('click',()=>{const open=notebookTools.classList.toggle('tools-open');toolsToggle.setAttribute('aria-expanded',String(open));if(open){sidebar.classList.remove('toc-open');tocToggle.setAttribute('aria-expanded','false')}requestAnimationFrame(updateIndicator)});
+document.querySelector('.tools-close').addEventListener('click',()=>{closeNotebookTools();toolsToggle.focus()});
 tocToggle.addEventListener('click',()=>{if(sidebar.classList.contains('toc-open'))closeNotebookTools()});
 document.addEventListener('seagull:view',closeNotebookTools);
 document.addEventListener('click',event=>{if(!notebookTools.contains(event.target))closeNotebookTools()});document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeNotebookTools();sidebar.classList.remove('toc-open');tocToggle.setAttribute('aria-expanded','false')}});
