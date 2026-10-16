@@ -4,7 +4,9 @@
 
 默认阅读配色为暖白、米色和暖棕：代码框、公式框、重点卡片与脑图节点统一使用米色底，不使用偏绿背景；Obsidian CSS 和 Canvas 同步采用该配色。代码语法颜色保留，视频截图与原始配图的内容不随界面换色。
 
-主题、粘贴文本和网页也使用同一个渲染器：`source_kind` 设为 `topic/text/article`，主题或文字可用 `source_text/source_origin`，无需伪造视频或文件地址；网页填写真实 `source_url`。`sources` 保存 `title/url` 资料数组，`style` 为 `paper/atlas/folio`，`tags` 用于笔记夹搜索。互动步骤、自测与拓展字段见 [materials-and-styles.md](materials-and-styles.md)。非视频来源不添加虚构时间戳。
+主题、粘贴文本和网页也使用同一个渲染器：`source_kind` 设为 `topic/text/article`，主题或文字可用 `source_text/source_origin`，无需伪造视频或文件地址；网页填写真实 `source_url`。`sources` 保存 `title/url` 资料数组，`style` 为 `paper/atlas/folio/whale/journal/moonlight/pixel`，`tags` 用于笔记夹搜索。互动步骤、自测与拓展字段见 [materials-and-styles.md](materials-and-styles.md)。非视频来源不添加虚构时间戳。
+
+所有主题共用复习题。为每个主要章节编写一项基于实际正文的 `review`：`chapter` 是从 1 开始的章节编号，`question/answer` 是题目与解释；选择题额外填写至少两个文字选项的 `options` 和从 0 开始的正确索引 `correct`。例如 `{"chapter":2,"question":"commit 记录哪层内容？","options":["暂存区","所有未跟踪文件"],"correct":0,"answer":"commit 记录准备好的暂存内容；先检查 git diff --staged。"}`。避免错误或含糊的答案键；解释要说明原因而非仅报选项。未提供选择题时使用开放式自测、展示参考解释，不自动给自由回答打分。完整正文与配图始终可以连续阅读，Markdown 与 Obsidian 保留题目选项和解释。
 
 ```json
 {

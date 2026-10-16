@@ -1,6 +1,6 @@
 ---
 name: seagull-notes
-description: Create illustrated, interactive Chinese notebooks from knowledge topics, pasted notes, article URLs, Bilibili/YouTube links and local materials. Includes a personal notebook shelf, chapter navigation, mind maps, six reading styles, step explorers and review cards. Use for making or extending learning notes; video sources prefer platform captions and reuse sign-in when needed.
+description: Create illustrated, interactive Chinese notebooks from knowledge topics, pasted notes, article URLs, Bilibili/YouTube links and local materials. Includes a personal notebook shelf, chapter navigation, mind maps, seven reading styles, step explorers and review cards. Use for making or extending learning notes; video sources prefer platform captions and reuse sign-in when needed.
 ---
 
 # Seagull Notes
@@ -130,8 +130,14 @@ YouTube 优先尝试浏览器提供的 `tab.content.exportYouTubeTranscript()`�
 
 依赖见 [setup.md](references/setup.md)；错误排查见 [troubleshooting.md](references/troubleshooting.md)。
 
-## 6. 六种阅读主题
+## 6. 七种阅读主题
 
-原有 `paper/atlas/folio` 保留；新增 `whale`（肥鱼自习室）、`anime`（次元放映厅）、`cyber`（霓虹矩阵）。均可通过 `--style` 或顶部阅读风格选择。这三套使用 `assets/themes/` 中各自独立的 HTML 模板：肥鱼版为课程目录、学习桌和常驻搭子的三栏自习室；动漫版为角色舞台、单集正文与横向集数卡；赛博版为白银底色、青紫仪表、节点目录与知识检查面板。赛博必须保持浅色，不使用深色终端。不要只给米色纸页换配色。
+保留 `paper` 米色纸页、`atlas` 手写札记、`folio` 皮革书卷与 `whale` 鲸游·知识海；新增 `journal` 日系手账、`moonlight` 月光玻璃、`pixel` 像素桌面，替换放课后物语与赛博主题。旧 JSON 和浏览器偏好里的 `anime/cyber` 分别迁移到 `journal/moonlight`，可见选项只有这七套。
 
-独立模板逐章学习，可通过目录或前后按钮访问全部章节；概览与复习入口保留重点、配图、步骤演示、自测和拓展。切换模板移动同一份原始内容节点，不克隆或删减正文；Markdown、代码、公式和出处保持一致。打印展开所有章节。鲸鱼娘指社区蓝发圆脸、鲸鳍耳朵、深蓝女仆装的“大肥鱼”，使用随技能提供的原创学习插画，不替换为普通蓝发少女。原三套继续沿用用户的米色约定。插画离线嵌入，移动端装饰不遮住正文；所有主题尊重减少动态效果和打印。资源见 [主题素材](assets/themes/SOURCE.md)。
+新三套按用户提供的截图复刻布局、材质、配色和装饰层次，分别提供首页、真实笔记夹、搜索、全文阅读与目录。日系手账保留蓝色手写、撕边纸、打孔、胶带、照片拼贴及山田凉插画；月光玻璃使用月夜房间与深蓝半透明面板、左侧导航和右侧大纲，正文保证文字对比；像素桌面采用复古标题栏、斜面边框、桌面图标与任务栏，窗口可拖动、最小化、从任务栏恢复和最大化。截图里的虚构数量与音乐播放器不作为真实功能展示。
+
+三个笔记夹使用实际登记的笔记，搜索标题、摘要与标签；从笔记夹打开其他笔记会携带当前主题。单文件离线打开仍能读本篇全文，其他笔记链接需要对应本地笔记夹文件。完整 Markdown、代码、公式、配图、导图、出处、复习和 Obsidian 导出共用原始内容节点，不以首页卡片代替正文。窄屏改为单列；打印展开全文；动画尊重减少动态效果设置。
+
+日系手账首页复刻照片跨压横幅与双便签的拼贴层次、蓝色花饰、纸张打孔、胶带、右侧月历与阅读卡。月历可切换月份、标记实际今天；快速便笺只保存在浏览器，可直接修改。像素版初始为真正的桌面，只有「我的笔记」一个图标；点击后打开文件夹，列出实际保存的笔记文件。点击文件才显示「学习、正文、导图、Markdown、出处」五个桌面入口并打开该文件。关闭返回纯桌面，最小化保留任务栏恢复；跨笔记打开携带 `style=pixel&open=notes`，避免重新回到空桌面。导图展开时脱离窗口容器，避免被玻璃或窗口裁切。
+
+鲸游使用横向航线与全宽正文，四种大肥鱼姿态随阅读切换，也可手动换姿态。互动步骤自动换行。原三套纸本保留米色约定。背景与插画嵌入 HTML，素材来源及编辑方式见 [主题素材](assets/themes/SOURCE.md)。

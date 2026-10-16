@@ -216,4 +216,4 @@ python -m pytest tests -q
 
 绘图流程参考了 Scientific Agent Skills 的 Matplotlib 与 scientific-visualization 指引：Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). [Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents](https://doi.org/10.48550/arXiv.2609.00065)。
 
-新增三套独立 HTML 阅读模板，保留原三套，共六套：`whale` 肥鱼自习室采用课程目录、逐章学习桌与常驻大肥鱼搭子；`anime` 次元放映厅采用动漫角色舞台、单集正文和横向集数目录；`cyber` 霓虹矩阵采用白银底色、青紫仪表、节点目录和知识检查面板，始终保持浅色。三套均可进入概览与复习，保留配图、步骤演示、自测与拓展。六套共用原始完整内容节点、代码与公式复制、脑图、Markdown、资料出处及 Obsidian 导出；打印展开全部章节，动画遵循减少动态效果设置。
+新增日系手账 `journal`、月光玻璃 `moonlight` 和像素桌面 `pixel`，按提供的截图复刻，替换放课后物语与赛博主题，保留原三套与鲸游，共七套。新三套都包括真实笔记夹、搜索、完整正文、章节大纲、导图、Markdown、出处及 Obsidian 导出。日系手账复刻蓝色手写、撕边纸与照片拼贴；月光玻璃复刻月夜房间与深蓝半透明面板；像素桌面复刻复古窗口、桌面图标及任务栏，支持窗口拖动、最小化、恢复和最大化。旧 `anime/cyber` 分别兼容迁移到 `journal/moonlight`。用户提供的山田凉素材保留出处，背景通过图像编辑去除原界面，完整图片不作为可点击页面的替代。打印输出全文，动画尊重减少动态效果。

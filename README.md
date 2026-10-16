@@ -55,15 +55,16 @@ python skill/scripts/notebook.py note.json --style atlas
 | Paper (`paper`) | The existing beige illustrated reader |
 | Handwritten Notes (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
 | Leather Book (`folio`) | A walnut leather cover with stitching, layered cream pages, a shaded spine, edge-hover arrows, keyboard navigation, and paper turns with changing light |
-| Whale Study Room (`whale`) | A dedicated study desk with a course library, one lesson at a time, and a persistent chibi whale companion |
-| Anime Theater (`anime`) | A visual-novel stage with an anime scholar, episode scripts, previous/next controls and a horizontal episode deck |
-| Neon Matrix (`cyber`) | A light silver workspace with cyan/violet instrumentation, a node index, document console and knowledge inspector |
+| Ocean Voyage (`whale`) | Full-width continuous notes under a horizontal chapter route, with four chibi whale poses and wrapping interactive steps |
+| Japanese Journal (`journal`) | Screenshot-based blue handwriting, torn paper, washi tape, Ryo photo collage, a real shelf and full-text reading |
+| Moonlight Glass (`moonlight`) | Moonlit Ryo room, translucent navy panes, note shelf, sidebar and chapter outline |
+| Pixel Desktop (`pixel`) | Retro blue desktop with draggable windows, minimize/restore/maximize controls and a working taskbar |
 
 ![Facing pages in Leather Book](examples/open-book-preview.jpg)
 
-The three new readers have separate HTML templates rather than recoloring Paper. Their overview/review controls retain illustrations, interactive exercises and references; every chapter remains accessible. Switching templates moves the original content nodes, preserving copy buttons, formulas, Markdown and exports. Cyber stays light, including its code and math surfaces.
+The three new readers have separate compositions, navigation and reading layouts. Ocean Voyage uses continuous scroll; After School Story teaches from the actual note and checks authored answer keys (open responses use self-checking); Daylight Nexus opens all notes immediately, with the canvas available as navigation. Canvas dashed lines denote reading order; the separate mind map preserves actual concept relationships. Overview/review controls retain illustrations, exercises and references. Copy buttons, formulas, Markdown and exports retain the original content. Cyber stays light. Backgrounds and character art are embedded for offline use; the Ryo artwork retains its owners' rights, with provenance in `skill/assets/themes/SOURCE.md`.
 
-All six styles include a reading-font selector: style default, sans serif, Song-style serif, Kai-style calligraphy, and bundled handwriting. The browser remembers your choice across notebooks. Changing fonts repaginates Leather Book at the current content position; code and math retain their dedicated typography.
+All seven styles include a reading-font selector: style default, sans serif, Song-style serif, Kai-style calligraphy, and bundled handwriting. The browser remembers your choice across notebooks. Changing fonts repaginates Leather Book at the current content position; code and math retain their dedicated typography.
 
 Topic, text, and article notes default to Handwritten Notes; existing video and local-media notebooks retain Paper. The two replicas center compact handwritten pages on a charcoal desk, with tools and chapter navigation in popovers. Handwritten Notes scrolls continuously. Leather Book measures the available page space and continues long chapters, paragraphs, lists, tables and review answers across as many facing pages as needed. Long code blocks span pages; each copy button still copies the complete original block. Overview, illustrations, reviews and references remain in appendix pages. Resizing recalculates pagination and preserves the reading position. Below 700px it uses a single page; reduced-motion preferences skip the turn animation. Every style keeps complete content, code/formula copying, mind maps and print support. Printing includes all chapters and appendices. Mastery marks and style preferences are stored locally. The existing `atlas` and `folio` values select the two replacement styles.
 

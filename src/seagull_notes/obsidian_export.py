@@ -130,7 +130,10 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
         for step in item.get("steps", []):
             body.extend([f'### {step["title"]}', step["markdown"]])
     for item in note.get("review", []):
-        body.extend([f'### 自测：{item["question"]}', item["answer"]])
+        body.append(f'### 自测：{item["question"]}')
+        if item.get("options"):
+            body.append("\n".join(f'{index}. {option}' for index, option in enumerate(item["options"], 1)))
+        body.append(item["answer"])
     for item in note.get("extensions", []):
         body.extend([f'## 拓展：{item["title"]}', item["markdown"]])
     files[note_name] = "\n\n".join(body).encode("utf-8")

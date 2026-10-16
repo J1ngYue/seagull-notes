@@ -143,7 +143,7 @@ def render_widgets(note: dict) -> str:
         panels = ''.join(f'<div class="explore-panel prose" role="tabpanel" id="explore-{index}-panel-{step}" aria-labelledby="explore-{index}-tab-{step}" {"hidden" if step else ""}>{rich_text(item["markdown"])}</div>' for step, item in enumerate(steps))
         widgets.append(f'<section class="explorer"><header><div><span class="label">EXPLORE · 互动演示</span><h3>{html.escape(explorer["title"])}</h3></div><button type="button" class="explore-play" aria-pressed="false">自动演示</button></header><div class="explore-steps" role="tablist" aria-label="{html.escape(explorer["title"], quote=True)}">{buttons}</div><progress value="1" max="{len(steps)}" aria-label="演示步骤"></progress>{panels}</section>')
     if note.get("review"):
-        questions = ''.join(f'<details class="review-card"><summary><span>{index:02}</span>{html.escape(item["question"])}</summary><div class="prose">{rich_text(item["answer"])}</div></details>' for index, item in enumerate(note["review"], 1))
+        questions = ''.join(f'<details class="review-card"><summary><span>{index:02}</span>{html.escape(item["question"])}</summary><div class="prose">' + ('<ol class="question-options">' + ''.join('<li>' + html.escape(option) + '</li>' for option in item.get("options", [])) + '</ol>' if item.get("options") else '') + rich_text(item["answer"]) + '</div></details>' for index, item in enumerate(note["review"], 1))
         widgets.append('<section class="review-deck"><span class="label">RECALL · 自测卡片</span><h3>合上答案，你能解释吗？</h3>' + questions + '</section>')
     if note.get("extensions"):
         extras = ''.join(f'<details class="extension-card"><summary>{html.escape(item["title"])}<span>拓展阅读 ＋</span></summary><div class="prose">{rich_text(item["markdown"])}</div></details>' for item in note["extensions"])
@@ -228,7 +228,10 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         for step in item.get("steps", []):
             body.extend([f'### {step["title"]}', step["markdown"]])
     for item in note.get("review", []):
-        body.extend([f'### 自测：{item["question"]}', item["answer"]])
+        body.append(f'### 自测：{item["question"]}')
+        if item.get("options"):
+            body.append("\n".join(f'{index}. {option}' for index, option in enumerate(item["options"], 1)))
+        body.append(item["answer"])
     for item in note.get("extensions", []):
         body.extend([f'## 拓展：{item["title"]}', item["markdown"]])
     markdown_body = "\n\n".join(value for value in body if value)
@@ -245,8 +248,30 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
     handwriting_assets = ('/* ' + (assets / "handwritten" / "LICENSE-note-skill.txt").read_text(encoding="utf-8") + '\n'
                           + (assets / "handwritten" / "OFL-MaShanZheng.txt").read_text(encoding="utf-8") + ' */\n'
                           + '@font-face{font-family:SeagullHand;src:url(data:font/woff2;base64,' + hand_font + ') format("woff2");font-weight:400;font-style:normal;font-display:swap}')
-    theme_art = '\n:root{' + ''.join('--' + name + '-art:url(data:image/webp;base64,' + base64.b64encode((assets / 'themes' / file).read_bytes()).decode('ascii') + ');' for name, file in [('whale', 'whale-girl.webp'), ('anime', 'anime-scholar.webp')]) + '}'
+    theme_art = '\n:root{' + ''.join('--' + name + ':url(data:image/webp;base64,' + base64.b64encode((assets / 'themes' / file).read_bytes()).decode('ascii') + ');' for name, file in [('whale-art', 'whale-girl.webp'), ('whale-explain-art', 'whale-explain.webp'), ('whale-think-art', 'whale-think.webp'), ('whale-celebrate-art', 'whale-celebrate.webp'), ('journal-reference', 'journal-reference.webp'), ('journal-banner', 'journal-banner.webp'), ('journal-flowers', 'journal-flowers.webp'), ('moon-wallpaper', 'moon-wallpaper.webp'), ('pixel-wallpaper', 'pixel-wallpaper.webp')]) + '}'
+    for item in note.get("review", []):
+        options = item.get("options", [])
+        if options and (not isinstance(options, list) or len(options) < 2 or not all(isinstance(option, str) for option in options)):
+            raise ValueError("选择题的 options 必须是至少两个文字选项的数组")
+        if options and (not isinstance(item.get("correct"), int) or isinstance(item["correct"], bool) or not 0 <= item["correct"] < len(options)):
+            raise ValueError("选择题的 correct 必须是 options 中正确选项的从 0 开始的索引")
     route = ''.join(f'<button type="button" class="route-card" data-chapter="{index}"><span>{index + 1:02}</span><strong>{html.escape(section["title"])}</strong><small>展开学习 ↗</small></button>' for index, section in enumerate(note["sections"]))
+    shelf_entries = []
+    shelf_manifest = notebook_library.directory() / "notebooks.json"
+    if library_href and shelf_manifest.exists():
+        for entry_id, entry in json.loads(shelf_manifest.read_text(encoding="utf-8")).items():
+            if entry_id == note_id:
+                continue
+            parent = library_href.rsplit("/", 1)[0] + "/" if "/" in library_href else ""
+            shelf_cover = notebook_library.directory() / entry.get("cover", "")
+            cover_data = ("data:" + (mimetypes.guess_type(shelf_cover)[0] or "image/png") + ";base64," + base64.b64encode(shelf_cover.read_bytes()).decode("ascii")) if shelf_cover.is_file() else ""
+            shelf_entries.append({"title": entry["title"], "summary": entry["summary"], "chapters": entry["chapters"],
+                                  "platform": entry["platform"], "tags": entry.get("tags", []), "href": parent + entry["html"],
+                                  "cover": cover_data, "current": False})
+    shelf_entries.insert(0, {"title": title, "summary": summary, "chapters": len(note["sections"]),
+                             "platform": note.get("platform") or sources.SOURCE_LABELS[kind], "tags": note.get("tags", []),
+                             "cover": "", "current": True, "href": "#"})
+    shelf_data = json.dumps({"entries": shelf_entries}, ensure_ascii=False).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
     page = template.substitute(
         title=html.escape(title), summary=html.escape(summary), meta=html.escape(meta),
         source_action=source_action, toc="".join(toc), sections="".join(sections), chapter_count=len(note["sections"]),
@@ -257,12 +282,13 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         transcript=html.escape(note.get("transcript") or note.get("source_text") or ("未提供完整字幕原文。" if kind == "video" else "本笔记依据整理需求与所列资料编写。")),
         original_tab="字幕与出处" if kind == "video" else "资料与出处", references=references,
         style=style, note_id=html.escape(note_id or title, quote=True),
-        experience_css=(assets / "experiences.css").read_text(encoding="utf-8") + "\n" + (assets / "themes.css").read_text(encoding="utf-8")
-        + theme_art,
+        experience_css=(assets / "experiences.css").read_text(encoding="utf-8") + "\n" + (assets / "themes.css").read_text(encoding="utf-8") + "\n" + (assets / "themes" / "studios.css").read_text(encoding="utf-8")
+        + "\n" + (assets / "themes" / "scrapbook-desktop.css").read_text(encoding="utf-8") + theme_art,
         handwriting_assets=handwriting_assets,
-        experience_js=(assets / "book-pagination.js").read_text(encoding="utf-8") + "\n" + (assets / "theme-scenes.js").read_text(encoding="utf-8") + "\n" + (assets / "experiences.js").read_text(encoding="utf-8"),
+        experience_js=(assets / "book-pagination.js").read_text(encoding="utf-8") + "\n" + (assets / "theme-scenes.js").read_text(encoding="utf-8") + "\n" + (assets / "studios.js").read_text(encoding="utf-8") + "\n" + (assets / "experiences.js").read_text(encoding="utf-8"),
         route=route, widgets=widgets,
-        reader_templates="\n".join((assets / "themes" / (mode + ".html")).read_text(encoding="utf-8") for mode in ("whale", "anime", "cyber")),
+        reader_templates="\n".join((assets / "themes" / (mode + ".html")).read_text(encoding="utf-8") for mode in ("whale", "journal", "moonlight", "pixel")),
+        shelf_data=shelf_data,
         math_css=math_css, math_js=math_js, code_css=code_css,
         library_action=f'<a class="library-link" href="{html.escape(library_href, quote=True)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2-3h9v16H3V7z"/></svg>笔记夹</a>' if library_href else "",
         obsidian_action=f'<a class="obsidian-link" href="{html.escape(obsidian_href, quote=True)}" download>导入 Obsidian ↓</a>' if obsidian_href else "",

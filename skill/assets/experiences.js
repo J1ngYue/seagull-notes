@@ -91,8 +91,9 @@ function turnBook(direction){
  selectBookPage(target);history.replaceState(null,'','#'+bookPages[target].id);currentChapter=-1;queueReading();
 }
 function applyReadingStyle(style){
- const readingAnchor=Math.max(0,currentChapter),previousStyle=document.body.dataset.style,keepChapter=window.scrollY>96&&document.body.dataset.view==='notes';
- if(!['paper','atlas','folio','whale','anime','cyber'].includes(style))style='paper';document.body.dataset.style=style;stylePicker.value=style;
+ const readingAnchor=Math.max(0,currentChapter),previousStyle=document.body.dataset.style,keepChapter=(window.scrollY>96||document.body.dataset.readerTemplate&&currentChapter>=0)&&document.body.dataset.view==='notes';
+ style=({anime:'journal',cyber:'moonlight'})[style]||style;
+ if(!['paper','atlas','folio','whale','journal','moonlight','pixel'].includes(style))style='paper';document.body.dataset.style=style;stylePicker.value=style;
  if(bookMounted)unmountBook();
  unmountThemeScene();
  if(!['atlas','folio'].includes(style)){tabsHome.insertBefore(formatTabs,tabsNext);introPieces.forEach(piece=>overview.before(piece));overview.hidden=true}else{document.getElementById('reader-tools').append(formatTabs);introPieces.forEach(piece=>overview.append(piece));overview.hidden=false}
@@ -115,7 +116,7 @@ routeCards.forEach((card,index)=>card.addEventListener('click',()=>{activate(doc
 document.querySelector('[data-folio=previous]').addEventListener('click',()=>turnBook(-1));document.querySelector('[data-folio=next]').addEventListener('click',()=>turnBook(1));
 document.addEventListener('keydown',event=>{if(event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey||document.body.dataset.style!=='folio'||document.body.dataset.view!=='notes'||event.target.closest('input,textarea,select,pre,dialog,[role=tab]'))return;if(['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();turnBook(event.key==='ArrowRight'?1:-1)}});
 new ResizeObserver(()=>{if(bookMounted&&bookSpread.clientHeight&&bookLayoutKey!==bookSpread.clientWidth+'x'+bookSpread.clientHeight)scheduleBookPagination()}).observe(bookSpread);document.fonts.ready.then(()=>{if(bookMounted)scheduleBookPagination()});document.querySelectorAll('#notes img').forEach(image=>image.addEventListener('load',()=>{if(bookMounted)scheduleBookPagination()}));document.addEventListener('click',event=>{if(bookMounted&&event.target.closest('.wrap-code'))scheduleBookPagination()});document.addEventListener('seagull:view',()=>{stopBookAnimation();if(bookMounted&&document.body.dataset.view==='notes')scheduleBookPagination()});
-applyReaderFont(loadPreference(fontKey,'default'));applyReadingStyle(loadPreference(styleKey,document.body.dataset.style));updateMastery();
+applyReaderFont(loadPreference(fontKey,'default'));applyReadingStyle(new URLSearchParams(location.search).get('style')||loadPreference(styleKey,document.body.dataset.style));updateMastery();
 const chapterReveal=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');chapterReveal.unobserve(entry.target)}}),{threshold:.08});chapters.forEach(chapter=>chapterReveal.observe(chapter));
 document.querySelectorAll('.explorer').forEach(explorer=>{
  const buttons=Array.from(explorer.querySelectorAll('[data-step]')),panels=Array.from(explorer.querySelectorAll('.explore-panel')),play=explorer.querySelector('.explore-play');let selected=0,timer=null;

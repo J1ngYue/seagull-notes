@@ -25,7 +25,7 @@ body[data-view=map] .workspace{display:block;max-width:1280px}body[data-view=map
 <script>
 document.querySelectorAll('.mindmap-viewer').forEach(viewer=>{
  const stage=viewer.querySelector('.map-stage'),paper=viewer.querySelector('.map-paper'),image=viewer.querySelector('.mindmap'),label=viewer.querySelector('.map-zoom'),expand=viewer.querySelector('[data-map-action=expand]');
- const width=Number(image.getAttribute('width')),height=Number(image.getAttribute('height'));let scale=1,automatic=true,drag=null,previousOverflow='';
+ const width=Number(image.getAttribute('width')),height=Number(image.getAttribute('height'));let scale=1,automatic=true,drag=null,previousOverflow='',expandedHome=null;
  function resize(next,center=true,anchor){
   if(!stage.clientWidth)return;const point=anchor||{x:stage.clientWidth/2,y:stage.clientHeight/2};
   const cx=(stage.scrollLeft+point.x-(paper.offsetWidth-width*scale)/2)/(width*scale),cy=(stage.scrollTop+point.y-(paper.offsetHeight-height*scale)/2)/(height*scale);
@@ -34,7 +34,7 @@ document.querySelectorAll('.mindmap-viewer').forEach(viewer=>{
  }
  function fit(){automatic=true;resize(Math.min((stage.clientWidth-64)/width,(stage.clientHeight-64)/height,1))}
  function zoom(factor,anchor){automatic=false;const minimum=Math.min(.15,(stage.clientWidth-64)/width,(stage.clientHeight-64)/height);resize(Math.max(minimum,Math.min(3,scale*factor)),false,anchor)}
- function toggleExpanded(){const open=viewer.classList.toggle('expanded');expand.setAttribute('aria-pressed',String(open));expand.querySelector('span').textContent=open?'收起画布':'展开画布';if(open){previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden'}else document.body.style.overflow=previousOverflow;fit()}
+ function toggleExpanded(){const open=viewer.classList.toggle('expanded');expand.setAttribute('aria-pressed',String(open));expand.querySelector('span').textContent=open?'收起画布':'展开画布';if(open){previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';if(viewer.closest('.studio')){expandedHome=document.createComment('expanded map home');viewer.before(expandedHome);document.body.append(viewer)}}else{document.body.style.overflow=previousOverflow;if(expandedHome){expandedHome.replaceWith(viewer);expandedHome=null}}fit()}
  viewer.querySelector('[data-map-action=in]').addEventListener('click',()=>zoom(stage.clientWidth<650?2:1.25));viewer.querySelector('[data-map-action=out]').addEventListener('click',()=>zoom(stage.clientWidth<650?.5:.8));viewer.querySelector('[data-map-action=fit]').addEventListener('click',fit);expand.addEventListener('click',toggleExpanded);
  stage.addEventListener('keydown',event=>{if(['+','=','-','0'].includes(event.key)){event.preventDefault();event.key==='0'?fit():zoom(event.key==='-'?.8:1.25)}});
  stage.addEventListener('wheel',event=>{if(!event.deltaY)return;event.preventDefault();const rect=stage.getBoundingClientRect(),delta=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?stage.clientHeight:1);zoom(Math.exp(-Math.max(-150,Math.min(150,delta))*.002),{x:event.clientX-rect.left,y:event.clientY-rect.top})},{passive:false});

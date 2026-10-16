@@ -28,7 +28,7 @@ def topic():
             "extensions": [{"title": "进一步学习", "markdown": "自己的补充解释。"}]}
 
 
-@pytest.mark.parametrize("style", ["paper", "atlas", "folio", "whale", "anime", "cyber"])
+@pytest.mark.parametrize("style", ["paper", "atlas", "folio", "whale", "journal", "moonlight", "pixel"])
 def test_all_styles_keep_complete_topic_content_and_references(tmp_path, style):
     note = dict(topic(), style=style)
     page, markdown = script("notebook").render_note(note, tmp_path)
@@ -42,7 +42,7 @@ def test_all_styles_keep_complete_topic_content_and_references(tmp_path, style):
     assert not document.xpath('//script[@src] | //link[@rel="stylesheet"]')
 
 
-@pytest.mark.parametrize("style", ["paper", "atlas", "folio", "whale", "anime", "cyber"])
+@pytest.mark.parametrize("style", ["paper", "atlas", "folio", "whale", "journal", "moonlight", "pixel"])
 def test_markdown_view_preserves_complete_source_without_executing_markup(tmp_path, style):
     note = dict(topic(), style=style)
     note["sections"][0]["markdown"] = '```html\n<script>alert("display only")</script>\n```\n\n$$x^2+1$$\n\n尾部内容。'
@@ -64,6 +64,18 @@ def test_pasted_text_is_material_but_topic_requires_research(tmp_path, monkeypat
     subject = prepare.prepare("Git 与 GitHub", "topic")
     assert subject['needs_research'] is True and subject['source_kind'] == 'topic'
     assert prepare.prepare(text, "text")['material_id'] == pasted['material_id']
+
+
+def test_replaced_styles_migrate_and_shelf_payload_is_inert(tmp_path):
+    assert sources.reading_style(dict(topic(), style="anime")) == "journal"
+    assert sources.reading_style(dict(topic(), style="cyber")) == "moonlight"
+    note = dict(topic(), title='</script><script>alert(1)</script>', style="pixel")
+    page, _ = script("notebook").render_note(note, tmp_path)
+    document = html.fromstring(page)
+    payload = json.loads(document.get_element_by_id("shelf-data").text)
+    assert len(payload["entries"]) == 1
+    assert payload["entries"][0]["title"] == note["title"]
+    assert not document.xpath('//script[text()="alert(1)"]')
 
 
 def test_url_preparation_uses_real_extraction_and_keeps_asr_disabled(tmp_path, monkeypatch):
@@ -123,3 +135,30 @@ def test_topic_obsidian_export_keeps_interactive_component_text(tmp_path):
         text = archive.read(package['obsidian_note']).decode('utf-8')
     assert '主题知识' in text and '视频' not in text
     assert '先修改文件。' in text and '自己的补充解释。' in text
+
+
+def test_lesson_questions_are_safe_and_survive_markdown_and_obsidian(tmp_path):
+    note = topic()
+    note['review'] = [{'chapter': 1, 'question': '选择哪一个？', 'options': ['正确 <script>文本</script>', '另一项'],
+                       'correct': 0, 'answer': '解释正确选项的原因。'}]
+    page, markdown = script('notebook').render_note(note, tmp_path)
+    document = html.fromstring(page)
+    assert not document.cssselect('.question-options script')
+    assert document.cssselect('.question-options')[0].text_content() == '正确 <script>文本</script>另一项'
+    assert '1. 正确 <script>文本</script>' in markdown
+    source = tmp_path/'note.json'
+    source.write_text(json.dumps(note, ensure_ascii=False), encoding='utf-8')
+    bundle = obsidian_export.export_bundle(note, source, tmp_path/'questions.zip')
+    with ZipFile(bundle['obsidian_zip']) as archive:
+        exported = archive.read(bundle['obsidian_note']).decode('utf-8')
+    assert '1. 正确 <script>文本</script>' in exported and '解释正确选项的原因。' in exported
+
+
+@pytest.mark.parametrize('options,correct', [(['一个', '两个'], None), (['一个', '两个'], -1),
+                                           (['一个', '两个'], 2), (['一个', '两个'], True),
+                                           (['单个'], 0), ('不是数组', 0)])
+def test_lesson_questions_reject_invalid_answer_keys(tmp_path, options, correct):
+    note = topic()
+    note['review'] = [{'chapter': 1, 'question': '问题', 'options': options, 'correct': correct, 'answer': '解释'}]
+    with pytest.raises(ValueError, match='选择题'):
+        script('notebook').render_note(note, tmp_path)
