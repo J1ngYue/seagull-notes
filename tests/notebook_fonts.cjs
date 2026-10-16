@@ -47,6 +47,7 @@ async function open(preference,url='https://notes.example.invalid/fonts.html'){
      const window=scene.querySelector('[data-window=notes]');scene.querySelector('[data-window-action=minimize]').click();assert.equal(window.hidden,true);scene.querySelector('[data-window-restore=notes]').click();assert.equal(window.hidden,false);
      scene.querySelector('[data-window-action=maximize]').click();assert.equal(window.classList.contains('maximized'),true);scene.querySelector('[data-window-action=maximize]').click();assert.equal(window.classList.contains('maximized'),false);
     }else if(mode==='journal'){
+     const sticker=scene.querySelector('[data-sticker]'),pose=sticker.dataset.sticker;sticker.click();assert.notEqual(sticker.dataset.sticker,pose);for(let i=0;i<4;i++)sticker.click();assert.equal(sticker.dataset.sticker,pose);assert.equal(sticker.tagName,'BUTTON');
      const month=scene.querySelector('.calendar-title').textContent;scene.querySelector('[data-journal-month="1"]').click();assert.notEqual(scene.querySelector('.calendar-title').textContent,month);scene.querySelector('[data-journal-month="-1"]').click();assert.equal(scene.querySelector('.calendar-title').textContent,month);
      const memo=scene.querySelector('.journal-memo-input');memo.value='记住今天的学习';memo.dispatchEvent(new w.Event('input'));assert.equal(JSON.parse(w.localStorage.getItem('seagull:journal:memo')),memo.value);
     }
