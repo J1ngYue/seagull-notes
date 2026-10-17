@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {JSDOM,VirtualConsole}=require(process.argv[2]||'jsdom');
 const page=fs.readFileSync(process.argv[3],'utf8');
-async function open(preference,url='https://notes.example.invalid/fonts.html',savedStyle){
+async function open(preference,url='https://notes.example.invalid/fonts.html',savedStyle,memoPreferences){
  const errors=[],console=new VirtualConsole();console.on('jsdomError',error=>{if(!error.message.startsWith('Could not parse CSS stylesheet'))errors.push(error.message)});
  const observedPage=page.replace(/(<body\b[^>]*>)/,'$1<script>window.firstReaderState={style:document.documentElement.dataset.initialStyle,booting:document.documentElement.hasAttribute("data-reader-booting"),visibility:getComputedStyle(document.body).visibility};</script>');
  const dom=new JSDOM(observedPage,{url,runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:console,beforeParse(window){
@@ -12,6 +12,7 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
   window.matchMedia=()=>({matches:false});window.scrollTo=()=>{};window.HTMLElement.prototype.scrollIntoView=()=>{};
   if(preference!==undefined)window.localStorage.setItem('seagull:reader-font',JSON.stringify(preference));
   if(savedStyle!==undefined)window.localStorage.setItem('seagull:style:'+new URL(url).pathname,JSON.stringify(savedStyle));
+  if(memoPreferences)for(const [key,value] of Object.entries(memoPreferences))window.localStorage.setItem(key,JSON.stringify(value));
  }});
  await new Promise(resolve=>dom.window.addEventListener('load',resolve));return {dom,errors};
 }
@@ -67,7 +68,12 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
      for(const container of [scene.querySelector('.studio-home'),scene.querySelector('.studio-reading')])assert.deepEqual(Array.from(container.querySelectorAll('[data-sticker]')).map(el=>el.dataset.sticker).sort(),poses);
      assert.equal(scene.querySelectorAll('button[data-sticker]').length,0);const sticker=scene.querySelector('[data-sticker]'),pose=sticker.dataset.sticker;sticker.click();assert.equal(sticker.dataset.sticker,pose);
      const month=scene.querySelector('.calendar-title').textContent;scene.querySelector('[data-journal-month="1"]').click();assert.notEqual(scene.querySelector('.calendar-title').textContent,month);scene.querySelector('[data-journal-month="-1"]').click();assert.equal(scene.querySelector('.calendar-title').textContent,month);
-     const memo=scene.querySelector('.journal-memo-input');memo.value='记住今天的学习';memo.dispatchEvent(new w.Event('input'));assert.equal(JSON.parse(w.localStorage.getItem('seagull:journal:memo')),memo.value);
+     const memo=scene.querySelector('.journal-memo-input');memo.value='记住今天的学习\n保留第二行';memo.dispatchEvent(new w.Event('input'));
+     assert.equal(JSON.parse(w.localStorage.getItem('seagull:journal:memos'))[0].text,memo.value);
+     const count=scene.querySelectorAll('.journal-memo-row').length;scene.querySelector('.journal-memo-add').click();assert.equal(scene.querySelectorAll('.journal-memo-row').length,count+1);
+     const added=scene.querySelector('.journal-memo-row:last-child'),input=added.querySelector('textarea');assert.equal(d.activeElement,input);input.value='<script>plain text</script>';input.dispatchEvent(new w.Event('input'));
+     const check=added.querySelector('input');check.checked=true;check.dispatchEvent(new w.Event('change'));assert.equal(JSON.parse(w.localStorage.getItem('seagull:journal:memos')).at(-1).done,true);assert.equal(added.querySelector('script'),null);
+     added.querySelector('.journal-memo-delete').click();assert.equal(scene.querySelectorAll('.journal-memo-row').length,count);scene.querySelector('.journal-memo-undo').click();assert.equal(scene.querySelectorAll('.journal-memo-row').length,count+1);assert.equal(scene.querySelector('.journal-memo-row:last-child textarea').value,input.value);
     }
    }
    scene.querySelector('[data-scene-action=overview]').click();assert.equal(chapters.every(c=>c.hidden),false);assert.equal(d.querySelector('#notes>.summary').hidden,false);assert.equal(d.querySelector('#notes>.study-widgets').hidden,false);
@@ -93,5 +99,11 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
   assert.equal(document.body.dataset.style,expected);assert.equal(document.documentElement.hasAttribute('data-reader-booting'),false);assert.equal(initial.dom.window.getComputedStyle(document.body).visibility,'visible');assert.deepEqual(initial.errors,[]);initial.dom.window.close();
  }
  const changed=await open(undefined,'https://notes.example.invalid/fonts.html?style=journal'),picker=changed.dom.window.document.querySelector('#style-select');picker.value='moonlight';picker.dispatchEvent(new changed.dom.window.Event('change'));assert.equal(new URL(changed.dom.window.location.href).searchParams.get('style'),'moonlight');assert.equal(changed.dom.window.document.body.dataset.style,'moonlight');assert.deepEqual(changed.errors,[]);changed.dom.window.close();
+ const legacy='原来的便笺\n第二行完整保留',migrated=await open(undefined,'https://notes.example.invalid/memo.html?style=journal',undefined,{'seagull:journal:memo':legacy}),mw=migrated.dom.window,md=mw.document;
+ assert.equal(md.querySelectorAll('.journal-memo-row').length,1);assert.equal(md.querySelector('.journal-memo-input').value,legacy);
+ md.querySelector('.journal-memo-add').click();const migratedInput=md.querySelector('.journal-memo-row:last-child textarea');migratedInput.value='新增后刷新';migratedInput.dispatchEvent(new mw.Event('input'));
+ const persistedMemos=JSON.parse(mw.localStorage.getItem('seagull:journal:memos'));assert.equal(persistedMemos[0].text,legacy);assert.deepEqual(migrated.errors,[]);migrated.dom.window.close();
+ const restored=await open(undefined,'https://notes.example.invalid/another-note.html?style=journal',undefined,{'seagull:journal:memos':persistedMemos});assert.deepEqual(Array.from(restored.dom.window.document.querySelectorAll('.journal-memo-input')).map(x=>x.value),[legacy,'新增后刷新']);
+ restored.dom.window.document.querySelectorAll('.journal-memo-delete').forEach(x=>x.click());assert.equal(restored.dom.window.document.querySelector('.journal-memo-empty').hidden,false);assert.deepEqual(restored.errors,[]);restored.dom.window.close();
  process.stdout.write('Seven styles, five fixed stickers on each journal screen, full content, shelf navigation and pre-paint theme selection verified.\n');
 })().catch(error=>{process.stderr.write(String(error.stack));process.exitCode=1});

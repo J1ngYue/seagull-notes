@@ -19,6 +19,28 @@ function resizePixelWindow(rect,dx,dy,direction,bounds,minWidth,minHeight){
  }
  return {left,top,width,height};
 }
+function buildJournalMemos(root){
+ const host=root.querySelector('.journal-quick-memo'),list=host.querySelector('.journal-memo-list'),status=host.querySelector('.journal-memo-status'),empty=host.querySelector('.journal-memo-empty'),undo=host.querySelector('.journal-memo-undo');
+ const key='seagull:journal:memos',saved=loadPreference(key,null),legacy=loadPreference('seagull:journal:memo','');
+ const make=text=>({id:crypto.randomUUID(),text,done:false});
+ let memos=Array.isArray(saved)?saved.filter(item=>item&&typeof item.text==='string'):(typeof legacy==='string'&&legacy? [make(legacy)]:['记录今天想学的知识','整理自己的笔记','保持创作的节奏！'].map(make)),removed=null;
+ function persist(){try{localStorage.setItem(key,JSON.stringify(memos));status.textContent='已自动保存 · 仅此浏览器'}catch{status.textContent='本地保存不可用，请先复制内容'}}
+ function size(input){input.style.height='auto';input.style.height=Math.min(170,Math.max(30,input.scrollHeight))+'px'}
+ function append(memo){
+  const row=document.createElement('div');row.className='journal-memo-row';row.dataset.memoId=memo.id;row.classList.toggle('done',memo.done);
+  const check=document.createElement('input');check.type='checkbox';check.className='journal-memo-check';check.checked=!!memo.done;check.setAttribute('aria-label','标记便笺完成');
+  const input=document.createElement('textarea');input.className='journal-memo-input';input.rows=1;input.value=memo.text;input.placeholder='写下新的便笺…';input.setAttribute('aria-label','便笺内容');
+  const remove=document.createElement('button');remove.type='button';remove.className='journal-memo-delete';remove.textContent='×';remove.title='删除这条便笺';remove.setAttribute('aria-label','删除便笺');
+  check.addEventListener('change',()=>{memo.done=check.checked;row.classList.toggle('done',memo.done);persist()});
+  input.addEventListener('input',()=>{memo.text=input.value;size(input);persist()});
+  remove.addEventListener('click',()=>{const index=memos.indexOf(memo);removed={memo,index};memos.splice(index,1);row.remove();empty.hidden=memos.length>0;undo.hidden=false;persist();(list.querySelector('.journal-memo-input')||host.querySelector('.journal-memo-add')).focus()});
+  row.append(check,input,remove);list.append(row);size(input);return input;
+ }
+ memos.forEach(append);empty.hidden=memos.length>0;
+ host.querySelector('.journal-memo-add').addEventListener('click',()=>{const memo=make('');memos.push(memo);const input=append(memo);empty.hidden=true;persist();input.focus()});
+ undo.addEventListener('click',()=>{if(!removed)return;memos.splice(removed.index,0,removed.memo);removed=null;undo.hidden=true;list.replaceChildren();memos.forEach(append);empty.hidden=true;persist()});
+ const observer=new ResizeObserver(()=>list.querySelectorAll('.journal-memo-input').forEach(size));observer.observe(list);sceneCleanups.push(()=>observer.disconnect());
+}
 function buildStudio(root,style){
  const shelf=JSON.parse(document.getElementById('shelf-data').textContent),heading=sceneNodes.heading;
  root.querySelectorAll('.shelf-count').forEach(node=>node.textContent=shelf.entries.length);
@@ -55,7 +77,7 @@ function buildStudio(root,style){
   const today=new Date(),month=new Date(today.getFullYear(),today.getMonth(),1),grid=root.querySelector('.calendar-days');
   function calendar(){root.querySelector('.calendar-title').textContent=month.getFullYear()+'  |  '+String(month.getMonth()+1).padStart(2,'0')+'月';grid.replaceChildren();for(let i=0;i<month.getDay();i++)grid.append(document.createElement('span'));for(let i=1;i<=new Date(month.getFullYear(),month.getMonth()+1,0).getDate();i++){const day=document.createElement('span');day.textContent=i;if(i===today.getDate()&&month.getMonth()===today.getMonth()&&month.getFullYear()===today.getFullYear()){day.classList.add('today');day.setAttribute('aria-label','今天 '+i+' 日')}grid.append(day)}}
   root.querySelectorAll('[data-journal-month]').forEach(button=>button.addEventListener('click',()=>{month.setMonth(month.getMonth()+Number(button.dataset.journalMonth));calendar()}));calendar();
-  const memo=root.querySelector('.journal-memo-input'),memoKey='seagull:journal:memo';memo.value=loadPreference(memoKey,'');memo.addEventListener('input',()=>{savePreference(memoKey,memo.value);root.querySelector('.journal-memo-status').textContent='已自动保存在本地'});
+  buildJournalMemos(root);
   const tags=new Map();shelf.entries.forEach(entry=>entry.tags.forEach(tag=>tags.set(tag,(tags.get(tag)||0)+1)));const tagHost=root.querySelector('.journal-tags');tags.forEach((count,tag)=>{const button=document.createElement('button'),label=document.createElement('span'),number=document.createElement('small');button.type='button';label.textContent='#  '+tag;number.textContent=count;button.append(label,number);button.addEventListener('click',()=>{root.querySelector('.shelf-search').value=tag;filterShelf(tag)});tagHost.append(button)});if(!tags.size)tagHost.hidden=true;
   shelf.entries.slice(0,4).forEach(entry=>{const link=card(entry);link.classList.add('recent-note');root.querySelector('.journal-recent-list').append(link)});
  }

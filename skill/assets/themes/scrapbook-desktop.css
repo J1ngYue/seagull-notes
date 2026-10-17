@@ -24,6 +24,25 @@
 @media(max-width:700px){.journal-dashboard article{padding-bottom:80px}.journal-thought{padding-bottom:80px!important}.journal-checklist-sticker{width:65px;bottom:-12px}.journal-photo-sticker{width:60px;right:-12px;top:-18px}.journal-shelf-sticker{width:72px;height:55px;right:48px;top:-17px}.journal-coffee-sticker{left:6px;width:62px;bottom:-12px}}
 @media(max-width:700px){.journal-studio .journal-collage{display:block;position:static;padding:20px 0}.journal-collage>.journal-polaroid,.journal-collage>.journal-memo,.journal-collage>.outline-card{display:none}.journal-sticker-sheet{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}}
 
+/* Editable local quick notes, with actual checkboxes and add/remove controls. */
+.journal-studio .journal-quick-memo h2{align-items:center;gap:10px}
+.journal-studio .journal-memo-add{display:grid;place-items:center;flex:none;width:32px;height:32px;padding:0;border-radius:7px;font:25px/1 sans-serif;color:#365d93}
+.journal-studio .journal-memo-add:hover,.journal-studio .journal-memo-delete:hover,.journal-studio .journal-memo-undo:hover{background:#dce6f6;color:#204675}
+.journal-memo-list{display:grid;gap:8px;margin:12px 0;max-height:350px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;overscroll-behavior:contain}
+.journal-memo-row{display:grid;grid-template-columns:20px minmax(0,1fr) 30px;gap:6px;align-items:start;min-width:0}
+.journal-studio .journal-memo-check{width:17px;height:17px;accent-color:#5378ae;margin:6px 0 0;cursor:pointer}
+.journal-studio .journal-quick-memo .journal-memo-input{font:18px/1.6 SeagullHand,'Microsoft YaHei',sans-serif;min-height:30px;max-height:170px;padding:0 2px;resize:none;overflow-y:auto;border:0;border-bottom:1px solid transparent;border-radius:0;color:#25436f;background:transparent}
+.journal-studio .journal-memo-input:focus{outline:0;border-bottom-color:#7799c4;background:#dce6f638}
+.journal-memo-row.done .journal-memo-input{text-decoration:line-through;color:#8090a9}
+.journal-studio .journal-memo-delete{display:grid;place-items:center;width:27px;height:30px;padding:0;border-radius:6px;color:#7d8fa9;font:21px/1 sans-serif}
+.journal-studio .journal-memo-footer{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:8px 0 0;padding:5px 0 0;min-height:26px;border:0;letter-spacing:0}
+.journal-studio .journal-quick-memo .journal-memo-status{display:block;margin:0;font:10px/1.6 'Microsoft YaHei',sans-serif;color:#7589a6}
+.journal-studio .journal-memo-undo{padding:4px 5px;border-radius:4px;font:11px/1.6 'Microsoft YaHei',sans-serif;white-space:nowrap;color:#456b9d}
+.journal-studio .journal-memo-empty{font:17px/1.7 SeagullHand,cursive;margin:15px 0;color:#7185a5}
+.journal-studio .journal-quick-memo button:focus-visible,.journal-memo-check:focus-visible{outline:2px solid #6187ba;outline-offset:2px}
+@media(max-width:1200px){.journal-studio[data-screen=home]>.studio-right{display:block!important;position:static;width:auto;max-height:none;margin:20px 25px 25px 235px;overflow:visible}.journal-studio[data-screen=home]>.studio-right>:not(.journal-quick-memo){display:none!important}}
+@media(max-width:700px){.journal-studio[data-screen=home]>.studio-right{margin:18px 15px 25px}.journal-memo-list{max-height:300px}.journal-studio .journal-memo-delete{width:30px;min-height:32px}}
+
 /* The desktop keeps its windows above a single, full-width taskbar. */
 @media screen{
  body[data-reader-template][data-view=map] .workspace{max-width:none}
