@@ -48,10 +48,10 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
     if(mode==='pixel'){
      const window=scene.querySelector('[data-window=notes]');scene.querySelector('[data-window-action=minimize]').click();assert.equal(window.hidden,true);scene.querySelector('[data-window-restore=notes]').click();assert.equal(window.hidden,false);
      scene.querySelector('[data-window-action=maximize]').click();assert.equal(window.classList.contains('maximized'),true);scene.querySelector('[data-window-action=maximize]').click();assert.equal(window.classList.contains('maximized'),false);
-     assert.equal(scene.querySelectorAll('.pixel-resize-grip').length,2);
+     assert.equal(scene.querySelectorAll('.pixel-resize-grip').length,16);
      const measure=window.getBoundingClientRect,viewportWidth=w.innerWidth,readingHash=w.location.hash;
      window.getBoundingClientRect=()=>({left:100,top:80,width:parseFloat(window.style.width)||600,height:parseFloat(window.style.height)||480});
-     window.querySelector('.pixel-resize-grip').dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowRight',shiftKey:true,bubbles:true}));
+     window.querySelector('.pixel-resize-grip[data-resize=e]').dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowRight',shiftKey:true,bubbles:true}));
      assert.equal(window.style.width,'640px');assert.equal(window.style.height,'480px');assert.equal(w.location.hash,readingHash);
      w.innerWidth=720;w.dispatchEvent(new w.Event('resize'));assert.equal(window.style.width,'612px');
      w.innerWidth=viewportWidth;window.getBoundingClientRect=measure;

@@ -1,4 +1,24 @@
 // The three screenshot-based workspaces share data, while keeping separate markup.
+function resizePixelWindow(rect,dx,dy,direction,bounds,minWidth,minHeight){
+ const right=rect.left+rect.width,bottom=rect.top+rect.height;
+ const west=direction.includes('w'),east=direction.includes('e'),north=direction.includes('n'),south=direction.includes('s');
+ const clamp=(value,minimum,maximum)=>Math.max(Math.min(minimum,maximum),Math.min(maximum,value));
+ let left=rect.left,top=rect.top,width=rect.width,height=rect.height;
+ if(direction.length===2){
+  const anchorX=west?right:left,anchorY=north?bottom:top;
+  const maxWidth=west?anchorX-bounds.left:bounds.right-anchorX,maxHeight=north?anchorY-bounds.top:bounds.bottom-anchorY;
+  const maximum=Math.min(maxWidth/width,maxHeight/height),minimum=Math.max(minWidth/width,minHeight/height);
+  const movement=((west?-dx:dx)*width+(north?-dy:dy)*height)/(width*width+height*height);
+  const scale=clamp(1+movement,minimum,maximum);width*=scale;height*=scale;
+  left=west?anchorX-width:anchorX;top=north?anchorY-height:anchorY;
+ }else{
+  if(east)width=clamp(width+dx,minWidth,bounds.right-left);
+  if(west){left=clamp(left+dx,bounds.left,right-minWidth);width=right-left}
+  if(south)height=clamp(height+dy,minHeight,bounds.bottom-top);
+  if(north){top=clamp(top+dy,bounds.top,bottom-minHeight);height=bottom-top}
+ }
+ return {left,top,width,height};
+}
 function buildStudio(root,style){
  const shelf=JSON.parse(document.getElementById('shelf-data').textContent),heading=sceneNodes.heading;
  root.querySelectorAll('.shelf-count').forEach(node=>node.textContent=shelf.entries.length);
@@ -54,12 +74,14 @@ function buildStudio(root,style){
   document.addEventListener('fullscreenchange',syncFullscreen);syncFullscreen();
   function tick(){const now=new Date();clock.textContent=now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false});clock.dateTime=now.toISOString();clock.title=now.toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'})}tick();const timer=setInterval(tick,30000);
   sceneCleanups.push(()=>{clearInterval(timer);document.removeEventListener('fullscreenchange',syncFullscreen)});
-  function resizePanel(panel,width,height,rect){const maxWidth=innerWidth-rect.left-8,maxHeight=innerHeight-rect.top-62,notes=panel.dataset.window==='notes';panel.classList.add('resized');Object.assign(panel.style,{position:'fixed',left:rect.left+'px',top:rect.top+'px',right:'auto',bottom:'auto'});panel.style.width=Math.max(Math.min(notes?480:240,maxWidth),Math.min(maxWidth,width))+'px';panel.style.height=Math.max(Math.min(notes?340:150,maxHeight),Math.min(maxHeight,height))+'px'}
+  function applyWindowBox(panel,box){panel.classList.add('resized');Object.assign(panel.style,{position:'fixed',left:box.left+'px',top:box.top+'px',right:'auto',bottom:'auto',width:box.width+'px',height:box.height+'px'})}
+  function resizePanel(panel,width,height,rect){const maxWidth=innerWidth-rect.left-8,maxHeight=innerHeight-rect.top-62,notes=panel.dataset.window==='notes';applyWindowBox(panel,{left:rect.left,top:rect.top,width:Math.max(Math.min(notes?480:240,maxWidth),Math.min(maxWidth,width)),height:Math.max(Math.min(notes?340:150,maxHeight),Math.min(maxHeight,height))})}
+  function resizeFromHandle(panel,rect,dx,dy,direction){const notes=panel.dataset.window==='notes';applyWindowBox(panel,resizePixelWindow(rect,dx,dy,direction,{left:8,top:8,right:innerWidth-8,bottom:innerHeight-62},notes?480:240,notes?340:150))}
   constrainWindows=()=>{if(innerWidth<=700)return;root.querySelectorAll('[data-window].resized:not(.maximized)').forEach(panel=>{const rect=panel.getBoundingClientRect();if(!rect.width)return;const notes=panel.dataset.window==='notes',left=Math.max(8,Math.min(rect.left,innerWidth-(notes?480:240)-8)),top=Math.max(8,Math.min(rect.top,innerHeight-(notes?340:150)-62));panel.style.left=left+'px';panel.style.top=top+'px';resizePanel(panel,rect.width,rect.height,{left,top})})};
   window.addEventListener('resize',constrainWindows);sceneCleanups.push(()=>window.removeEventListener('resize',constrainWindows));
-  root.querySelectorAll('[data-window]').forEach(panel=>{const grip=document.createElement('button');grip.type='button';grip.className='pixel-resize-grip';grip.setAttribute('aria-label',panel.dataset.window==='notes'?'调整笔记窗口大小':'调整目录窗口大小');grip.title='拖动右下角调整大小，也可用方向键';panel.append(grip);grip.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)||panel.classList.contains('maximized'))return;event.preventDefault();event.stopPropagation();const rect=panel.getBoundingClientRect(),step=event.shiftKey?40:16;resizePanel(panel,rect.width+(event.key==='ArrowRight'?step:event.key==='ArrowLeft'?-step:0),rect.height+(event.key==='ArrowDown'?step:event.key==='ArrowUp'?-step:0),rect)})});
-  root.addEventListener('pointerdown',event=>{const grip=event.target.closest('.pixel-resize-grip'),bar=event.target.closest('.pixel-titlebar'),handle=grip||bar;if(!handle||!grip&&event.target.closest('button')||event.button!==0||innerWidth<700)return;const panel=handle.closest('[data-window]');if(panel.classList.contains('maximized'))return;event.preventDefault();const rect=panel.getBoundingClientRect();drag={panel,id:event.pointerId,resize:!!grip,x:event.clientX,y:event.clientY,left:rect.left,top:rect.top,width:rect.width,height:rect.height};panel.style.position='fixed';panel.style.left=rect.left+'px';panel.style.top=rect.top+'px';panel.style.right='auto';panel.style.bottom='auto';panel.style.width=rect.width+'px';panel.style.zIndex='30';handle.setPointerCapture(event.pointerId)});
-  root.addEventListener('pointermove',event=>{if(!drag||event.pointerId!==drag.id)return;if(drag.resize){resizePanel(drag.panel,drag.width+event.clientX-drag.x,drag.height+event.clientY-drag.y,drag);return}drag.panel.style.left=Math.max(0,Math.min(innerWidth-180,drag.left+event.clientX-drag.x))+'px';drag.panel.style.top=Math.max(0,Math.min(innerHeight-90,drag.top+event.clientY-drag.y))+'px'});
+  root.querySelectorAll('[data-window]').forEach(panel=>Object.entries({nw:'左上角',n:'上边',ne:'右上角',e:'右边',se:'右下角',s:'下边',sw:'左下角',w:'左边'}).forEach(([direction,name])=>{const grip=document.createElement('button');grip.type='button';grip.className='pixel-resize-grip';grip.dataset.resize=direction;grip.setAttribute('aria-label',(panel.dataset.window==='notes'?'调整笔记窗口大小：':'调整目录窗口大小：')+name);grip.title=name+'：'+(direction.length===2?'等比例缩放':'单方向调整')+'；也可用方向键';panel.append(grip);grip.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)||panel.classList.contains('maximized'))return;event.preventDefault();event.stopPropagation();const step=event.shiftKey?40:16;resizeFromHandle(panel,panel.getBoundingClientRect(),event.key==='ArrowRight'?step:event.key==='ArrowLeft'?-step:0,event.key==='ArrowDown'?step:event.key==='ArrowUp'?-step:0,direction)})}));
+  root.addEventListener('pointerdown',event=>{const grip=event.target.closest('.pixel-resize-grip'),bar=event.target.closest('.pixel-titlebar'),handle=grip||bar;if(!handle||!grip&&event.target.closest('button')||event.button!==0||innerWidth<700)return;const panel=handle.closest('[data-window]');if(panel.classList.contains('maximized'))return;event.preventDefault();const rect=panel.getBoundingClientRect();drag={panel,id:event.pointerId,direction:grip?.dataset.resize,x:event.clientX,y:event.clientY,left:rect.left,top:rect.top,width:rect.width,height:rect.height};panel.style.position='fixed';panel.style.left=rect.left+'px';panel.style.top=rect.top+'px';panel.style.right='auto';panel.style.bottom='auto';panel.style.width=rect.width+'px';panel.style.zIndex='30';handle.setPointerCapture(event.pointerId)});
+  root.addEventListener('pointermove',event=>{if(!drag||event.pointerId!==drag.id)return;if(drag.direction){resizeFromHandle(drag.panel,drag,event.clientX-drag.x,event.clientY-drag.y,drag.direction);return}drag.panel.style.left=Math.max(0,Math.min(innerWidth-180,drag.left+event.clientX-drag.x))+'px';drag.panel.style.top=Math.max(0,Math.min(innerHeight-90,drag.top+event.clientY-drag.y))+'px'});
   root.addEventListener('pointerup',()=>drag=null);root.addEventListener('pointercancel',()=>drag=null);updateTasks();
  }
  root.querySelector('.scene-reader-body')?.addEventListener('scroll',queueReading,{passive:true});
