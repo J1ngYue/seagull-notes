@@ -172,11 +172,23 @@ def render_mindmap(nodes: list[dict[str, Any]], title: str) -> str:
     svg = render_svg(nodes, title)
     import xml.etree.ElementTree as ET
     document = ET.fromstring(svg)
+    placed, _, _ = _layout(nodes or [{"title": title or "空脑图"}], title)
+    branches = [node for node in placed if node["depth"] == 1]
+    topics = ['<button type="button" data-map-focus="all" aria-pressed="true">全部主题</button>']
+    for branch in branches:
+        members = [node for node in placed if node["depth"] and node["branch"] == branch["branch"]]
+        left, top = min(node["x"] for node in members), min(node["y"] for node in members)
+        right = max(node["x"] + node["w"] for node in members)
+        bottom = max(node["y"] + node["h"] for node in members)
+        bounds = ','.join(f'{value:.1f}' for value in (left + PADDING, top + PADDING, right - left, bottom - top))
+        topics.append(f'<button type="button" data-map-focus="{bounds}" aria-pressed="false">{html.escape(branch["title"])}<small>{len(members)}</small></button>')
     template = Path(__file__).resolve().parents[2] / "skill" / "assets" / "mindmap.html"
     return Template(template.read_text(encoding="utf-8")).substitute(
         image="data:image/svg+xml;base64," + base64.b64encode(svg.encode("utf-8")).decode("ascii"),
         title=html.escape(title, quote=True), width=document.get("width"), height=document.get("height"),
         node_count=len(document.findall('.//{http://www.w3.org/2000/svg}g[@class="map-node"]')),
+        branch_count=len(branches), level_count=max(node["depth"] for node in placed) + 1,
+        topics='<nav class="map-topics" aria-label="导图主题导航">' + ''.join(topics) + '</nav>' if branches else '',
     )
 
 

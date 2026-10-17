@@ -4,6 +4,9 @@
 .map-heading strong{display:block;font-size:14px;font-weight:600}.map-heading span{display:block;font-size:10px;letter-spacing:.4px;color:#776b5f;margin-top:3px}
 .map-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.map-actions button{display:flex;align-items:center;justify-content:center;gap:6px;min-width:34px;min-height:34px;border:1px solid #e1d3bd;border-radius:8px;background:#fcf8f0;color:#785c42;padding:5px 10px;font:11px "Microsoft YaHei",system-ui,sans-serif;cursor:pointer;transition:background .18s,border-color .18s}.map-actions button:hover{background:#f0e3cf;border-color:#cbb596}.map-actions button:focus-visible,.map-stage:focus-visible{outline:2px solid #a87859;outline-offset:-3px}.map-actions svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.map-zoom{min-width:42px;text-align:center;font:11px ui-monospace,Consolas,monospace;color:#776b5f}
 .map-stage{height:640px;overflow:auto;background:#fffefa;cursor:grab;scrollbar-width:thin;overscroll-behavior:contain}.map-stage.dragging{cursor:grabbing}.map-paper{display:flex;align-items:center;justify-content:center}.map-stage .mindmap{display:block;min-width:0;max-width:none;flex-shrink:0;user-select:none;pointer-events:none}
+.map-topics{display:flex;gap:7px;padding:10px 20px;border-bottom:1px solid #e7dccb;overflow-x:auto;scrollbar-width:thin;background:#fcf8f1;flex-shrink:0}
+.mindmap-viewer .map-topics button{display:flex;align-items:center;gap:7px;flex-shrink:0;border:1px solid #e1d3bd;border-radius:20px;padding:7px 12px;background:#fffefa;color:#785c42;white-space:nowrap;font:11px/1.5 "Microsoft YaHei",sans-serif;min-height:33px;cursor:pointer}
+.mindmap-viewer .map-topics button:hover,.mindmap-viewer .map-topics button[aria-pressed=true]{background:#eee0ca;border-color:#bca17d;color:#4d3b29}.map-topics small{font:10px Consolas,monospace;color:#927c60}.map-topics button:focus-visible{outline:2px solid #a87859;outline-offset:-2px}
 .map-caption{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #e7dccb;padding:11px 24px;font-size:10px;line-height:1.8;color:#776b5f;background:#fcf8f0}
 .mindmap-viewer.expanded{position:fixed;inset:18px;z-index:80;border:1px solid #e1d3bd;box-shadow:0 0 0 30px #35291f88,0 16px 50px #51392220;display:flex;flex-direction:column}.mindmap-viewer.expanded .map-stage{flex:1;height:0;min-height:0}.mindmap-viewer.expanded .map-toolbar,.mindmap-viewer.expanded .map-caption{flex-shrink:0}
 body[data-view=map] .workspace{display:block;max-width:1280px}body[data-view=map] .sidebar{display:none}body[data-view=map] #map{padding:0;overflow:visible;animation:map-enter .28s ease both;transform:none}@keyframes map-enter{from{opacity:0}to{opacity:1}}
@@ -12,15 +15,16 @@ body[data-view=map] .workspace{display:block;max-width:1280px}body[data-view=map
 @media print{.map-toolbar,.map-caption{display:none}.map-stage{height:auto;overflow:visible}.map-paper{width:100%!important;height:auto!important}.map-stage .mindmap{width:100%!important;height:auto!important}.mindmap-viewer.expanded{position:static;box-shadow:none;border:0;display:block}}
 </style>
 <section class="mindmap-viewer" aria-label="交互式思维导图">
-  <header class="map-toolbar"><div class="map-heading"><strong>把知识，连成一张图。</strong><span>$node_count 个知识节点 · 分支颜色对应不同主题</span></div><div class="map-actions">
+  <header class="map-toolbar"><div class="map-heading"><strong>把知识，连成一张图。</strong><span>$node_count 个知识节点 · $branch_count 个主题 · $level_count 层知识关系</span></div><div class="map-actions">
     <button type="button" data-map-action="out" aria-label="缩小思维导图"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
     <output class="map-zoom" aria-label="思维导图缩放比例">100%</output>
     <button type="button" data-map-action="in" aria-label="放大思维导图"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7v14"/></svg></button>
     <button type="button" data-map-action="fit">适应画布</button>
     <button type="button" data-map-action="expand" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5"/></svg><span>展开画布</span></button>
   </div></header>
+  $topics
   <div class="map-stage" tabindex="0" aria-label="思维导图画布，滚轮缩放、拖动平移，加减键缩放，0 适应画布"><div class="map-paper"><img class="mindmap" alt="$title 思维导图" src="$image" width="$width" height="$height" draggable="false"></div></div>
-  <div class="map-caption"><span>滚轮缩放 · 拖动平移 · + / − 缩放 · 0 适应</span><span>保留完整知识结构，支持离线阅读</span></div>
+  <div class="map-caption"><span>滚轮缩放 · 拖动平移 · + / − 缩放 · 0 适应</span><span class="map-focus-status">点击主题，聚焦一支知识</span></div>
 </section>
 <script>
 document.querySelectorAll('.mindmap-viewer').forEach(viewer=>{
@@ -32,7 +36,9 @@ document.querySelectorAll('.mindmap-viewer').forEach(viewer=>{
   scale=next;image.style.width=width*scale+'px';image.style.height=height*scale+'px';paper.style.width=Math.max(stage.clientWidth,width*scale+(center?48:stage.clientWidth))+'px';paper.style.height=Math.max(stage.clientHeight,height*scale+(center?48:stage.clientHeight))+'px';label.textContent=Math.round(scale*100)+'%';
   stage.scrollLeft=center?(paper.offsetWidth-stage.clientWidth)/2:(paper.offsetWidth-width*scale)/2+width*scale*cx-point.x;stage.scrollTop=center?(paper.offsetHeight-stage.clientHeight)/2:(paper.offsetHeight-height*scale)/2+height*scale*cy-point.y;
  }
- function fit(){automatic=true;resize(Math.min((stage.clientWidth-64)/width,(stage.clientHeight-64)/height,1))}
+ function markTopic(button){viewer.querySelectorAll('[data-map-focus]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)))}
+ function fit(){automatic=true;resize(Math.min((stage.clientWidth-64)/width,(stage.clientHeight-64)/height,1));markTopic(viewer.querySelector('[data-map-focus=all]'));viewer.querySelector('.map-focus-status').textContent='点击主题，聚焦一支知识'}
+ viewer.querySelectorAll('[data-map-focus]').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.mapFocus==='all'){fit();return}const [x,y,w,h]=button.dataset.mapFocus.split(',').map(Number);automatic=false;resize(Math.min((stage.clientWidth-64)/w,(stage.clientHeight-64)/h,3));stage.scrollLeft=(paper.offsetWidth-width*scale)/2+(x+w/2)*scale-stage.clientWidth/2;stage.scrollTop=(paper.offsetHeight-height*scale)/2+(y+h/2)*scale-stage.clientHeight/2;markTopic(button);viewer.querySelector('.map-focus-status').textContent='当前聚焦：'+button.childNodes[0].textContent}));
  function zoom(factor,anchor){automatic=false;const minimum=Math.min(.15,(stage.clientWidth-64)/width,(stage.clientHeight-64)/height);resize(Math.max(minimum,Math.min(3,scale*factor)),false,anchor)}
  function toggleExpanded(){const open=viewer.classList.toggle('expanded');expand.setAttribute('aria-pressed',String(open));expand.querySelector('span').textContent=open?'收起画布':'展开画布';if(open){previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';if(viewer.closest('.studio')){expandedHome=document.createComment('expanded map home');viewer.before(expandedHome);document.body.append(viewer)}}else{document.body.style.overflow=previousOverflow;if(expandedHome){expandedHome.replaceWith(viewer);expandedHome=null}}fit()}
  viewer.querySelector('[data-map-action=in]').addEventListener('click',()=>zoom(stage.clientWidth<650?2:1.25));viewer.querySelector('[data-map-action=out]').addEventListener('click',()=>zoom(stage.clientWidth<650?.5:.8));viewer.querySelector('[data-map-action=fit]').addEventListener('click',fit);expand.addEventListener('click',toggleExpanded);
@@ -44,6 +50,6 @@ document.querySelectorAll('.mindmap-viewer').forEach(viewer=>{
  function release(){drag=null;stage.classList.remove('dragging')}
  stage.addEventListener('pointerup',release);stage.addEventListener('pointercancel',release);
  document.addEventListener('seagull:view',event=>{if(event.detail!=='map'&&viewer.classList.contains('expanded'))toggleExpanded()});
- new ResizeObserver(()=>{if(automatic)fit()}).observe(stage);image.addEventListener('load',()=>{if(automatic)fit()});fit();
+ new ResizeObserver(()=>{if(automatic)fit();else resize(scale,false)}).observe(stage);image.addEventListener('load',()=>{if(automatic)fit()});fit();
 });
 </script>

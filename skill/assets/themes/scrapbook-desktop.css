@@ -26,6 +26,7 @@
 
 /* The desktop keeps its windows above a single, full-width taskbar. */
 @media screen{
+ body[data-reader-template][data-view=map] .workspace{max-width:none}
  .pixel-studio{height:100dvh;overflow:clip}
  .pixel-studio .pixel-desktop-icons{width:94px;gap:8px;bottom:62px}
  .pixel-studio .pixel-file-icons{display:grid;gap:8px;flex:none;align-content:start}
@@ -36,6 +37,7 @@
  .pixel-studio .pixel-desktop-icons i:before{display:none}
  .pixel-desktop-icons i svg{display:block;width:100%;height:100%;overflow:visible}
  .pixel-studio .pixel-main-window{height:min(850px,calc(100dvh - 152px));display:flex;flex-direction:column;overflow:hidden}
+ .pixel-studio .pixel-main-window.resized{max-width:none}
  .pixel-main-window>:is(.pixel-titlebar,.pixel-menubar,.pixel-commandbar,.pixel-addressbar,.pixel-statusbar){flex-shrink:0}
  .pixel-studio .pixel-statusbar{margin:0}
  .pixel-studio .pixel-window-content{flex:1;min-height:0;overflow:hidden}
@@ -45,10 +47,20 @@
  .pixel-studio .studio-shelf{flex:1;min-height:0;overflow:auto}
  .pixel-studio .pixel-format-bar{flex-shrink:0;margin-bottom:15px}
  .pixel-studio .scene-reader-body,.pixel-studio .pixel-main-window.maximized .scene-reader-body{flex:1;min-height:0;max-height:none;overflow:auto;overscroll-behavior:contain}
- .pixel-studio .pixel-main-window.maximized{position:fixed;inset:8px 8px 62px!important;width:auto!important;max-width:none!important;height:auto;margin:0;z-index:35;overflow:hidden;animation:none}
+ body[data-view=map] .pixel-studio .scene-reader-body,body[data-view=map] .pixel-studio #map{display:flex;flex-direction:column;flex:1;min-height:0}
+ body[data-view=map] .pixel-studio .scene-reader-body>[data-slot=heading]{display:none}
+ body[data-view=map] .pixel-studio .scene-reader-body>[data-slot=panels]{display:flex;flex-direction:column;flex:1;min-height:0}
+ body[data-view=map] .pixel-studio #map{overflow:hidden}
+ .pixel-studio #map .mindmap-viewer{display:flex;flex-direction:column;flex:1;min-height:0}
+ .pixel-studio #map .map-stage{height:0;min-height:140px;flex:1}
+ .pixel-studio .pixel-main-window.maximized{position:fixed;inset:8px 8px 62px!important;width:auto!important;max-width:none!important;height:auto!important;margin:0;z-index:35;overflow:hidden;animation:none}
  .pixel-studio .pixel-main-window.maximized .pixel-window-content{height:auto;min-height:0}
  .pixel-studio .pixel-outline-window{position:fixed;top:auto;bottom:74px;height:fit-content;max-height:calc(100dvh - 100px);overflow:hidden}
  .pixel-studio .pixel-outline-window .outline-chapters{max-height:min(220px,calc(100dvh - 160px));overscroll-behavior:contain}
+ .pixel-studio .pixel-resize-grip{position:absolute;right:3px;bottom:3px;width:19px;height:19px;min-height:0;padding:0;border:0;z-index:40;cursor:nwse-resize;touch-action:none;background:repeating-linear-gradient(135deg,transparent 0 3px,#54719e 3px 5px,transparent 5px 7px);clip-path:polygon(100% 0,100% 100%,0 100%);opacity:.7}
+ .pixel-studio .pixel-resize-grip:hover,.pixel-studio .pixel-resize-grip:focus-visible{opacity:1;background-color:#b3cff8;outline:2px solid #426bb0;outline-offset:1px}
+ .pixel-studio .maximized .pixel-resize-grip{display:none}
+ .pixel-studio .pixel-statusbar{padding-right:24px}
  .pixel-studio .pixel-taskbar{left:0;right:0;bottom:0;width:100%;max-width:none;height:54px;min-height:54px;gap:12px;margin:0;padding:6px 12px;border:0;border-top:1px solid #e9f4ff;background:linear-gradient(#d4e4fb 0,#aec8ee 12%,#7f9dce 88%,#6c89b8);box-shadow:0 -1px #315987,0 -5px 15px #051a413d;color:#193c75;z-index:62}
  .pixel-taskbar .pixel-task-buttons{display:flex;align-items:center;gap:7px;flex:1;min-width:0;margin-right:114px;overflow:hidden}
  .pixel-studio .pixel-taskbar button{display:flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0;min-height:36px;padding:6px 13px;max-width:none;border:1px solid #5275aa;border-radius:3px;background:linear-gradient(#edf4ff,#b6cdee);box-shadow:inset 1px 1px #ffffffd9,inset -1px -1px #7797c5;font:12px/1.3 Consolas,"Microsoft YaHei",sans-serif;color:#244575;white-space:nowrap}
@@ -63,10 +75,14 @@
  body[data-style=pixel] .topbar{bottom:7px;right:190px;top:auto}
  .pixel-system-message{position:fixed;right:15px;bottom:69px;max-width:330px;margin:0;padding:12px 16px;background:#fff8dc;border:1px solid #9f824a;box-shadow:3px 3px #071c3f66;color:#4c4027;font:12px/1.7 "Microsoft YaHei",sans-serif;z-index:95}
 }
+@media screen and (min-width:1151px){.pixel-studio .pixel-outline-window.resized{display:flex;flex-direction:column;max-height:none}.pixel-studio .pixel-outline-window.resized .pixel-titlebar{flex-shrink:0}.pixel-studio .pixel-outline-window.resized .outline-chapters{min-height:0;max-height:none;flex:1}}
 @media screen and (max-height:760px) and (min-width:701px){.pixel-studio .pixel-desktop-icons{top:85px;gap:4px;overflow-y:auto;scrollbar-width:thin}.pixel-studio .pixel-file-icons{gap:4px}.pixel-studio .pixel-desktop-icons button{padding:3px;min-height:clamp(56px,calc((100dvh - 180px)/6),76px)}.pixel-studio .pixel-desktop-icons i{width:clamp(32px,calc((100dvh - 360px)/6),46px);height:clamp(32px,calc((100dvh - 360px)/6),46px)}}
 @media screen and (max-width:700px){
  .pixel-studio{padding:85px 10px 65px}
  .pixel-studio .pixel-main-window{width:100%;height:calc(100dvh - 175px);min-height:0;margin-top:0}
+ .pixel-studio .pixel-main-window.resized:not(.maximized){position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:calc(100dvh - 175px)!important}
+ .pixel-studio .pixel-resize-grip{display:none}
+ .pixel-studio #map .map-caption{display:none}
  .pixel-studio .pixel-window-content{display:flex;flex-direction:column;min-height:0}
  .pixel-studio .pixel-window-content>.studio-main{flex:1}
  .pixel-studio .pixel-taskbar{gap:5px;padding:6px}

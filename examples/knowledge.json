@@ -99,41 +99,268 @@
       "title": "Git 与 GitHub",
       "children": [
         {
-          "title": "本地状态",
+          "title": "职责与边界",
           "children": [
             {
-              "title": "工作区编辑"
+              "title": "Git：管理本地版本",
+              "children": [
+                {
+                  "title": "提交与历史"
+                },
+                {
+                  "title": "分支与合并"
+                }
+              ]
             },
             {
-              "title": "暂存区选择"
+              "title": "GitHub：托管与协作",
+              "children": [
+                {
+                  "title": "共同的远程位置"
+                },
+                {
+                  "title": "Pull Request 讨论与审查"
+                }
+              ]
             },
             {
-              "title": "提交记录"
+              "title": "两步分开验证",
+              "children": [
+                {
+                  "title": "commit：本地有版本"
+                },
+                {
+                  "title": "push：远程收到提交"
+                }
+              ]
             }
           ]
         },
         {
-          "title": "开发路线",
+          "title": "工作区、暂存区、仓库",
           "children": [
             {
-              "title": "建立分支"
+              "title": "工作区：正在编辑的文件",
+              "children": [
+                {
+                  "title": "修改项目文件"
+                },
+                {
+                  "title": "git diff：未暂存差异"
+                }
+              ]
             },
             {
-              "title": "验证与合并"
+              "title": "暂存区：准备下次提交",
+              "children": [
+                {
+                  "title": "git add：选择当前内容"
+                },
+                {
+                  "title": "git diff --staged：核对暂存"
+                }
+              ]
+            },
+            {
+              "title": "仓库：已经记录的历史",
+              "children": [
+                {
+                  "title": "git commit：记录版本"
+                },
+                {
+                  "title": "git log：查看历史"
+                }
+              ]
             }
           ]
         },
         {
-          "title": "远程协作",
+          "title": "完成一次可解释的提交",
           "children": [
             {
-              "title": "fetch / pull"
+              "title": "准备",
+              "children": [
+                {
+                  "title": "独立练习目录中 git init"
+                },
+                {
+                  "title": "先创建或修改 README"
+                }
+              ]
             },
             {
-              "title": "push 发布"
+              "title": "记录",
+              "children": [
+                {
+                  "title": "git status → git add"
+                },
+                {
+                  "title": "commit 说明本次目的"
+                }
+              ]
             },
             {
-              "title": "Pull Request 审查"
+              "title": "核对",
+              "children": [
+                {
+                  "title": "git log --oneline"
+                },
+                {
+                  "title": "确认本次包含哪些改动"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "分支与合并",
+          "children": [
+            {
+              "title": "建立开发路线",
+              "children": [
+                {
+                  "title": "git switch -c feature/readme"
+                },
+                {
+                  "title": "新分支基于当前版本"
+                }
+              ]
+            },
+            {
+              "title": "合入接收分支",
+              "children": [
+                {
+                  "title": "先 git switch main"
+                },
+                {
+                  "title": "再 git merge feature/readme"
+                }
+              ]
+            },
+            {
+              "title": "遇到冲突",
+              "children": [
+                {
+                  "title": "理解双方修改的实际含义"
+                },
+                {
+                  "title": "整理后验证功能并完成合并"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "远程与同步",
+          "children": [
+            {
+              "title": "先确认连接",
+              "children": [
+                {
+                  "title": "git remote -v：检查地址"
+                },
+                {
+                  "title": "origin 是常见的远程名字"
+                }
+              ]
+            },
+            {
+              "title": "取回与整合",
+              "children": [
+                {
+                  "title": "fetch：获取对象与引用"
+                },
+                {
+                  "title": "pull：取回后按所选方式整合"
+                }
+              ]
+            },
+            {
+              "title": "发布与核对",
+              "children": [
+                {
+                  "title": "git push origin main：示例"
+                },
+                {
+                  "title": "在远程确认对应分支结果"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Pull Request 协作",
+          "children": [
+            {
+              "title": "准备来源",
+              "children": [
+                {
+                  "title": "本地完成验证与提交"
+                },
+                {
+                  "title": "推送来源分支"
+                }
+              ]
+            },
+            {
+              "title": "说明与审查",
+              "children": [
+                {
+                  "title": "说明问题、改动和验证结果"
+                },
+                {
+                  "title": "讨论反馈并继续调整"
+                }
+              ]
+            },
+            {
+              "title": "接收与检查",
+              "children": [
+                {
+                  "title": "按项目约定合并"
+                },
+                {
+                  "title": "核对目标分支上的实际内容"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "常见误区与复习",
+          "children": [
+            {
+              "title": "别混淆层级",
+              "children": [
+                {
+                  "title": "commit 成功不代表 push 成功"
+                },
+                {
+                  "title": "fetch 不等于工作文件已整合"
+                }
+              ]
+            },
+            {
+              "title": "别忽略当前状态",
+              "children": [
+                {
+                  "title": "add 之后又改动需重新判断暂存"
+                },
+                {
+                  "title": "merge 的目标是当前分支"
+                }
+              ]
+            },
+            {
+              "title": "每次都回答",
+              "children": [
+                {
+                  "title": "我在哪、哪些改动尚未提交？"
+                },
+                {
+                  "title": "本地与远程各自有什么提交？"
+                }
+              ]
             }
           ]
         }

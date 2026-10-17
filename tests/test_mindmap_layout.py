@@ -48,3 +48,35 @@ def test_editable_canvas_uses_same_balanced_tree_without_overlap():
     cards = [dict(node, w=node["width"], h=node["height"]) for node in canvas["nodes"]]
     assert all(not overlaps(node, other) for index, node in enumerate(cards) for other in cards[index + 1:])
     assert {edge["fromSide"] for edge in canvas["edges"]} == {"left", "right"}
+
+
+def test_topic_focus_bounds_include_each_complete_branch():
+    from lxml import html
+
+    tree = dense_tree()
+    placed, _, _ = export._layout(tree, "完整课程")
+    page = html.fromstring(export.render_mindmap(tree, "完整课程"))
+    buttons = page.cssselect('.map-topics button[data-map-focus]')[1:]
+    assert len(buttons) == len(tree)
+    for button, branch in zip(buttons, [node for node in placed if node["depth"] == 1]):
+        x, y, width, height = map(float, button.get('data-map-focus').split(','))
+        members = [node for node in placed if node["depth"] and node["branch"] == branch["branch"]]
+        assert branch["title"] in button.text_content()
+        for node in members:
+            assert x <= node["x"] + export.PADDING + .1
+            assert y <= node["y"] + export.PADDING + .1
+            assert x + width + .1 >= node["x"] + node["w"] + export.PADDING
+            assert y + height + .1 >= node["y"] + node["h"] + export.PADDING
+
+
+def test_rich_example_preserves_all_nodes_in_svg_and_editable_canvas():
+    import json
+    from pathlib import Path
+
+    tree = json.loads((Path(__file__).parents[1] / 'examples/knowledge.json').read_text(encoding='utf-8'))['mind_map']
+    placed, _, _ = export._layout(tree)
+    assert max(node['depth'] for node in placed) >= 3
+    svg = ET.fromstring(export.render_svg(tree))
+    assert len(svg.findall('.//{http://www.w3.org/2000/svg}g[@class="map-node"]')) == len(placed)
+    assert len(obsidian_export.canvas_tree(tree, 'Git 与 GitHub')['nodes']) == len(placed)
+    assert all(not overlaps(node, other) for index, node in enumerate(placed) for other in placed[index + 1:])
