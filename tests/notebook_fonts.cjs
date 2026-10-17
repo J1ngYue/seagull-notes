@@ -28,6 +28,12 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
    assert.equal(d.querySelector('#markdown .raw').textContent,original);
    assert.deepEqual(Array.from(d.querySelectorAll('#notes .code-block code')).map(n=>n.textContent),codes);
   }
+  const question=d.querySelector('.chapter-question');
+  if(question){
+   const mastery=d.querySelector('#chapter-1 .mastery-button'),before=mastery.getAttribute('aria-pressed'),correct=Number(question.dataset.correct),options=question.querySelectorAll('input');
+   options[(correct+1)%options.length].checked=true;question.dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));assert.equal(question.dataset.result,'incorrect');assert.equal(question.querySelector('.quiz-feedback').hidden,false);assert.ok(question.querySelector('.quiz-result').textContent.includes('正确答案'));
+   options[correct].checked=true;options[correct].dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal(question.querySelector('.quiz-feedback').hidden,true);question.dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));assert.equal(question.dataset.result,'correct');assert.equal(mastery.getAttribute('aria-pressed'),before,'Answering must not mark a chapter mastered');
+  }
   if(['whale','journal','moonlight','pixel'].includes(mode)){
    const scene=d.querySelector('.reader-scene');assert.equal(scene.getAttribute('aria-label'),{whale:'鲸游·知识海',journal:'日系手账',moonlight:'月光玻璃',pixel:'像素桌面'}[mode]);
    assert.equal(d.body.dataset.readerTemplate,mode);assert.equal(d.querySelectorAll('.reader-scene').length,1);
@@ -64,6 +70,9 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
      d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));await new Promise(resolve=>setImmediate(resolve));assert.equal(fullscreen.getAttribute('aria-pressed'),'false');
      d.documentElement.requestFullscreen=async()=>{throw new Error('Not allowed')};fullscreen.click();await new Promise(resolve=>setImmediate(resolve));assert.equal(scene.querySelector('.pixel-system-message').hidden,false);assert.equal(fullscreen.getAttribute('aria-pressed'),'false');
     }else if(mode==='journal'){
+     const item=scene.querySelector('.study-checklist button'),mastery=chapters[0].querySelector('.mastery-button'),initial=mastery.getAttribute('aria-pressed')==='true';
+     item.click();assert.equal(w.location.hash,'#chapter-1');assert.equal(scene.dataset.screen,'reading');assert.equal(mastery.getAttribute('aria-pressed'),String(initial));
+     mastery.click();assert.equal(item.classList.contains('done'),!initial);if(!initial)assert.equal(w.getComputedStyle(item).textDecoration,'line-through');mastery.click();assert.equal(item.classList.contains('done'),initial);
      const poses=['bass','coffee','reading','star','writing'];
      for(const container of [scene.querySelector('.studio-home'),scene.querySelector('.studio-reading')])assert.deepEqual(Array.from(container.querySelectorAll('[data-sticker]')).map(el=>el.dataset.sticker).sort(),poses);
      assert.equal(scene.querySelectorAll('button[data-sticker]').length,0);const sticker=scene.querySelector('[data-sticker]'),pose=sticker.dataset.sticker;sticker.click();assert.equal(sticker.dataset.sticker,pose);

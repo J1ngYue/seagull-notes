@@ -25,6 +25,7 @@
 @media(max-width:700px){.journal-studio .journal-collage{display:block;position:static;padding:20px 0}.journal-collage>.journal-polaroid,.journal-collage>.journal-memo,.journal-collage>.outline-card{display:none}.journal-sticker-sheet{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}}
 
 /* Editable local quick notes, with actual checkboxes and add/remove controls. */
+.journal-studio .study-checklist button.done{text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:#557299;color:#7183a0}
 .journal-studio .journal-quick-memo h2{align-items:center;gap:10px}
 .journal-studio .journal-memo-add{display:grid;place-items:center;flex:none;width:32px;height:32px;padding:0;border-radius:7px;font:25px/1 sans-serif;color:#365d93}
 .journal-studio .journal-memo-add:hover,.journal-studio .journal-memo-delete:hover,.journal-studio .journal-memo-undo:hover{background:#dce6f6;color:#204675}

@@ -35,10 +35,10 @@ function paginateNotebookBook(spread,documents,options){
      rows.forEach(row=>add(row,node,()=>{const prose=source.cloneNode(false),table=node.cloneNode(false),body=document.createElement('tbody');prose.removeAttribute('id');table.removeAttribute('id');Array.from(node.children).filter(child=>child.matches('caption,colgroup,thead')).forEach(child=>{const copy=child.cloneNode(true);copy.querySelectorAll('.arithmatex').forEach(math=>delete math.dataset.copyBound);table.append(copy)});table.append(body);prose.append(table);return {outer:prose,target:body}}));
     }else add(node,source,proseWrapper(source));
    });
-  }else if(source.matches('.takeaways,.review-deck,.extension-deck')){
-   Array.from(source.children).filter(node=>!node.matches('.label,h3')).forEach(node=>{
+  }else if(source.matches('.takeaways,.review-deck,.extension-deck,.chapter-quiz')){
+   Array.from(source.children).filter(node=>!node.matches('.label,h3,.quiz-hint')).forEach(node=>{
     if(node.matches('details')&&node.querySelector('.prose')){const answer=node.querySelector('.prose');Array.from(answer.children).forEach(part=>add(part,node,()=>{const outer=source.cloneNode(false);Array.from(source.children).filter(child=>child.matches('.label,h3')).forEach(child=>outer.append(child.cloneNode(true)));const question=document.createElement('h4');question.className='book-question';question.textContent=node.querySelector('summary').textContent;const prose=answer.cloneNode(false);outer.append(question,prose);return {outer,target:prose}}))}
-    else add(node,source,()=>{const outer=source.cloneNode(false);Array.from(source.children).filter(child=>child.matches('.label,h3')).forEach(child=>outer.append(child.cloneNode(true)));return {outer,target:outer}});
+    else add(node,source,()=>{const outer=source.cloneNode(false);Array.from(source.children).filter(child=>child.matches('.label,h3,.quiz-hint')).forEach(child=>outer.append(child.cloneNode(true)));return {outer,target:outer}});
    });
   }else if(source.matches('.source-list'))Array.from(source.children).forEach(node=>add(node,source,plainWrapper(source)));
   else if(source.matches('.study-widgets'))Array.from(source.children).forEach(node=>result.push(...blocksOf(node)));

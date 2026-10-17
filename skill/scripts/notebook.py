@@ -143,15 +143,33 @@ def render_widgets(note: dict) -> str:
         panels = ''.join(f'<div class="explore-panel prose" role="tabpanel" id="explore-{index}-panel-{step}" aria-labelledby="explore-{index}-tab-{step}" {"hidden" if step else ""}>{rich_text(item["markdown"])}</div>' for step, item in enumerate(steps))
         widgets.append(f'<section class="explorer"><header><div><span class="label">EXPLORE · 互动演示</span><h3>{html.escape(explorer["title"])}</h3></div><button type="button" class="explore-play" aria-pressed="false">自动演示</button></header><div class="explore-steps" role="tablist" aria-label="{html.escape(explorer["title"], quote=True)}">{buttons}</div><progress value="1" max="{len(steps)}" aria-label="演示步骤"></progress>{panels}</section>')
     if note.get("review"):
-        questions = ''.join(f'<details class="review-card"><summary><span>{index:02}</span>{html.escape(item["question"])}</summary><div class="prose">' + ('<ol class="question-options">' + ''.join('<li>' + html.escape(option) + '</li>' for option in item.get("options", [])) + '</ol>' if item.get("options") else '') + rich_text(item["answer"]) + '</div></details>' for index, item in enumerate(note["review"], 1))
-        widgets.append('<section class="review-deck"><span class="label">RECALL · 自测卡片</span><h3>合上答案，你能解释吗？</h3>' + questions + '</section>')
+        questions = ''.join(f'<details class="review-card"><summary><span>{index:02}</span>{html.escape(item["question"])}</summary><div class="prose">' + ('<ol class="question-options">' + ''.join('<li>' + html.escape(option) + '</li>' for option in item.get("options", [])) + '</ol>' if item.get("options") else '') + rich_text(item["answer"]) + '</div></details>' for index, item in enumerate(note["review"], 1) if not (item.get("chapter") and item.get("options")))
+        if questions:
+            widgets.append('<section class="review-deck"><span class="label">RECALL · 自测卡片</span><h3>合上答案，你能解释吗？</h3>' + questions + '</section>')
     if note.get("extensions"):
         extras = ''.join(f'<details class="extension-card"><summary>{html.escape(item["title"])}<span>拓展阅读 ＋</span></summary><div class="prose">{rich_text(item["markdown"])}</div></details>' for item in note["extensions"])
         widgets.append('<section class="extension-deck"><span class="label">GO FURTHER · 拓展</span>' + extras + '</section>')
     return '<div class="study-widgets">' + ''.join(widgets) + '</div>' if widgets else ""
 
 
+def render_quiz(items: list[dict]) -> str:
+    cards = []
+    for index, item in enumerate(items, 1):
+        options = ''.join(f'<label><input type="radio" name="choice" value="{number}" required><span>{chr(65 + number)}. {html.escape(option)}</span></label>' for number, option in enumerate(item["options"]))
+        cards.append(f'<form class="chapter-question" data-correct="{item["correct"]}"><fieldset><legend>{index}. {html.escape(item["question"])}</legend><div class="question-options">{options}</div></fieldset><button type="submit" class="quiz-check">检查答案</button><div class="quiz-feedback" role="status" hidden><strong class="quiz-result">参考答案：{chr(65 + item["correct"])}。</strong><div class="prose">{rich_text(item["answer"])}</div></div></form>')
+    return '<section class="chapter-quiz" aria-label="本章选择题"><h3>学完这一章，试着选一选</h3><p class="quiz-hint">先选择，再检查答案。掌握状态由你在章末手动标记。</p>' + ''.join(cards) + '</section>' if cards else ''
+
+
 def render_note(note: dict, base: Path, library_href: str | None = None, obsidian_href: str | None = None, note_id: str = "") -> tuple[str, str]:
+    for item in note.get("review", []):
+        options = item.get("options", [])
+        if options and (not isinstance(options, list) or len(options) < 2 or not all(isinstance(option, str) for option in options)):
+            raise ValueError("选择题的 options 必须是至少两个文字选项的数组")
+        if options and (not isinstance(item.get("correct"), int) or isinstance(item["correct"], bool) or not 0 <= item["correct"] < len(options)):
+            raise ValueError("选择题的 correct 必须是 options 中正确选项的从 0 开始的索引")
+        chapter = item.get("chapter")
+        if chapter is not None and (type(chapter) is not int or not 1 <= chapter <= len(note["sections"])):
+            raise ValueError("复习题的 chapter 必须是有效的从 1 开始的章节编号")
     title = note["title"]
     kind = sources.source_kind(note)
     style = sources.reading_style(note)
@@ -217,8 +235,11 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
             caption = image.get("caption", "")
             figure = f'<figure><button type="button" class="figure-image" aria-label="放大查看配图"><img src="{data_url}" alt="{html.escape(caption, quote=True)}"></button><figcaption>{html.escape(caption)}</figcaption></figure>'
             image_md = f"![{caption}](<{path.as_posix()}>)"
-        sections.append(f'<section class="chapter" id="chapter-{i}"><header><span class="number">{i:02}</span><h2>{name}</h2>{time_link}</header><div class="prose">{rich_text(section["markdown"])}</div>{figure}</section>')
+        questions = [item for item in note.get("review", []) if item.get("chapter") == i and item.get("options")]
+        sections.append(f'<section class="chapter" id="chapter-{i}"><header><span class="number">{i:02}</span><h2>{name}</h2>{time_link}</header><div class="prose">{rich_text(section["markdown"])}</div>{figure}{render_quiz(questions)}</section>')
         body.extend([f"## {heading}", section["markdown"], image_md])
+        for item in questions:
+            body.extend([f'### 自测：{item["question"]}', "\n".join(f'{index}. {option}' for index, option in enumerate(item["options"], 1)), f'正确答案：{item["correct"] + 1}. {item["options"][item["correct"]]}', item["answer"]])
     reference_links = sources.source_links(note)
     references = '<div class="source-list">' + ''.join(f'<a href="{html.escape(item["url"], quote=True)}" target="_blank" rel="noopener">{html.escape(item["title"])} ↗</a>' for item in reference_links) + '</div>' if reference_links else ""
     if reference_links:
@@ -228,6 +249,8 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         for step in item.get("steps", []):
             body.extend([f'### {step["title"]}', step["markdown"]])
     for item in note.get("review", []):
+        if item.get("chapter") and item.get("options"):
+            continue
         body.append(f'### 自测：{item["question"]}')
         if item.get("options"):
             body.append("\n".join(f'{index}. {option}' for index, option in enumerate(item["options"], 1)))
@@ -249,12 +272,6 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
                           + (assets / "handwritten" / "OFL-MaShanZheng.txt").read_text(encoding="utf-8") + ' */\n'
                           + '@font-face{font-family:SeagullHand;src:url(data:font/woff2;base64,' + hand_font + ') format("woff2");font-weight:400;font-style:normal;font-display:swap}')
     theme_art = '\n:root{' + ''.join('--' + name + ':url(data:image/webp;base64,' + base64.b64encode((assets / 'themes' / file).read_bytes()).decode('ascii') + ');' for name, file in [('whale-art', 'whale-girl.webp'), ('whale-explain-art', 'whale-explain.webp'), ('whale-think-art', 'whale-think.webp'), ('whale-celebrate-art', 'whale-celebrate.webp'), ('journal-reference', 'journal-reference.webp'), ('journal-banner', 'journal-banner.webp'), ('journal-flowers', 'journal-flowers.webp'), ('journal-sticker-bass', 'journal-sticker-bass.webp'), ('journal-sticker-reading', 'journal-sticker-reading.webp'), ('journal-sticker-writing', 'journal-sticker-writing.webp'), ('journal-sticker-coffee', 'journal-sticker-coffee.webp'), ('journal-sticker-star', 'journal-sticker-star.webp'), ('moon-wallpaper', 'moon-wallpaper.webp'), ('pixel-wallpaper', 'pixel-wallpaper.webp')]) + '}'
-    for item in note.get("review", []):
-        options = item.get("options", [])
-        if options and (not isinstance(options, list) or len(options) < 2 or not all(isinstance(option, str) for option in options)):
-            raise ValueError("选择题的 options 必须是至少两个文字选项的数组")
-        if options and (not isinstance(item.get("correct"), int) or isinstance(item["correct"], bool) or not 0 <= item["correct"] < len(options)):
-            raise ValueError("选择题的 correct 必须是 options 中正确选项的从 0 开始的索引")
     route = ''.join(f'<button type="button" class="route-card" data-chapter="{index}"><span>{index + 1:02}</span><strong>{html.escape(section["title"])}</strong><small>展开学习 ↗</small></button>' for index, section in enumerate(note["sections"]))
     shelf_entries = []
     shelf_manifest = notebook_library.directory() / "notebooks.json"
@@ -283,7 +300,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         original_tab="字幕与出处" if kind == "video" else "资料与出处", references=references,
         style=style, note_id=html.escape(note_id or title, quote=True),
         experience_css=(assets / "experiences.css").read_text(encoding="utf-8") + "\n" + (assets / "themes.css").read_text(encoding="utf-8") + "\n" + (assets / "themes" / "studios.css").read_text(encoding="utf-8")
-        + "\n" + (assets / "themes" / "scrapbook-desktop.css").read_text(encoding="utf-8") + theme_art + "\n" + (assets / "reader-tools.css").read_text(encoding="utf-8"),
+        + "\n" + (assets / "themes" / "scrapbook-desktop.css").read_text(encoding="utf-8") + theme_art + "\n" + (assets / "reader-tools.css").read_text(encoding="utf-8") + "\n" + (assets / "chapter-quiz.css").read_text(encoding="utf-8"),
         handwriting_assets=handwriting_assets,
         experience_js=(assets / "book-pagination.js").read_text(encoding="utf-8") + "\n" + (assets / "theme-scenes.js").read_text(encoding="utf-8") + "\n" + (assets / "studios.js").read_text(encoding="utf-8") + "\n" + (assets / "experiences.js").read_text(encoding="utf-8"),
         route=route, widgets=widgets,

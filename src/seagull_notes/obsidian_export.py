@@ -99,7 +99,7 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
         body.append("> [!tip] 核心收获\n" + "\n".join("> - " + value for value in note["takeaways"]))
     if note.get("cover"):
         body.append(picture(note["cover"]))
-    for section in note["sections"]:
+    for chapter, section in enumerate(note["sections"], 1):
         heading = f"## {section['title']}"
         if section.get("start") is not None and sources.source_kind(note) in {"video", "local"}:
             label = _timestamp(section["start"])
@@ -114,6 +114,9 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
         body.extend([heading, section["markdown"]])
         if section.get("image"):
             body.append(picture(section["image"]))
+        for item in note.get("review", []):
+            if item.get("chapter") == chapter and item.get("options"):
+                body.extend([f'### 自测：{item["question"]}', "\n".join(f'{index}. {option}' for index, option in enumerate(item["options"], 1)), f'正确答案：{item["correct"] + 1}. {item["options"][item["correct"]]}', item["answer"]])
     if note.get("mind_map"):
         canvas = f"{folder}/思维导图.canvas"
         files[canvas] = json.dumps(canvas_tree(note["mind_map"], note["title"]), ensure_ascii=False, indent=2).encode("utf-8")
@@ -130,6 +133,8 @@ def export_bundle(note: dict, source: Path, package: Path) -> dict[str, str]:
         for step in item.get("steps", []):
             body.extend([f'### {step["title"]}', step["markdown"]])
     for item in note.get("review", []):
+        if item.get("chapter") and item.get("options"):
+            continue
         body.append(f'### 自测：{item["question"]}')
         if item.get("options"):
             body.append("\n".join(f'{index}. {option}' for index, option in enumerate(item["options"], 1)))

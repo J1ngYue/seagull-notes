@@ -177,6 +177,13 @@ if(window.katex){document.querySelectorAll('.arithmatex').forEach(element=>{
  element.dataset.latex=latex;element.dataset.copyBound='true';element.setAttribute('role','button');element.tabIndex=0;element.title='单击复制 LaTeX 公式';element.setAttribute('aria-label','复制 LaTeX 公式：'+latex);
  element.addEventListener('click',()=>copyFormula(element));element.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();copyFormula(element)}});
 })}
+document.addEventListener('submit',event=>{
+ const form=event.target.closest('.chapter-question');if(!form)return;event.preventDefault();
+ const selected=form.querySelector('input:checked');if(!selected){form.querySelector('input').focus();return}
+ const correct=Number(form.dataset.correct),passed=Number(selected.value)===correct,feedback=form.querySelector('.quiz-feedback');
+ form.dataset.result=passed?'correct':'incorrect';form.querySelector('.quiz-result').textContent=passed?'答对了！':'再想一想。正确答案是 '+String.fromCharCode(65+correct)+'。';feedback.hidden=false;
+});
+document.addEventListener('change',event=>{const form=event.target.closest('.chapter-question');if(!form)return;delete form.dataset.result;form.querySelector('.quiz-feedback').hidden=true});
 $experience_js
 document.documentElement.removeAttribute('data-reader-booting');
 </script>

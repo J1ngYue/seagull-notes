@@ -144,14 +144,17 @@ def test_lesson_questions_are_safe_and_survive_markdown_and_obsidian(tmp_path):
     page, markdown = script('notebook').render_note(note, tmp_path)
     document = html.fromstring(page)
     assert not document.cssselect('.question-options script')
-    assert document.cssselect('.question-options')[0].text_content() == '正确 <script>文本</script>另一项'
+    assert document.cssselect('#chapter-1 .chapter-question')
+    assert document.cssselect('.question-options')[0].text_content() == 'A. 正确 <script>文本</script>B. 另一项'
     assert '1. 正确 <script>文本</script>' in markdown
+    assert '正确答案：1.' in markdown and markdown.count('### 自测：') == 1
     source = tmp_path/'note.json'
     source.write_text(json.dumps(note, ensure_ascii=False), encoding='utf-8')
     bundle = obsidian_export.export_bundle(note, source, tmp_path/'questions.zip')
     with ZipFile(bundle['obsidian_zip']) as archive:
         exported = archive.read(bundle['obsidian_note']).decode('utf-8')
     assert '1. 正确 <script>文本</script>' in exported and '解释正确选项的原因。' in exported
+    assert '正确答案：1.' in exported and exported.count('### 自测：') == 1
 
 
 @pytest.mark.parametrize('options,correct', [(['一个', '两个'], None), (['一个', '两个'], -1),
@@ -161,4 +164,12 @@ def test_lesson_questions_reject_invalid_answer_keys(tmp_path, options, correct)
     note = topic()
     note['review'] = [{'chapter': 1, 'question': '问题', 'options': options, 'correct': correct, 'answer': '解释'}]
     with pytest.raises(ValueError, match='选择题'):
+        script('notebook').render_note(note, tmp_path)
+
+
+@pytest.mark.parametrize('chapter', [0, 3, True, '1'])
+def test_lesson_questions_reject_invalid_chapters(tmp_path, chapter):
+    note = topic()
+    note['review'] = [{'chapter': chapter, 'question': '问题', 'options': ['甲', '乙'], 'correct': 0, 'answer': '解释'}]
+    with pytest.raises(ValueError, match='chapter'):
         script('notebook').render_note(note, tmp_path)

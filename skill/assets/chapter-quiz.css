@@ -1,0 +1,22 @@
+.chapter-quiz{margin-top:32px;padding-top:22px;border-top:1px dashed var(--line,#e7dccb);color:inherit}
+.chapter-quiz h3{margin:0 0 8px;font-size:20px;line-height:1.6}
+.book-page .chapter-quiz:not(:has(.chapter-question)){display:none}
+.quiz-hint{font-size:13px;line-height:1.7;opacity:.75;margin:0 0 20px}
+.chapter-question{padding:18px;margin:14px 0;border:1px solid var(--line,#e7dccb);border-radius:12px;background:var(--tint,#f6f0e6)}
+.chapter-question fieldset{border:0;padding:0;margin:0;min-width:0}
+.chapter-question legend{font-size:16px;line-height:1.8;font-weight:600;margin-bottom:12px}
+.chapter-question .question-options{display:grid;gap:8px}
+.chapter-question label{display:flex;align-items:baseline;gap:10px;padding:9px 12px;border:1px solid transparent;border-radius:7px;cursor:pointer;font-size:15px;line-height:1.7;overflow-wrap:anywhere}
+.chapter-question label:has(input:checked){border-color:var(--accent,#a55c43);background:var(--surface,#fffefa)}
+.chapter-question input{flex:none;accent-color:var(--accent,#a55c43)}
+.chapter-question .quiz-check{margin-top:14px;padding:8px 17px;border:1px solid var(--line,#e7dccb);border-radius:7px;background:var(--surface,#fffefa);color:inherit;font-size:14px;cursor:pointer;min-height:36px}
+.quiz-feedback{border-top:1px solid var(--line,#e7dccb);margin-top:16px;padding-top:14px;font-size:15px;line-height:1.8}
+.quiz-feedback .prose{font-size:inherit!important;line-height:inherit!important}
+.quiz-feedback p{margin:7px 0 0}
+.journal-studio .chapter-quiz{font-family:SeagullHand,'Microsoft YaHei',sans-serif}
+.journal-studio .chapter-quiz h3{font-size:26px}
+.journal-studio .chapter-question :is(legend,label){font-size:20px}
+.moonlight-studio .chapter-question{--surface:#233653;background:#152844b3;border-color:#9aafe55c}
+.pixel-studio .chapter-question,.pixel-studio .chapter-question :is(label,.quiz-check){border-radius:0}
+.chapter-question :is(input,button):focus-visible{outline:2px solid var(--accent,#a55c43);outline-offset:3px}
+@media print{.chapter-question{break-inside:avoid}.quiz-check{display:none}.quiz-feedback[hidden]{display:block!important}}
