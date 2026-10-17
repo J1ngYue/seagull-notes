@@ -48,6 +48,13 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
     if(mode==='pixel'){
      const window=scene.querySelector('[data-window=notes]');scene.querySelector('[data-window-action=minimize]').click();assert.equal(window.hidden,true);scene.querySelector('[data-window-restore=notes]').click();assert.equal(window.hidden,false);
      scene.querySelector('[data-window-action=maximize]').click();assert.equal(window.classList.contains('maximized'),true);scene.querySelector('[data-window-action=maximize]').click();assert.equal(window.classList.contains('maximized'),false);
+     const fullscreen=scene.querySelector('[data-pixel-fullscreen]');
+     Object.defineProperty(d,'fullscreenElement',{configurable:true,value:null,writable:true});
+     d.documentElement.requestFullscreen=async()=>{d.fullscreenElement=d.documentElement;d.dispatchEvent(new w.Event('fullscreenchange'))};
+     d.exitFullscreen=async()=>{d.fullscreenElement=null;d.dispatchEvent(new w.Event('fullscreenchange'))};
+     fullscreen.click();await new Promise(resolve=>setImmediate(resolve));assert.equal(fullscreen.getAttribute('aria-pressed'),'true');assert.equal(fullscreen.getAttribute('aria-label'),'退出全屏');
+     d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));await new Promise(resolve=>setImmediate(resolve));assert.equal(fullscreen.getAttribute('aria-pressed'),'false');
+     d.documentElement.requestFullscreen=async()=>{throw new Error('Not allowed')};fullscreen.click();await new Promise(resolve=>setImmediate(resolve));assert.equal(scene.querySelector('.pixel-system-message').hidden,false);assert.equal(fullscreen.getAttribute('aria-pressed'),'false');
     }else if(mode==='journal'){
      const poses=['bass','coffee','reading','star','writing'];
      for(const container of [scene.querySelector('.studio-home'),scene.querySelector('.studio-reading')])assert.deepEqual(Array.from(container.querySelectorAll('[data-sticker]')).map(el=>el.dataset.sticker).sort(),poses);

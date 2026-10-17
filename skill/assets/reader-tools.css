@@ -56,6 +56,7 @@ body[data-style=folio] .tools-heading :is(h2,small){color:#fff5e5}
 body[data-style=folio] .tools-heading .tools-close{border-color:#d7b7957a;color:#fff5e5}
 body[data-style=moonlight] .tools-heading{border-bottom:1px solid var(--tools-line);padding-bottom:15px}
 body[data-style=pixel] .topbar .tools{top:auto;bottom:calc(100% + 12px);padding:18px;border-radius:0;border:2px solid #244478;box-shadow:inset 2px 2px #fff,inset -2px -2px #8c9db9,4px 6px #03153566}
+body[data-style=pixel] .topbar .tools-toggle{min-height:36px;padding:7px 11px;border-radius:3px;border-color:#6f8cba;background:linear-gradient(#eef5ff,#bbd0ee);box-shadow:inset 1px 1px #fff;color:#244575}
 body[data-style=pixel] .tools-heading{margin:-14px -14px 16px;padding:8px 10px;background:linear-gradient(90deg,#3560a6,#7295d0);border:0}
 body[data-style=pixel] .tools-heading small{display:none}
 body[data-style=pixel] .tools-heading h2{margin:0;color:white;font:13px/1.5 Consolas,"Microsoft YaHei",sans-serif}
@@ -64,4 +65,5 @@ body[data-style=pixel] .tools :is(.style-picker,select,.print,.obsidian-link){bo
 @keyframes reader-tools-enter{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:none}}
 @media(max-width:700px){body[data-style] .topbar .tools{position:fixed;top:64px;right:12px;width:340px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 84px);padding:19px;border-radius:16px}body[data-style] .topbar .tools-toggle{min-height:38px;padding:8px 12px;font-size:11px}body[data-style=paper] .topbar .tools{top:70px;right:12px}.tools-heading{margin-bottom:14px!important}.setting-copy small{font-size:9px}body[data-style] .tools .style-picker{padding:11px}body[data-style] .tools .style-picker select{height:42px;min-height:42px}body[data-style=folio] .tools-heading{margin:-19px -19px 16px!important;border-radius:15px 15px 0 0;padding:16px 19px}body[data-style=pixel] .topbar .tools{top:auto;bottom:105px;max-height:calc(100dvh - 125px);border-radius:0;padding:18px}body[data-style=pixel] .tools-heading{margin:-14px -14px 16px!important}.tools-footnote{margin-top:12px}.tools-section-label{margin-top:17px}}
 @media(prefers-reduced-motion:reduce){body[data-style] .topbar.tools-open .tools{animation:none}.tools *{transition:none!important}}
+@media screen and (max-width:700px){body[data-style=pixel] .topbar .tools-toggle{width:32px;min-height:32px;padding:5px}}
 @media print{body[data-style] .topbar{display:none!important}}
