@@ -1,6 +1,6 @@
 ---
 name: seagull-notes
-description: Create illustrated, interactive Chinese notebooks from knowledge topics, pasted notes, article URLs, Bilibili/YouTube links and local materials. Includes a personal notebook shelf, chapter navigation, mind maps, seven reading styles, step explorers and review cards. Use for making or extending learning notes; video sources prefer platform captions and reuse sign-in when needed.
+description: Create illustrated, interactive Chinese notebooks from knowledge topics, pasted notes, article URLs, Bilibili/YouTube links and local materials. Includes a notebook shelf, mind maps, seven reading styles, editable journal memos, desktop windows and chapter quizzes with explanations. Use for making or extending learning notes; video sources prefer platform captions and reuse sign-in when needed.
 ---
 
 # Seagull Notes
@@ -66,7 +66,7 @@ YouTube 优先尝试浏览器提供的 `tab.content.exportYouTubeTranscript()`�
 
 不同材料都写成能理解、学习和复习的笔记。主题先列概念范围与出处；文本和网页按原文结构逐项核对；视频按实际时间核对。`coverage.md` 分别使用资料链接／原文小节／视频时间定位，不给非视频编造时间。
 
-有操作阶段或状态变化时，用 `explorers` 做可点击的步骤演示；有适合复习的问题时，用 `review` 做答案可展开的自测卡；补充内容放在 `extensions` 并注明拓展来源。可视化必须解释真实内容，不强行给没有因果关系的知识点连成流程。不能为了适配页面长度删去重要内容，手账每章保留完整正文。
+有操作阶段或状态变化时，用 `explorers` 做可点击的步骤演示。每章按实际正文编写 2–3 道选择题，保存为带 `chapter/options/correct/answer` 的 `review`，渲染在对应章末，选择后检查对错并显示原因；可另加开放式自测卡。补充内容放在 `extensions` 并注明拓展来源。可视化必须解释真实内容，不强行给没有因果关系的知识点连成流程。不能为了适配页面长度删去重要内容，手账每章保留完整正文。
 
 读完素材再整理中文笔记：开头概括核心观点，按内容分章，保留关键数字、术语、步骤、论据及局限；删除口语重复和广告，区别视频观点与自己的解释。
 
@@ -116,7 +116,7 @@ YouTube 优先尝试浏览器提供的 `tab.content.exportYouTubeTranscript()`�
 
 用户要求直接导入已有 Obsidian 库时，确认实际库路径（可沿用已明确使用的库），给渲染命令加 `--obsidian-vault '<vault绝对路径>'`，自动复制笔记与附件；不让用户手动搬图片。已存在文件保持原样，避免覆盖用户修改。首次样式启用在 Obsidian 设置 → 外观 → CSS 代码片段完成；未实际确认应用界面时只报告文件导入与检查结果。笔记夹支持单篇及全部 Obsidian ZIP 导出。
 
-打开结果检查：中文、图片、章节时间跳转、各个标签、手机窄屏和打印布局。检查全文是否覆盖到视频结尾，缺失时间轴或画面时如实标明。
+打开结果检查：中文、图片、章节时间跳转、各个标签、手机窄屏和打印布局。逐章确认有 2–3 道与正文对应的选择题，正确答案和解释无误；实测选择、判错、重选及解析，答题不自动改变掌握状态。手账清单点击跳转正文，正文标记掌握后清单自动勾选划线，撤销后恢复。检查全文是否覆盖到视频结尾，缺失时间轴或画面时如实标明。
 
 长笔记额外检查目录能否滚动到末章，正文中的长命令和表格是否造成页面横向溢出，并抽查中后段的复杂案例。不能只看封面美观就宣称内容完整。
 
