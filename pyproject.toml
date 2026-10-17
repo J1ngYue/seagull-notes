@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "seagull-notes"
 version = "0.1.0"
-description = "Create interactive notebooks from topics, pasted text, webpages, videos and local materials, with a personal shelf and three reading styles."
+description = "Create illustrated, interactive notebooks from topics, text, webpages and videos, with seven reading styles, chapter quizzes, mind maps and editable exports."
 requires-python = ">=3.10"
 dependencies = [
     "yt-dlp>=2024.1.1",

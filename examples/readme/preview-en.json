@@ -1,0 +1,197 @@
+{
+  "title": "Git & GitHub: from changes to collaboration",
+  "subtitle": "A learning notebook · Local versions, branches, and pull requests",
+  "source_kind": "topic",
+  "source_origin": "Adapted from the repository’s Git example and official command references",
+  "source_text": "An English documentation preview, adapted from examples/knowledge.json. UI labels in the screenshot are translated for documentation only.",
+  "platform": "Topic guide",
+  "style": "paper",
+  "tags": [
+    "Git",
+    "GitHub",
+    "Version control"
+  ],
+  "summary": "Keep track of what changed, understand which state each command affects, and make collaboration easier to review. Start locally, inspect your changes, then publish a branch with a clear purpose.",
+  "takeaways": [
+    "Git records versions locally; GitHub hosts repositories and collaboration.",
+    "Stage intentionally. Inspect the diff before you create a commit.",
+    "A pull request explains a change and invites review before merging."
+  ],
+  "sections": [
+    {
+      "title": "Git and GitHub: different responsibilities",
+      "markdown": "**Git records versions. GitHub provides hosting and collaboration.** You can commit, inspect history, and create branches in a local repository without connecting to GitHub.\n\n| Your goal | The tool |\n| --- | --- |\n| Save a local version | Git commit |\n| Develop an isolated change | Git branch |\n| Publish commits | Git push |\n| Discuss and review a change | GitHub pull request |\n\nCheck local commits and remote publication separately: saving a version does not automatically publish it."
+    },
+    {
+      "title": "Working tree, staging area, and commits",
+      "markdown": "The **working tree** contains the files you edit. The **staging area** prepares the next commit. A **commit** records that prepared content as a version.\n\n```bash\ngit status\ngit diff\ngit diff --staged\n```\n\n`git diff` shows unstaged changes; `git diff --staged` shows changes prepared for the next commit. **Inspect the diff before deciding what to include.** If you edit a file again after staging it, those new edits must be inspected and staged separately."
+    },
+    {
+      "title": "Branches and pull requests: a reviewable workflow",
+      "markdown": "Create a branch from a known starting point, complete a focused change, and verify it before asking others to review. This example assumes the primary branch is named `main`.\n\n```bash\ngit switch main\ngit switch -c feature/readme\n# Edit and verify README.md, then:\ngit add README.md\ngit diff --staged\ngit commit -m \"Explain the project\"\ngit push -u origin feature/readme\n```\n\nOpen a pull request on GitHub. Explain the problem, the resulting behavior, and how you checked it. Respond to review and merge according to the project’s rules. A local merge targets your currently checked-out branch. When conflicts occur, understand both changes and verify the combined result; removing conflict markers alone is not validation."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Git status",
+      "url": "https://git-scm.com/docs/git-status"
+    },
+    {
+      "title": "Git add",
+      "url": "https://git-scm.com/docs/git-add"
+    },
+    {
+      "title": "Git commit",
+      "url": "https://git-scm.com/docs/git-commit"
+    },
+    {
+      "title": "Git switch",
+      "url": "https://git-scm.com/docs/git-switch"
+    },
+    {
+      "title": "GitHub pull requests",
+      "url": "https://docs.github.com/en/pull-requests/reference/pull-requests"
+    }
+  ],
+  "review": [
+    {
+      "chapter": 1,
+      "question": "Which action records a local version?",
+      "options": [
+        "Creating a Git commit",
+        "Opening a browser tab",
+        "Writing a pull request description"
+      ],
+      "correct": 0,
+      "answer": "A commit records prepared content in the local repository. Publishing it is a separate operation."
+    },
+    {
+      "chapter": 1,
+      "question": "What does a pull request primarily support?",
+      "options": [
+        "Automatically staging local files",
+        "Discussing and reviewing proposed changes",
+        "Installing Git on your computer"
+      ],
+      "correct": 1,
+      "answer": "A pull request organizes collaboration and review around proposed changes."
+    },
+    {
+      "chapter": 2,
+      "question": "Which command inspects changes prepared for the next commit?",
+      "options": [
+        "git diff --staged",
+        "git push",
+        "git switch main"
+      ],
+      "correct": 0,
+      "answer": "git diff --staged compares staged content with the current commit."
+    },
+    {
+      "chapter": 2,
+      "question": "You edit a file again after staging it. What should you do?",
+      "options": [
+        "Assume the new edit was included",
+        "Delete the repository",
+        "Inspect and stage the new edit if it belongs in the commit"
+      ],
+      "correct": 2,
+      "answer": "Staging selects content at that moment. Later edits remain unstaged until selected."
+    },
+    {
+      "chapter": 3,
+      "question": "What should a pull request describe?",
+      "options": [
+        "Only the author’s name",
+        "The problem, resulting behavior, and validation",
+        "Only the number of changed lines"
+      ],
+      "correct": 1,
+      "answer": "Reviewers need enough context and validation evidence to assess the proposed change."
+    },
+    {
+      "chapter": 3,
+      "question": "A local merge incorporates changes into which branch?",
+      "options": [
+        "The currently checked-out branch",
+        "Always main",
+        "Every branch at once"
+      ],
+      "correct": 0,
+      "answer": "The current branch receives the merge. Check your branch before merging."
+    }
+  ],
+  "mind_map": [
+    {
+      "title": "Git & GitHub",
+      "children": [
+        {
+          "title": "Local versions",
+          "children": [
+            {
+              "title": "Inspect",
+              "children": [
+                {
+                  "title": "git status"
+                },
+                {
+                  "title": "git diff"
+                }
+              ]
+            },
+            {
+              "title": "Prepare",
+              "children": [
+                {
+                  "title": "git add"
+                },
+                {
+                  "title": "git diff --staged"
+                }
+              ]
+            },
+            {
+              "title": "Record",
+              "children": [
+                {
+                  "title": "git commit"
+                },
+                {
+                  "title": "git log"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Branches",
+          "children": [
+            {
+              "title": "Create a focused branch"
+            },
+            {
+              "title": "Edit and verify"
+            },
+            {
+              "title": "Review the combined result"
+            }
+          ]
+        },
+        {
+          "title": "Collaboration",
+          "children": [
+            {
+              "title": "Publish a branch"
+            },
+            {
+              "title": "Explain the change"
+            },
+            {
+              "title": "Review and merge"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

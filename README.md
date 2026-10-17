@@ -1,23 +1,66 @@
 # Seagull Notes
 
-English | [简体中文](README_CN.md)
+English · [简体中文](README_CN.md)
 
-Turn knowledge topics, pasted notes, article URLs, Bilibili, YouTube, and local materials into **illustrated, interactive notebooks with a personal shelf**.
+**Turn what you watch, read, and want to learn into notes you can return to.**
 
-Seagull Notes combines a Codex skill with local Python helpers. The helpers extract source material and render the notebook; your AI client reads the material and writes the notes. This workflow does not require a separate note-generation API key.
+A Codex skill for illustrated Chinese notebooks. Bring a topic, paste notes or an article link, or share a Bilibili / YouTube video. Get a personal shelf, seven reading styles, chapter quizzes, interactive mind maps, and editable exports.
 
-- **Captions first.** Prefer available platform captions, including automatic captions, and retain their timestamps.
-- **Automatic Bilibili collection.** BV links use the local collector and reuse complete caption caches. `--anonymous` explicitly skips credentials.
-- **Browser sign-in when needed.** Let the user complete sign-in in Codex's in-app browser, then read what that session can access.
-- **Illustrated delivery.** Summaries, takeaways, chapters, source images, explanatory diagrams, and a mind map in a self-contained HTML file.
-- **Topics, text, and webpages.** Ask for a subject tutorial, paste someone else's notes, or provide an article URL. The AI reads or researches the material, preserves attribution, and separates source content from its own extensions.
-- **Three reading experiences.** Keep the beige Paper view, use the handwritten Handwritten Notes, or turn chapter pages in the Leather Book. Ruled paper, binding, sticky notes and marker highlights recreate the study-notebook feel; code and formulas remain readable and copyable.
+![Seagull Notes — one learning workflow, seven reading spaces](examples/readme/hero-en.svg)
 
-![From video link to illustrated notes](examples/workflow-en.svg)
+[Get started](#get-started) · [Reading styles](#seven-reading-spaces) · [Learning tools](#built-for-reading-and-revisiting) · [Exports](#your-notes-stay-yours) · [Skill instructions](skill/SKILL.md)
 
-## Quick start
+## From material to a notebook
 
-Requires Python 3.10 or later. A dedicated Python environment is recommended.
+| Start with | What happens |
+| --- | --- |
+| **A topic** — “Help me learn Git and GitHub” | The AI researches reliable sources and builds an explained, illustrated lesson. |
+| **Existing notes** — pasted text or an article / note URL | It reads the material, reorganizes the explanation, and preserves attribution. |
+| **A video** — Bilibili, YouTube, or local material | It reads accessible captions with timestamps; source frames and explanatory diagrams are identified separately. |
+
+![Three ways in; a complete reading, review, and export workflow](examples/readme/workflow-en.svg)
+
+Complete a platform sign-in or QR scan **only when access requires it**. Valid sessions and complete caption caches are reused. Platform captions, including automatic captions, come first; local speech recognition is an explicitly approved fallback.
+
+The AI client reads and writes the lesson; Python helpers collect material and render the result. **No separate note-generation API key is needed** for this skill workflow. It uses your configured AI client.
+
+## Seven reading spaces
+
+Switch styles without losing the note’s full text, sources, code, formulas, or study progress.
+
+| Style | Reading experience |
+| --- | --- |
+| **Paper** · `paper` | A quiet, continuous reader with chapter navigation and warm paper colors. |
+| **Handwritten Notes** · `atlas` | Ruled pages, spiral binding, bundled handwriting, tape, and highlighted takeaways. |
+| **Leather Book** · `folio` | Stitched leather, measured facing pages, animated page turns, and responsive single-page reading. |
+| **Ocean Voyage** · `whale` | An open blue reading space, horizontal chapter route, and four whale-girl poses. |
+| **Japanese Journal** · `journal` | A blue Ryo collage, torn paper, washi tape, five transparent stickers together, and editable quick memos. |
+| **Moonlight Glass** · `moonlight` | A moonlit room with glass panels, a note shelf, sidebar, and chapter outline. |
+| **Pixel Desktop** · `pixel` | Open **My Notes → a saved notebook → Study / Read / Map / Markdown / Sources** inside a working retro desktop. |
+
+![Real rendered previews of Paper, Leather Book, Ocean Voyage, and Pixel Desktop](examples/readme/readers-en.webp)
+
+*Real renderer output, captured at 2× resolution. These documentation previews use English lesson text and translated interface labels. The installed skill and default interface currently use Chinese; this image does not indicate an English interface setting.*
+
+Topic, text, and article notebooks default to Handwritten Notes. Video and local-material notebooks default to Paper. Choose another style in Reading Tools or with `--style`.
+
+## Built for reading and revisiting
+
+| Tool | What you can actually do |
+| --- | --- |
+| **Chapter learning loop** | Read, answer 2–3 authored multiple-choice questions per chapter, check explanations, and retry. Manually mark the chapter learned at its end; the journal checklist then checks and strikes through automatically. Quiz results do not change mastery for you. |
+| **Interactive mind map** | Explore concepts, steps, and common mistakes in nested branches. Focus a branch, zoom around the pointer, pan, fit, or expand. Maps reflect the authored content, beyond chapter titles. |
+| **Journal quick memos** | Add, edit, complete, and delete memos; undo the last deletion. Changes persist in this browser. |
+| **Desktop windows** | Drag, minimize, restore, maximize, or enter fullscreen. Resize proportionally from any corner, or independently from any edge. The Start menu and taskbar work. |
+| **Technical content** | Copy original code, wrap long lines, and click typeset formulas to copy LaTeX. Five font choices retain dedicated code and math typography. |
+| **Personal shelf** | Browse saved notebooks, filter by source type, and search titles, summaries, and tags. Re-rendering the same input updates its entry. |
+| **Smoother navigation** | Soft transitions between reading views, styles, shelves, and window states; reading positions are preserved. Reduced-motion preferences are respected. |
+
+Long chapters continue across Leather Book pages instead of being cut off. Changing fonts or window size recalculates pagination while keeping your content position. The web reader embeds its assets for offline reading; external source links still need network access.
+
+## Get started
+
+Requires **Python 3.10+** and an AI client that can load the skill.
 
 ```bash
 git clone https://github.com/J1ngYue/seagull-notes.git
@@ -25,203 +68,115 @@ cd seagull-notes
 python -m pip install -e ".[notes,browser]"
 ```
 
-On Windows, use the absolute path to your actual Python installation instead of a Microsoft Store alias. For example:
+Copy `skill/` to your client’s skills directory as `seagull-notes`, for example `~/.agents/skills/seagull-notes/`. Keep this Python project installed: copying the skill alone does not install its Python helpers. You can also use the skill directly from the checkout.
 
-```powershell
-& 'D:\software\Anaconda\python.exe' -m pip install -e '.[notes,browser]'
-```
+On Windows, use your actual Python installation rather than a Microsoft Store alias, for example `D:\software\Anaconda\python.exe`.
 
-Copy `skill/` into your client's skills directory as `seagull-notes`, for example `~/.agents/skills/seagull-notes/`. Install the Python project first so a copied skill can import its helpers. You can also use the skill directly from the checkout.
+Then ask your AI client:
 
-Ask Codex:
+> Use seagull-notes to make detailed Chinese notes about Git and GitHub. Explain repositories, branches, pull requests, merging, and forks, with examples and chapter quizzes.
 
 > Use seagull-notes to turn this video into illustrated Chinese notes: VIDEO_URL
 
-You can also ask “Make me notes about Git and GitHub,” paste study text, or send an article URL. Topic requests are researched rather than treated as source material. Article notes retain their source links; video notes keep their caption workflow.
+> Organize the notes below into a Japanese Journal notebook. Preserve the source and distinguish your additions.
 
-## Topic and text notebooks
+### Try the included notebook
 
-The AI prepares the material, writes the notebook JSON, then renders it. The preparation command does not generate a finished lesson:
-
-```bash
-python skill/scripts/prepare.py --kind topic --source "Git and GitHub"
-python skill/scripts/prepare.py --kind text --file pasted-notes.txt
-python skill/scripts/prepare.py --kind url --source "https://example.com/article"
-python skill/scripts/notebook.py note.json --style atlas
-```
-
-| Style | Experience |
-| --- | --- |
-| Paper (`paper`) | The existing beige illustrated reader |
-| Handwritten Notes (`atlas`) | Cream ruled paper, spiral binding, Chinese handwriting, tape, sticky notes, marker highlights, and write-in chapters |
-| Leather Book (`folio`) | A walnut leather cover with stitching, layered cream pages, a shaded spine, edge-hover arrows, keyboard navigation, and paper turns with changing light |
-| Ocean Voyage (`whale`) | Full-width continuous notes under a horizontal chapter route, with four chibi whale poses and wrapping interactive steps |
-| Japanese Journal (`journal`) | Screenshot-based blue handwriting, torn paper, washi tape, Ryo photo collage, a real shelf and full-text reading |
-| Moonlight Glass (`moonlight`) | Moonlit Ryo room, translucent navy panes, note shelf, sidebar and chapter outline |
-| Pixel Desktop (`pixel`) | Retro blue desktop with draggable windows, minimize/restore/maximize controls and a working taskbar |
-
-![Facing pages in Leather Book](examples/open-book-preview.jpg)
-
-The three new readers have separate compositions, navigation and reading layouts. Ocean Voyage uses continuous scroll; After School Story teaches from the actual note and checks authored answer keys (open responses use self-checking); Daylight Nexus opens all notes immediately, with the canvas available as navigation. Canvas dashed lines denote reading order; the separate mind map preserves actual concept relationships. Overview/review controls retain illustrations, exercises and references. Copy buttons, formulas, Markdown and exports retain the original content. Cyber stays light. Backgrounds and character art are embedded for offline use; the Ryo artwork retains its owners' rights, with provenance in `skill/assets/themes/SOURCE.md`.
-
-All seven styles include a reading-font selector: style default, sans serif, Song-style serif, Kai-style calligraphy, and bundled handwriting. The browser remembers your choice across notebooks. Changing fonts repaginates Leather Book at the current content position; code and math retain their dedicated typography.
-
-Topic, text, and article notes default to Handwritten Notes; existing video and local-media notebooks retain Paper. The two replicas center compact handwritten pages on a charcoal desk, with tools and chapter navigation in popovers. Handwritten Notes scrolls continuously. Leather Book measures the available page space and continues long chapters, paragraphs, lists, tables and review answers across as many facing pages as needed. Long code blocks span pages; each copy button still copies the complete original block. Overview, illustrations, reviews and references remain in appendix pages. Resizing recalculates pagination and preserves the reading position. Below 700px it uses a single page; reduced-motion preferences skip the turn animation. Every style keeps complete content, code/formula copying, mind maps and print support. Printing includes all chapters and appendices. Mastery marks and style preferences are stored locally. The existing `atlas` and `folio` values select the two replacement styles.
-
-The shelf filters notes by source type and searches titles, summaries, and tags. `explorers`, `review`, and `extensions` add interactive learning components; see [the material and style guide](skill/references/materials-and-styles.md). Obsidian remains an optional export; the web notebook is the primary experience for the new styles.
-
-The handwritten and leather-journal styling is adapted from [note-skill](https://github.com/Unclecheng-li/note-skill), with its MIT notice preserved. Seagull Notes retains its own ingestion, complete note content, shelf and copying controls. The bundled Chinese handwriting font works offline; its SIL OFL notice is preserved. See [asset provenance](skill/assets/handwritten/SOURCE.md).
-
-Try the included Git/GitHub topic notebook with its official reference links, original flow diagram, step explorer, review questions, and extensions:
+No video fetch or generation API configuration is required for this rendering demo:
 
 ```bash
 python skill/scripts/notebook.py examples/knowledge.json --style atlas --out data/artifacts/git-atlas
 python skill/scripts/notebook.py examples/knowledge.json --style folio --out data/artifacts/git-folio
 ```
 
-The included skill instructions and notebook interface are currently in Chinese. This English README describes the same workflow.
+Open `data/artifacts/git-atlas.html` or `data/artifacts/git-folio.html`. The example contains **7 chapters, 14 chapter questions, and a 71-node mind map**, with official reference links. Generated notebooks also appear at `data/artifacts/notebooks/index.html`.
 
-Send a link; the skill handles collection, import, reading, illustrations, rendering, and review. Your only normal intervention is sign-in or platform verification when required. For accessible captioned videos, the workflow targets a complete illustrated notebook within 45 minutes after sign-in. This is a processing target, not a guarantee for blocked sources, missing captions, or unusually large material.
+The renderer displays an authored JSON notebook; it does not write a lesson by itself. See the [input format](skill/references/notebook-format.md) and [material / style guide](skill/references/materials-and-styles.md).
 
-Long tutorials default to detailed study notes unless you request a summary. Major demonstrations include their starting state, prerequisites, steps, commands, results, and verification, with important comparisons and troubleshooting preserved. Summaries and mind maps provide navigation; the main chapters retain the teaching detail. Faster delivery comes from cached captions and reusable rendering, without cutting essential content. The source tab retains the actual full transcript.
+## Your notes stay yours
 
-Coverage applies to short videos too. The skill maps every important concept, reasoning step, teaching example, key value, caveat, and closing explanation to a note chapter in a local `coverage.md`, then checks the full source for omissions. Repetition and advertisements may be removed; mentions in a summary or transcript do not replace a chapter explanation. Unverified visual details and source gaps are disclosed.
+| Output | Use it for |
+| --- | --- |
+| **Self-contained HTML** | Full browser reading, with embedded fonts, illustrations, formulas, and interactions. |
+| **Markdown** | Copy all text or download a `.md` file. Plain Markdown keeps original image paths; keep those files alongside it. |
+| **Obsidian package** | Native Markdown, independent attachments, source material, an editable Canvas mind map, and a scoped CSS snippet. The shelf offers individual and combined ZIPs. |
+| **Print / PDF** | Print or save the complete notebook as PDF through browser printing. |
 
-## Platform captions by default
-
-Bilibili BV links automatically use the caption collector. Other sources use available platform captions or browser exports. Valid sign-in sessions are reused; sign-in is shown only when authentication is actually required. The normal workflow does not present a caption-versus-ASR choice.
-
-Check both ordinary and automatic captions. Offer local ASR only after the authenticated session and video page confirm that both are absent. Login problems, rate limits, empty API responses, and export failures do not establish missing captions. Existing caption tracks keep the workflow on caption retrieval, even when ASR was enabled. Platform captions also take priority over cached ASR. Anonymous mode remains available on explicit request. Video descriptions and AI summaries are not substitutes for a full transcript.
-
-### Fetch captions
-
-```bash
-python skill/scripts/fetch.py "VIDEO_URL"
-```
-
-By default, this command does not download the video, run ASR, or download a model. It writes JSON to stdout and progress messages to stderr:
-
-- `content`: extracted text.
-- `segments`: available `start`, `end`, and `text` values; times are in seconds.
-- `origin`: the actual source, such as `platform_subtitle`, `subtitle_file`, or `asr`.
-- `has_more` and `next_offset`: pagination when `--offset` and `--max-chars` are used.
-
-Read every page before writing the note.
-
-<details>
-<summary>Fallback after confirming no ordinary or AI captions: local ASR</summary>
-
-Before offering this fallback, check the dependencies and complete model cache, explain any required download and extra processing time, and obtain explicit authorization. Users may also explicitly request ASR or supply local media. To explicitly skip stored credentials, use `--anonymous`.
-
-```bash
-python -m pip install -e ".[notes,asr]"
-python -m seagull_notes.cli prepare-model
-python skill/scripts/fetch.py "VIDEO_URL" --anonymous --allow-asr
-```
-
-The default large-v3 model is approximately 3 GB. Model preparation is an explicit operation. Complete cached models load from their local snapshot; an empty cache directory is not treated as a usable model. Downloaded audio conversion requires FFmpeg and ffprobe.
-
-ASR defaults to CUDA with float16. For CPU operation, set `SEAGULL_NOTES_ASR_DEVICE=cpu` and `SEAGULL_NOTES_ASR_COMPUTE=int8`. `SEAGULL_NOTES_ASR_MODEL` selects the model size.
-
-Local files use the same helper:
-
-```bash
-python skill/scripts/fetch.py "/absolute/path/lecture.wav" --allow-asr
-python skill/scripts/fetch.py "/absolute/path/captions.srt"
-```
-
-Transcription is local speech recognition, not platform-generated captions. Its timestamps are preserved on both fresh runs and cache hits.
-
-</details>
-
-## Render an illustrated notebook
-
-```bash
-python skill/scripts/notebook.py examples/notebook.json --out data/artifacts/demo
-```
-
-Open `data/artifacts/demo.html`. The included example illustrates the interface, rather than claiming to summarize a real video. The warm paper layout includes a cover, takeaway cards, chapter navigation, images, a mind map, Markdown, source details, and PDF printing.
-
-Search the chapter directory, follow the highlighted current chapter, or use previous/next navigation and return to the top. On mobile, the directory expands on demand. Code cards can wrap long lines and show an inline copied state; copying retains the original text.
-
-Rendered notebooks are automatically collected in `data/artifacts/notebooks/`. Open its `index.html` to browse illustrated cards and search your notes; each notebook links back to this library. Re-rendering the same input updates its entry, while separate inputs with the same title remain distinct. An explicit `--out` keeps that output and also adds a library copy. Tabs use a sliding selection pill and a soft panel entrance; reduced-motion preferences are respected.
-
-Notes use warm white pages, beige cards, and brown accents, including code blocks, formulas, highlights, and mind-map nodes. Mind maps use a central topic, balanced branches, curved connectors, and wrapped bilingual labels. Use the mouse wheel to zoom around the pointer, or drag, fit, and expand the canvas. The same layout powers standalone maps and editable Obsidian Canvas exports.
-
-### Editable Obsidian export
-
-Each render also creates an Obsidian ZIP with native Markdown, independent image attachments, the transcript, an editable native Canvas mind map, and a scoped light CSS snippet. The library provides individual and combined ZIP downloads. Copy the package contents into your vault and enable `seagull-notes` under Appearance → CSS snippets once, or import directly:
+Optional direct import into an existing Obsidian vault:
 
 ```bash
 python skill/scripts/notebook.py note.json --obsidian-vault "/absolute/path/to/vault"
 ```
 
-Edit the text normally. Delete or move an image's `![[...]]` line, replace its attachment, or change `|760` to another width. SVG files remain editable vectors; raster screenshots remain images. The Canvas mind map supports changing text, moving nodes, and reconnecting arrows without a community plugin. Colors, headings, callouts, code cards, and illustrations retain the reading style; navigation uses Obsidian's interface. Existing vault files are preserved on re-import, so user edits are not overwritten.
+Exports stay editable; re-import preserves existing vault files. Navigation uses Obsidian’s own interface, rather than reproducing the seven web interfaces inside Obsidian.
 
-The AI client prepares the JSON input; the renderer does not generate a summary. See [the input format](skill/references/notebook-format.md). Use `source_url` for a video or article, `source_ref` for an existing local file's absolute path, or `source_kind` with `source_text/source_origin` for topics and pasted text. Local timestamps are position labels; video timestamps link back to the video. Topic, text, and article chapters do not invent timestamps.
+## More control when you need it
 
-The Markdown tab shows the complete source with copy-all and `.md` download controls. Switching views preserves the reading position. Map and source views omit the original notebook decorations; the map's binding follows its own canvas when expanded or collapsed.
-
-Use verified video frames for screenshots and label explanatory diagrams clearly. Images are embedded in HTML for offline reading; Markdown retains local image paths, so keep those files when moving the Markdown output.
-
-### Code blocks and copying
-
-Fenced code blocks include a language label, syntax highlighting, a bordered light card, and a copy button. Specify the actual language, such as `bash`, `python`, `java`, `cpp`, or `html`. Highlighting is generated with Pygments and embedded in the HTML for offline reading. Copying preserves the original code, indentation, line breaks, and special characters. Unknown languages remain copyable as plain text. Examples state their prerequisites and placeholder values; alternative operations use separate blocks.
-
-### LaTeX formulas and one-click copying
-
-Use `$...$` for inline math and `$$...$$` for display math in section Markdown. For example, `$$\theta_{t+1}=\theta_t-\eta\nabla L(\theta_t)$$`. Escape backslashes when writing JSON. Code blocks remain code.
-
-Formulas are typeset with bundled KaTeX. Click a formula, or focus it and press Enter/Space, to copy the original LaTeX without the delimiters. The generated HTML includes the renderer and font files, so math works offline. The vendored KaTeX 0.19.0 assets are MIT-licensed; its license is preserved in `skill/assets/katex/LICENSE`.
-
-### Generate numeric figures
+<details>
+<summary><strong>Prepare topics, text, webpages, and captions</strong></summary>
 
 ```bash
-python -m pip install -e ".[plots]"
-python skill/scripts/plot.py examples/gradient-plot.json --out data/artifacts/gradient
+python skill/scripts/prepare.py --kind topic --source "Git and GitHub"
+python skill/scripts/prepare.py --kind text --file pasted-notes.txt
+python skill/scripts/prepare.py --kind url --source "https://example.com/article"
+python skill/scripts/fetch.py "VIDEO_URL"
+python skill/scripts/fetch.py "/absolute/path/captions.srt"
+python skill/scripts/notebook.py note.json --style journal
 ```
 
-The helper plots supplied numeric data and ordered update points, with real scales, numbered steps, and separate value labels. It exports SVG and PNG, checks for detected text clipping and overlap, and does not infer data from captions. Mark generated illustrations with `kind: "diagram"` to preserve their aspect ratio. Readers can click notebook images to inspect the full figure. See [figure guidance](skill/references/note-figures.md).
+Preparation saves material for the AI to read; a topic request is a research brief, not a finished lesson. The skill checks coverage, retains verifiable references / timestamps, and labels its own explanatory additions. See [writing guidance](skill/references/materials-and-styles.md) and [figure guidance](skill/references/note-figures.md).
 
-## Browser access, storage, and MCP
+Full Bilibili BV links use a dedicated local collector by default. Complete caption caches and valid sessions are reused. When sign-in is necessary, it supplies a local `LOGIN_URL` for a QR scan, then resumes. `--anonymous` skips credentials; `--refresh` requests a fresh caption copy. The collector profile, in-app browser, and normal browser are separate sessions. Platform restrictions still apply. See [caption collection](skill/references/browser-subtitles.md).
 
-### Automatic local Bilibili caption collection
+</details>
+
+<details>
+<summary><strong>Optional local speech recognition</strong></summary>
+
+ASR requires explicit approval, after ordinary and AI captions have been confirmed unavailable, or an explicit request to transcribe local media. A failed request or login does not establish that captions are absent.
 
 ```bash
-python -m pip install -e ".[notes,browser]"
-python skill/scripts/fetch.py "https://www.bilibili.com/video/BV1LwHv6LEYz/" --local-browser
+python -m pip install -e ".[notes,asr]"
+python -m seagull_notes.cli prepare-model
+python skill/scripts/fetch.py "/absolute/path/lecture.wav" --allow-asr
+# For accessible public video audio, after approval:
+python skill/scripts/fetch.py "VIDEO_URL" --anonymous --allow-asr
 ```
 
-The collector reuses a dedicated Chrome profile in the background and verifies sign-in first. A valid session skips the login page. When authentication is needed, it prints a local `LOGIN_URL`; Codex opens this page visibly in its in-app browser. Scan the Bilibili QR code with the Bilibili app and confirm on your phone once; collection resumes automatically. This avoids relying on a separate Chrome window becoming visible. The collector profile is separate from both the in-app browser and your normal Chrome profile. Installed Chrome is preferred; otherwise install Chromium with `python -m playwright install chromium`.
+Check the model cache first. The default `large-v3` download is approximately **3 GB**; model download and transcription need authorization. Results are labeled as local speech recognition, with timestamps, and may misrecognize names or numbers.
 
-`--local-browser` is optional for BV links: the default command selects it automatically unless an explicit credential or anonymous option is supplied. Valid full-caption caches are reused before launching Chrome or requesting sign-in. `cache_hit` and `collected_at` retain provenance; `--refresh` requests an updated platform copy. `collection_seconds` measures only the collection stage, not AI note generation.
+Defaults are CUDA / float16. CPU settings: `SEAGULL_NOTES_ASR_DEVICE=cpu` and `SEAGULL_NOTES_ASR_COMPUTE=int8`. Select the model with `SEAGULL_NOTES_ASR_MODEL`.
 
-Full caption JSON and SRT files are saved automatically under `data/captions/`. The existing `content`, `segments`, and `origin` output feeds the note workflow directly, with no manual export or import. The collector preserves the selected `p` and reports the first and last caption times for coverage review. It fetches platform captions, without audio/video downloads or ASR models, and does not export cookie files. Platform restrictions still apply. Currently it accepts full Bilibili BV links; YouTube and other sources retain their existing workflow.
+</details>
 
-The in-app browser and the Python downloader are separate sessions. Signing in through the browser does not automatically pass cookies to Python. YouTube transcript export and other platform caption access depend on the capabilities exposed by the current browser. See [the browser workflow](skill/references/browser-subtitles.md).
+<details>
+<summary><strong>Storage, privacy, and optional MCP</strong></summary>
 
-Models, media, cookies, databases, and generated notes remain outside Git. `SEAGULL_NOTES_HOME` overrides the project data location. Source text enters your AI client's context when it writes the notes; whether that context goes to a cloud service depends on the client.
+Runtime data, models, browser profiles, cookies, and generated notebooks are excluded from Git. `SEAGULL_NOTES_HOME` changes the project data root. Source text enters your AI client’s context; cloud processing depends on its configuration. Mastery, memos, and appearance preferences are local to that browser, without cross-device sync.
 
-The repository also contains legacy webpage, PDF, CLI, and MCP helpers. MCP is optional:
+MCP is optional; the normal skill workflow does not require it:
 
 ```bash
 python -m pip install -e ".[mcp]"
 python -m seagull_notes.server
 ```
 
-Use a dedicated environment for MCP's server dependencies. The skill, renderer, caption fetcher, and local ASR do not require MCP. The legacy CLI's direct generation mode uses a rule-based fallback when no server-side model is configured; that is different from notes written by the AI client.
+Use a dedicated environment for server dependencies. Earlier CLI and extraction helpers are retained; the CLI’s rule-based fallback differs from an AI-authored notebook.
 
-## Validation
+</details>
+
+## Development and credits
 
 ```bash
 python -m pip install -e ".[notes,plots,test]"
 python -m pytest tests -q
 ```
 
-Tests cover captions, cache behavior, anonymous mode, timestamps, local source references, model completeness, notebook rendering, and the original pipeline. They do not require network access, a GPU, or a generation API. Platform restrictions need real-video checks.
+The test suite covers collection, caches, timestamps, rendering, exports, and source handling. Real platform access still depends on the platform and browser session.
 
-The notebook presentation was inspired by [CuteNote](https://cutenote.cc/). This project is not affiliated with CuteNote.
+- Handwritten / leather styling adapts [note-skill](https://github.com/Unclecheng-li/note-skill); its MIT notice and the font’s SIL OFL notice are preserved in [handwritten asset provenance](skill/assets/handwritten/SOURCE.md).
+- Formulas use bundled [KaTeX](https://katex.org/) with its [MIT license](skill/assets/katex/LICENSE).
+- Artwork and character assets have separate provenance and rights: [theme asset notes](skill/assets/themes/SOURCE.md). This project is not affiliated with DeepSeek or *Bocchi the Rock!*.
+- Earlier presentation drew inspiration from [CuteNote](https://cutenote.cc/), without affiliation. Figure guidance also drew on [Scientific Agent Skills](https://doi.org/10.48550/arXiv.2609.00065).
 
-Figure-generation guidance was informed by the Matplotlib and scientific-visualization skills in Scientific Agent Skills: Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026). [Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents](https://doi.org/10.48550/arXiv.2609.00065).
-
-The three additional themes reuse the same complete note, chapter navigation, Markdown, sources and Obsidian exports. Animation respects reduced-motion preferences. Whale-girl artwork is embedded for offline use; [asset provenance](skill/assets/themes/SOURCE.md).
+Documentation screenshots are generated previews, not evidence of processing a particular video. Actual notebooks label source screenshots and explanatory diagrams separately.
