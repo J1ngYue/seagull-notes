@@ -1,0 +1,23 @@
+@view-transition{navigation:auto}
+::view-transition,::view-transition-group(*),::view-transition-image-pair(*),::view-transition-old(*),::view-transition-new(*){pointer-events:none}
+::view-transition-group(*){animation-duration:340ms;animation-timing-function:cubic-bezier(.22,.61,.36,1)}
+::view-transition-old(root){animation:reader-leave 180ms ease-in both}
+::view-transition-new(root){animation:reader-arrive 340ms cubic-bezier(.22,.61,.36,1) both}
+@keyframes reader-leave{to{opacity:0;transform:translateY(-4px)}}
+@keyframes reader-arrive{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+html[data-reader-switching] :is(.panel,[data-screen-panel]){animation:none!important}
+.pixel-main-window{view-transition-name:pixel-notes}
+.pixel-outline-window{view-transition-name:pixel-outline}
+.pixel-taskbar{view-transition-name:pixel-taskbar}
+.pixel-start-menu{position:fixed;bottom:62px;left:14px;z-index:85;width:258px;padding:5px;background:#f7f6ee;color:#193b70;border:2px solid #17396b;box-shadow:inset 2px 2px white,inset -2px -2px #8a9cb7,5px 8px #041c3e66;animation:pixel-menu-open 180ms ease-out both}
+.pixel-start-menu>strong{display:block;background:linear-gradient(90deg,#3262b0,#6b92dd);color:white;padding:10px 12px;font:13px Consolas,'Microsoft YaHei',sans-serif}
+.pixel-studio .pixel-start-menu button{display:block;width:100%;padding:11px 14px;min-height:42px;font:13px/1.5 Consolas,'Microsoft YaHei',sans-serif;color:#193b70}
+.pixel-studio .pixel-start-menu button:hover,.pixel-studio .pixel-start-menu button:focus-visible{background:#dce7fa;outline:1px dotted #4f71a7;outline-offset:-4px}
+.pixel-start-menu hr{margin:4px 8px;border:0;border-top:1px solid #b8c2d5}
+.pixel-start[aria-expanded=true]{background:#9fb9e3!important;box-shadow:inset 2px 2px #6b7c9a!important}
+.journal-dashboard .study-checklist{max-height:165px;overflow-y:auto;padding-right:8px;scrollbar-width:thin;scrollbar-color:#8fa6c7 transparent;overscroll-behavior:contain}
+.journal-dashboard .study-checklist button:nth-child(n){display:block}
+.shelf-empty[role=status]{line-height:1.8}
+@keyframes pixel-menu-open{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}.pixel-start-menu{animation:none!important}}
+@media print{.pixel-start-menu{display:none!important}}

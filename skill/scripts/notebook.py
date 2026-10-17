@@ -276,7 +276,7 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
     shelf_entries = []
     shelf_manifest = notebook_library.directory() / "notebooks.json"
     if library_href and shelf_manifest.exists():
-        for entry_id, entry in json.loads(shelf_manifest.read_text(encoding="utf-8")).items():
+        for entry_id, entry in sorted(json.loads(shelf_manifest.read_text(encoding="utf-8")).items(), key=lambda item: item[1].get("updated_at", 0), reverse=True):
             if entry_id == note_id:
                 continue
             parent = library_href.rsplit("/", 1)[0] + "/" if "/" in library_href else ""
@@ -300,8 +300,9 @@ def render_note(note: dict, base: Path, library_href: str | None = None, obsidia
         original_tab="字幕与出处" if kind == "video" else "资料与出处", references=references,
         style=style, note_id=html.escape(note_id or title, quote=True),
         experience_css=(assets / "experiences.css").read_text(encoding="utf-8") + "\n" + (assets / "themes.css").read_text(encoding="utf-8") + "\n" + (assets / "themes" / "studios.css").read_text(encoding="utf-8")
-        + "\n" + (assets / "themes" / "scrapbook-desktop.css").read_text(encoding="utf-8") + theme_art + "\n" + (assets / "reader-tools.css").read_text(encoding="utf-8") + "\n" + (assets / "chapter-quiz.css").read_text(encoding="utf-8"),
+        + "\n" + (assets / "themes" / "scrapbook-desktop.css").read_text(encoding="utf-8") + theme_art + "\n" + (assets / "reader-tools.css").read_text(encoding="utf-8") + "\n" + (assets / "chapter-quiz.css").read_text(encoding="utf-8") + "\n" + (assets / "reader-motion.css").read_text(encoding="utf-8"),
         handwriting_assets=handwriting_assets,
+        motion_js=(assets / "reader-motion.js").read_text(encoding="utf-8"),
         experience_js=(assets / "book-pagination.js").read_text(encoding="utf-8") + "\n" + (assets / "theme-scenes.js").read_text(encoding="utf-8") + "\n" + (assets / "studios.js").read_text(encoding="utf-8") + "\n" + (assets / "experiences.js").read_text(encoding="utf-8"),
         route=route, widgets=widgets,
         reader_templates="\n".join((assets / "themes" / (mode + ".html")).read_text(encoding="utf-8") for mode in ("whale", "journal", "moonlight", "pixel")),

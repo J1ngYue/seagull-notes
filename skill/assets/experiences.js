@@ -101,15 +101,13 @@ function applyReadingStyle(style){
  applyThemeScene(style,readingAnchor);
  closeNotebookTools();
  document.querySelector('.hub-heading .label').textContent=style==='folio'?'MY STUDY JOURNAL':'MY STUDY NOTES';document.querySelector('.hub-heading h2').textContent=style==='folio'?'翻开这一页，继续理解。':'把重点写在纸上。';document.querySelector('.hub-heading p').textContent=style==='folio'?'从目录选一章，或用左右键继续阅读。':chapters.length+' 个章节，保留完整学习内容。';
- if(style==='folio'){mountBook();const index=bookPages.findIndex(page=>'#'+page.id===location.hash),chapter=chapters.findIndex(page=>'#'+page.id===location.hash);if(index>=0)selectBookPage(index,false);else selectFolioChapter(chapter>=0?chapter:Math.max(0,currentChapter),false);window.scrollTo({top:0,behavior:'auto'})}
- else if(keepChapter&&previousStyle!==style)chapters[readingAnchor]?.scrollIntoView({behavior:'auto',block:'start'});
+ if(style==='folio'){mountBook();const index=bookPages.findIndex(page=>'#'+page.id===location.hash),chapter=chapters.findIndex(page=>'#'+page.id===location.hash);if(index>=0)selectBookPage(index,false);else selectFolioChapter(chapter>=0?chapter:Math.max(0,currentChapter),false);window.scrollTo({top:0,behavior:'instant'})}
+ else if(keepChapter&&previousStyle!==style)chapters[readingAnchor]?.scrollIntoView({behavior:'instant',block:'start'});
  currentChapter=-1;queueReading();requestAnimationFrame(updateIndicator);
 }
-let styleTransition=null;
 stylePicker.addEventListener('change',()=>{
  const style=stylePicker.value,apply=()=>{applyReadingStyle(style);savePreference(styleKey,style);const url=new URL(location.href);if(url.searchParams.has('style')){url.searchParams.set('style',style);if(style!=='pixel')url.searchParams.delete('open');history.replaceState(null,'',url.pathname+url.search+url.hash)}};
- if(styleTransition)styleTransition.skipTransition();
- if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches){styleTransition=document.startViewTransition(apply);styleTransition.ready.catch(()=>{})}else apply();
+ runReaderTransition(apply);
 });
 document.addEventListener('seagull:chapter',event=>{if(document.body.dataset.style==='folio')selectFolioChapter(event.detail)});
 document.addEventListener('seagull:position',event=>{routeCards.forEach((card,index)=>card.classList.toggle('is-current',index===event.detail))});

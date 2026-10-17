@@ -39,6 +39,9 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
    assert.equal(d.body.dataset.readerTemplate,mode);assert.equal(d.querySelectorAll('.reader-scene').length,1);
    assert.deepEqual(Array.from(scene.querySelectorAll('.chapter')),chapters,'Chapter nodes and event bindings must survive template changes');
    if(mode==='pixel'){
+    const start=scene.querySelector('[data-pixel-menu]'),menu=scene.querySelector('.pixel-start-menu');start.click();assert.equal(menu.hidden,false);assert.equal(start.getAttribute('aria-expanded'),'true');assert.equal(d.activeElement,menu.querySelector('button'));
+    d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'End',bubbles:true}));assert.equal(d.activeElement,menu.querySelectorAll('button')[3]);d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));assert.equal(menu.hidden,true);assert.equal(d.activeElement,start);
+    start.click();menu.querySelector('[data-pixel-tools]').click();assert.equal(d.querySelector('.topbar').classList.contains('tools-open'),true);assert.equal(menu.hidden,true);d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
     scene.querySelector('[data-studio-action=desktop]').click();assert.equal(scene.dataset.screen,'desktop');assert.equal(scene.querySelector('[data-window=notes]').hidden,true);assert.equal(scene.querySelector('.pixel-file-icons').hidden,true);
     scene.querySelector('.pixel-notes-icon').click();assert.equal(scene.dataset.screen,'shelf');assert.equal(scene.querySelector('[data-window=notes]').hidden,false);assert.equal(scene.querySelector('.pixel-file-icons').hidden,true);
     scene.querySelector('.all-cards .shelf-card').click();assert.equal(scene.dataset.screen,'reading');assert.equal(scene.querySelector('.pixel-file-icons').hidden,false);assert.equal(scene.querySelectorAll('.pixel-file-icons button').length,5);
@@ -50,7 +53,7 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
    }else{
     scene.querySelector('[data-studio-action=shelf]').click();assert.equal(scene.dataset.screen,'shelf');
     const input=scene.querySelector('.shelf-search');input.value='no such note xyz';input.dispatchEvent(new w.Event('input'));assert.equal(scene.querySelectorAll('.all-cards .shelf-card:not([hidden])').length,0);assert.equal(scene.querySelector('.shelf-empty').hidden,false);
-    input.value='';input.dispatchEvent(new w.Event('input'));assert.ok(scene.querySelectorAll('.all-cards .shelf-card:not([hidden])').length>0);
+    input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));assert.equal(input.value,'');assert.ok(scene.querySelectorAll('.all-cards .shelf-card:not([hidden])').length>0);
     scene.querySelector('.outline-chapters button').click();assert.equal(scene.dataset.screen,'reading');assert.equal(w.location.hash,'#'+chapters[0].id);
     if(mode==='pixel'){
      const window=scene.querySelector('[data-window=notes]');scene.querySelector('[data-window-action=minimize]').click();assert.equal(window.hidden,true);scene.querySelector('[data-window-restore=notes]').click();assert.equal(window.hidden,false);
@@ -74,6 +77,7 @@ async function open(preference,url='https://notes.example.invalid/fonts.html',sa
      item.click();assert.equal(w.location.hash,'#chapter-1');assert.equal(scene.dataset.screen,'reading');assert.equal(mastery.getAttribute('aria-pressed'),String(initial));
      mastery.click();assert.equal(item.classList.contains('done'),!initial);if(!initial)assert.equal(w.getComputedStyle(item).textDecoration,'line-through');mastery.click();assert.equal(item.classList.contains('done'),initial);
      const poses=['bass','coffee','reading','star','writing'];
+     assert.equal(scene.querySelectorAll('.study-checklist button').length,chapters.length);assert.notEqual(w.getComputedStyle(scene.querySelector('.study-checklist button:last-child')).display,'none');
      for(const container of [scene.querySelector('.studio-home'),scene.querySelector('.studio-reading')])assert.deepEqual(Array.from(container.querySelectorAll('[data-sticker]')).map(el=>el.dataset.sticker).sort(),poses);
      assert.equal(scene.querySelectorAll('button[data-sticker]').length,0);const sticker=scene.querySelector('[data-sticker]'),pose=sticker.dataset.sticker;sticker.click();assert.equal(sticker.dataset.sticker,pose);
      const month=scene.querySelector('.calendar-title').textContent;scene.querySelector('[data-journal-month="1"]').click();assert.notEqual(scene.querySelector('.calendar-title').textContent,month);scene.querySelector('[data-journal-month="-1"]').click();assert.equal(scene.querySelector('.calendar-title').textContent,month);

@@ -105,6 +105,7 @@ $reader_templates
 <script type="application/json" id="shelf-data">$shelf_data</script>
 $math_js
 <script>
+$motion_js
 const tabs=Array.from(document.querySelectorAll('.tabs [role=tab]'));
 const panelScrollPositions=new Map();
 const indicator=document.querySelector('.tab-indicator');
@@ -119,11 +120,11 @@ function activate(tab){
  document.dispatchEvent(new CustomEvent('seagull:view',{detail:tab.dataset.panel}));
  updateIndicator();
  queueReading();
- requestAnimationFrame(()=>{if(document.body.dataset.view!==tab.dataset.panel)return;const panel=document.getElementById(tab.dataset.panel),saved=panelScrollPositions.get(panel.id);panel.scrollTop=saved?.panel||0;window.scrollTo({top:saved?.window??Math.max(0,panel.getBoundingClientRect().top+window.scrollY-16),behavior:'auto'})});
+ const panel=document.getElementById(tab.dataset.panel),saved=panelScrollPositions.get(panel.id);panel.scrollTop=saved?.panel||0;window.scrollTo({top:saved?.window??(document.body.dataset.readerTemplate?0:Math.max(0,panel.getBoundingClientRect().top+window.scrollY-16)),behavior:'instant'});
 }
 tabs.forEach((tab,index)=>{
- tab.addEventListener('click',()=>activate(tab));
- tab.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;activate(tabs[next]);tabs[next].focus()});
+ tab.addEventListener('click',()=>{if(tab.getAttribute('aria-selected')!=='true')runReaderTransition(()=>activate(tab))});
+ tab.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;runReaderTransition(()=>{activate(tabs[next]);tabs[next].focus()})});
 });
 const links=Array.from(document.querySelectorAll('.toc a'));
 const sidebar=document.querySelector('.sidebar'),search=document.getElementById('toc-search'),tocToggle=document.getElementById('toc-toggle');
@@ -141,10 +142,10 @@ function updateReading(){
  const active=links[index];if(!active.hidden&&active.getClientRects().length&&innerWidth>850){const a=active.getBoundingClientRect(),s=sidebar.getBoundingClientRect();if(a.top<s.top+105)sidebar.scrollTop+=a.top-s.top-105;else if(a.bottom>s.bottom-10)sidebar.scrollTop+=a.bottom-s.bottom+10}
 }
 function queueReading(){if(!readingFrame)readingFrame=requestAnimationFrame(updateReading)}
-function scrollBehavior(){return matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}
+function scrollBehavior(){return readerTransitionUpdating||matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'}
 function goToChapter(index,resetScroll=true){if(!chapters[index])return;if(document.body.dataset.style==='folio'&&resetScroll)chapters[index].scrollTop=0;document.dispatchEvent(new CustomEvent('seagull:chapter',{detail:index}));if(document.body.dataset.style!=='folio')chapters[index].scrollIntoView({behavior:scrollBehavior(),block:'start'});history.replaceState(null,'','#'+chapters[index].id);queueReading()}
 previous.addEventListener('click',()=>goToChapter(currentChapter-1));next.addEventListener('click',()=>goToChapter(currentChapter+1));document.getElementById('back-to-top').addEventListener('click',()=>{window.scrollTo({top:0,behavior:scrollBehavior()});history.replaceState(null,'',location.pathname+location.search)});
-window.addEventListener('scroll',queueReading,{passive:true});window.addEventListener('resize',queueReading);window.addEventListener('hashchange',queueReading);window.addEventListener('load',()=>{const index=chapters.findIndex(chapter=>'#'+chapter.id===location.hash);if(index>=0){document.dispatchEvent(new CustomEvent('seagull:chapter',{detail:index}));if(document.body.dataset.style!=='folio')chapters[index].scrollIntoView({behavior:'auto',block:'start'})}if(document.body.dataset.style==='folio')window.scrollTo({top:0,behavior:'auto'});queueReading()});queueReading();
+window.addEventListener('scroll',queueReading,{passive:true});window.addEventListener('resize',queueReading);window.addEventListener('hashchange',queueReading);window.addEventListener('load',()=>{const index=chapters.findIndex(chapter=>'#'+chapter.id===location.hash);if(index>=0){document.dispatchEvent(new CustomEvent('seagull:chapter',{detail:index}));if(document.body.dataset.style!=='folio')chapters[index].scrollIntoView({behavior:'instant',block:'start'})}if(document.body.dataset.style==='folio')window.scrollTo({top:0,behavior:'instant'});queueReading()});queueReading();
 const figureDialog=document.getElementById('figure-dialog');
 document.querySelectorAll('.figure-image').forEach(button=>button.addEventListener('click',()=>{
  const image=button.querySelector('img'),large=document.getElementById('large-figure');
@@ -152,6 +153,7 @@ document.querySelectorAll('.figure-image').forEach(button=>button.addEventListen
  figureDialog.showModal();document.querySelector('.image-scroll').scrollTo(0,0);
 }));
 document.getElementById('close-figure').addEventListener('click',()=>figureDialog.close());
+figureDialog.addEventListener('click',event=>{if(event.target!==figureDialog)return;const box=figureDialog.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)figureDialog.close()});
 const copyStatus=document.getElementById('copy-status');let copyStatusTimer;
 function reportCopy(message){copyStatus.textContent=message;copyStatus.hidden=false;clearTimeout(copyStatusTimer);copyStatusTimer=setTimeout(()=>{copyStatus.hidden=true},1800)}
 function copyFallback(text){
@@ -181,7 +183,7 @@ document.addEventListener('submit',event=>{
  const form=event.target.closest('.chapter-question');if(!form)return;event.preventDefault();
  const selected=form.querySelector('input:checked');if(!selected){form.querySelector('input').focus();return}
  const correct=Number(form.dataset.correct),passed=Number(selected.value)===correct,feedback=form.querySelector('.quiz-feedback');
- form.dataset.result=passed?'correct':'incorrect';form.querySelector('.quiz-result').textContent=passed?'答对了！':'再想一想。正确答案是 '+String.fromCharCode(65+correct)+'。';feedback.hidden=false;
+ form.dataset.result=passed?'correct':'incorrect';form.querySelector('.quiz-result').textContent=passed?'答对了！':'再想一想。正确答案是 '+String.fromCharCode(65+correct)+'。';feedback.hidden=false;revealReader(feedback);
 });
 document.addEventListener('change',event=>{const form=event.target.closest('.chapter-question');if(!form)return;delete form.dataset.result;form.querySelector('.quiz-feedback').hidden=true});
 $experience_js
